@@ -1,15 +1,6 @@
 import { useState, useMemo } from "react";
 
-const CHECKLIST_ITEMS = [
-  { id: "site_control", label: "Site Control Doc" },
-  { id: "single_line", label: "Single-Line Diagram" },
-  { id: "interconnection", label: "Interconnection Agreement" },
-  { id: "environmental", label: "Environmental Assessment" },
-  { id: "insurance", label: "Proof of Insurance" },
-  { id: "ppa", label: "Executed PPA / Contract" },
-  { id: "incentive_app", label: "Incentive Application" },
-  { id: "w9", label: "W-9 / Tax Forms" },
-];
+const ITEMS = ["Site Control Doc","Single-Line Diagram","Interconnection Agreement","Environmental Assessment","Proof of Insurance","Executed PPA / Contract","Incentive Application","W-9 / Tax Forms"];
 
 const STATUS = {
   pending: { label: "Pending Review", color: "#8B7355", bg: "#FDF6EC", border: "#E8D5B0" },
@@ -17,7 +8,16 @@ const STATUS = {
   approved: { label: "Approved", color: "#1A7A4A", bg: "#EBF9F1", border: "#A8E4C2" },
   flagged: { label: "Flagged", color: "#B03A2E", bg: "#FEF0EF", border: "#F5C0BC" },
 };
-{ id:"ILSFA-0008", name:"Lawndale Block Grant", customer:"Sam Rivera", agent:"S. Lee", pm:"", status:"pending", docs:[1,0,0,0,1,0,0,0], comment:"" },
+
+const DATA = [
+  { id:"ILSFA-0001", name:"Southside Community Solar", customer:"Maria Reyes", agent:"D. Alvarez", pm:"M. Torres", status:"approved", docs:[1,1,1,1,1,1,1,1], comment:"All documents verified." },
+  { id:"ILSFA-0002", name:"Pilsen Rooftop Array", customer:"Jorge Mendez", agent:"S. Lee", pm:"J. Kim", status:"flagged", docs:[1,0,1,1,0,1,1,1], comment:"Missing single-line and insurance." },
+  { id:"ILSFA-0003", name:"Englewood Block 14", customer:"Tanya Brown", agent:"D. Alvarez", pm:"M. Torres", status:"in_review", docs:[1,1,0,1,1,0,1,0], comment:"" },
+  { id:"ILSFA-0004", name:"Austin Neighborhood Solar", customer:"Kevin Park", agent:"R. Patel", pm:"", status:"pending", docs:[0,0,0,0,0,0,0,0], comment:"" },
+  { id:"ILSFA-0005", name:"Bronzeville Commons", customer:"Lisa Chen", agent:"S. Lee", pm:"R. Patel", status:"approved", docs:[1,1,1,1,1,1,1,1], comment:"Approved. Fast turnaround." },
+  { id:"ILSFA-0006", name:"Woodlawn Solar Hub", customer:"Andre Williams", agent:"D. Alvarez", pm:"J. Kim", status:"flagged", docs:[1,1,1,0,1,1,0,1], comment:"Assessment expired." },
+  { id:"ILSFA-0007", name:"Hyde Park Carport", customer:"Nina Okonkwo", agent:"R. Patel", pm:"M. Torres", status:"in_review", docs:[1,1,1,1,1,1,1,0], comment:"Waiting on W-9." },
+  { id:"ILSFA-0008", name:"Lawndale Block Grant", customer:"Sam Rivera", agent:"S. Lee", pm:"", status:"pending", docs:[1,0,0,0,1,0,0,0], comment:"" },
 ];
 
 function Pill({ status }) {
@@ -200,4 +200,3 @@ export default function App() {
     </div>
   );
 }
-
