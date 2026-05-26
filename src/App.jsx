@@ -34,7 +34,7 @@ const STATUS = {
 
 const INIT_DATA = [];
 
-const EMPTY_FORM = { projectId:"", name:"", customer:"", agent:"", pm:"", recValue:"", dcSize:"", ejc:false, ec:false, iec:false };
+const EMPTY_FORM = { projectId:"", name:"", customer:"", agent:"", pm:"", programYear:"", recValue:"", dcSize:"", ejc:false, ec:false, iec:false };
 
 const API_URL = "https://script.google.com/macros/s/AKfycbxXlm6OLl1AyVHsQAkNrs3dDpicmBJ0tPSJj-OIyB-ZLX24VdLbEpXLl4ErHxojsgibWQ/exec";
 
@@ -229,7 +229,7 @@ export default function App() {
   async function addProject() {
     if (!form.name.trim() || !form.projectId.trim()) return;
     const id = form.projectId.trim();
-    const newProject = { ...form, id, recValue:parseFloat(form.recValue)||0, dcSize:parseFloat(form.dcSize)||0, status:"pending", initialDocs:[...formDocs], finalDocs:[...EMPTY_DOCS], initialComment:"", finalComment:"", initialReviewer:"", finalReviewer:"", messages:[] };
+    const newProject = { ...form, id, programYear:form.programYear, recValue:parseFloat(form.recValue)||0, dcSize:parseFloat(form.dcSize)||0, status:"pending", initialDocs:[...formDocs], finalDocs:[...EMPTY_DOCS], initialComment:"", finalComment:"", initialReviewer:"", finalReviewer:"", messages:[] };
     setProjects(prev=>[newProject,...prev]);
     setForm(EMPTY_FORM);
     setFormDocs([...EMPTY_DOCS]);
@@ -394,7 +394,7 @@ export default function App() {
             <table style={{ width:"100%",borderCollapse:"collapse",fontSize:12 }}>
               <thead>
                 <tr style={{ background:"#FAFAF7" }}>
-                  {["Project ID","Project Name","Customer","Sales Agent","Project Manager","REC Value","DC Size","Initial Docs","Final Docs","Status","Messages",""].map(h=>(
+                  {["Project ID","Program Year","Customer","Sales Agent","Project Manager","REC Value","DC Size","Initial Docs","Final Docs","Status","Messages",""].map(h=>(
                     <th key={h} style={{ padding:"8px 14px",textAlign:"left",fontWeight:500,color:"#8B8680",fontSize:11,borderBottom:"1px solid #F0EDE6",whiteSpace:"nowrap" }}>{h}</th>
                   ))}
                 </tr>
@@ -424,7 +424,7 @@ export default function App() {
                     onMouseEnter={e=>e.currentTarget.style.background="#EFEDE7"}
                     onMouseLeave={e=>e.currentTarget.style.background=i%2===0?"#fff":"#FDFCFA"}>
                     <td style={{ padding:"10px 14px",fontFamily:"monospace",fontSize:11,color:"#8B8680" }}>{p.id}</td>
-                    <td style={{ padding:"10px 14px",fontWeight:500,color:"#1C1A17",whiteSpace:"nowrap" }}>{p.name}</td>
+                    <td style={{ padding:"10px 14px" }}>{p.programYear ? <span style={{ display:"inline-flex",alignItems:"center",padding:"3px 10px",borderRadius:20,fontSize:11,fontWeight:600,background:"#F3EEFF",color:"#6B4CA8",border:"1px solid #C9B3F5" }}>{p.programYear}</span> : <span style={{ color:"#C8C4BA",fontSize:11 }}>—</span>}</td>
                     <td style={{ padding:"10px 14px" }}><div style={{ display:"flex",alignItems:"center",gap:7 }}><Avatar name={p.customer} /><span style={{ color:"#5A5652",whiteSpace:"nowrap" }}>{p.customer}</span></div></td>
                     <td style={{ padding:"10px 14px" }}><div style={{ display:"flex",alignItems:"center",gap:7 }}><Avatar name={p.agent} /><span style={{ color:"#5A5652" }}>{p.agent}</span></div></td>
                     <td style={{ padding:"10px 14px" }}>{p.pm?<div style={{ display:"flex",alignItems:"center",gap:7 }}><Avatar name={p.pm} /><span style={{ color:"#5A5652" }}>{p.pm}</span></div>:<span style={{ color:"#C8C4BA",fontSize:11 }}>Unassigned</span>}</td>
@@ -569,7 +569,8 @@ export default function App() {
                   <div style={{ fontSize:18,fontWeight:700,color:"#1A5F9E" }}>{sel.dcSize?fmtKw(sel.dcSize):"—"}</div>
                 </div>
               </div>
-              <div style={{ display:"flex",gap:8 }}>
+              <div style={{ display:"flex",gap:8,alignItems:"center",flexWrap:"wrap" }}>
+                {sel.programYear && <span style={{ padding:"3px 12px",borderRadius:20,fontSize:11,fontWeight:600,background:"#F3EEFF",color:"#6B4CA8",border:"1px solid #C9B3F5" }}>📅 {sel.programYear}</span>}
                 {[["ejc","EJC"],["ec","EC"],["iec","IEC"]].map(([key,label])=>(
                   <span key={key} style={{ padding:"3px 12px",borderRadius:20,fontSize:11,fontWeight:600,border:`1px solid ${sel[key]?"#3A8C58":"#E0DDD6"}`,background:sel[key]?"#EBF9F1":"#F5F3EE",color:sel[key]?"#1A7A4A":"#A8A49E" }}>
                     {sel[key]?"✓ ":""}{label}
@@ -714,7 +715,13 @@ export default function App() {
               </div>
               <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:12 }}>
                 <Field label="Project ID *">
-                  <input value={form.projectId} onChange={e=>setForm(f=>({...f,projectId:e.target.value}))} placeholder="Enter project ID" style={{ ...inputStyle, borderColor: form.projectId ? "#E0DDD6" : "#E0DDD6" }} />
+                  <input value={form.projectId} onChange={e=>setForm(f=>({...f,projectId:e.target.value}))} placeholder="Enter project ID" style={inputStyle} />
+                </Field>
+                <Field label="Program Year *">
+                  <select value={form.programYear} onChange={e=>setForm(f=>({...f,programYear:e.target.value}))} style={{ ...inputStyle, color:form.programYear?"#1C1A17":"#A8A49E" }}>
+                    <option value="">Select year…</option>
+                    {["PY8-2026","PY8-2026 Waitlisted"].map(y=><option key={y} value={y}>{y}</option>)}
+                  </select>
                 </Field>
                 <Field label="Project Name *"><input value={form.name}     onChange={e=>setForm(f=>({...f,name:e.target.value}))}     placeholder="e.g. Southside Community Solar" style={inputStyle} /></Field>
                 <Field label="Customer Name"><input  value={form.customer} onChange={e=>setForm(f=>({...f,customer:e.target.value}))} placeholder="e.g. Maria Reyes" style={inputStyle} /></Field>
@@ -755,7 +762,7 @@ export default function App() {
               </Field>
             </div>
             <div style={{ padding:"14px 24px",borderTop:"1px solid #F0EDE6",display:"flex",gap:10,flexShrink:0 }}>
-              <button onClick={addProject} disabled={!form.name.trim()||!form.projectId.trim()} style={{ padding:"9px 24px",borderRadius:8,border:"none",background:(form.name.trim()&&form.projectId.trim())?"#2B5E3B":"#A8C5B2",color:"#fff",fontFamily:"inherit",fontSize:13,fontWeight:500,cursor:(form.name.trim()&&form.projectId.trim())?"pointer":"not-allowed" }}>
+              <button onClick={addProject} disabled={!form.name.trim()||!form.projectId.trim()||!form.programYear} style={{ padding:"9px 24px",borderRadius:8,border:"none",background:(form.name.trim()&&form.projectId.trim()&&form.programYear)?"#2B5E3B":"#A8C5B2",color:"#fff",fontFamily:"inherit",fontSize:13,fontWeight:500,cursor:(form.name.trim()&&form.projectId.trim()&&form.programYear)?"pointer":"not-allowed" }}>
                 Submit Project
               </button>
               <button onClick={()=>setShowAdd(false)} style={{ background:"transparent",border:"none",fontSize:13,color:"#8B8680",cursor:"pointer",fontFamily:"inherit" }}>Cancel</button>
