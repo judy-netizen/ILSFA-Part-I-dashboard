@@ -227,7 +227,7 @@ export default function App() {
   }
 
   async function addProject() {
-    if (!form.name.trim() || !form.projectId.trim()) return;
+    if (!form.projectId.trim() || !form.programYear) return;
     const id = form.projectId.trim();
     const newProject = { ...form, id, programYear:form.programYear, recValue:parseFloat(form.recValue)||0, dcSize:parseFloat(form.dcSize)||0, status:"pending", initialDocs:[...formDocs], finalDocs:[...EMPTY_DOCS], initialComment:"", finalComment:"", initialReviewer:"", finalReviewer:"", messages:[] };
     setProjects(prev=>[newProject,...prev]);
@@ -723,8 +723,8 @@ export default function App() {
                     {["PY8-2026","PY8-2026 Waitlisted"].map(y=><option key={y} value={y}>{y}</option>)}
                   </select>
                 </Field>
-                <Field label="Project Name *"><input value={form.name}     onChange={e=>setForm(f=>({...f,name:e.target.value}))}     placeholder="e.g. Southside Community Solar" style={inputStyle} /></Field>
                 <Field label="Customer Name"><input  value={form.customer} onChange={e=>setForm(f=>({...f,customer:e.target.value}))} placeholder="e.g. Maria Reyes" style={inputStyle} /></Field>
+                <Field label="Project Name"><input value={form.name}     onChange={e=>setForm(f=>({...f,name:e.target.value}))}     placeholder="e.g. Southside Community Solar" style={inputStyle} /></Field>
                 <Field label="Sales Agent">
                   <select value={form.agent} onChange={e=>setForm(f=>({...f,agent:e.target.value}))} style={{ ...inputStyle, color:form.agent?"#1C1A17":"#A8A49E" }}>
                     <option value="">Select agent…</option>
@@ -762,7 +762,7 @@ export default function App() {
               </Field>
             </div>
             <div style={{ padding:"14px 24px",borderTop:"1px solid #F0EDE6",display:"flex",gap:10,flexShrink:0 }}>
-              <button onClick={addProject} disabled={!form.name.trim()||!form.projectId.trim()||!form.programYear} style={{ padding:"9px 24px",borderRadius:8,border:"none",background:(form.name.trim()&&form.projectId.trim()&&form.programYear)?"#2B5E3B":"#A8C5B2",color:"#fff",fontFamily:"inherit",fontSize:13,fontWeight:500,cursor:(form.name.trim()&&form.projectId.trim()&&form.programYear)?"pointer":"not-allowed" }}>
+              <button onClick={addProject} disabled={!form.projectId.trim()||!form.programYear} style={{ padding:"9px 24px",borderRadius:8,border:"none",background:(form.projectId.trim()&&form.programYear)?"#2B5E3B":"#A8C5B2",color:"#fff",fontFamily:"inherit",fontSize:13,fontWeight:500,cursor:(form.projectId.trim()&&form.programYear)?"pointer":"not-allowed" }}>
                 Submit Project
               </button>
               <button onClick={()=>setShowAdd(false)} style={{ background:"transparent",border:"none",fontSize:13,color:"#8B8680",cursor:"pointer",fontFamily:"inherit" }}>Cancel</button>
