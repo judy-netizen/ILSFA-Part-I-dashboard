@@ -1,5 +1,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 
+const pulseStyle = `@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`;
+
 const ITEMS = ["IPA","PPA","Shading Study","Planset","Array","SS","SSR","POO","UB","ES Box","ES Date","ILSFA Verified","IPA Linked","HRUP","Invoice"];
 const EMPTY_DOCS = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
@@ -161,6 +163,7 @@ export default function App() {
   const [newMsg, setNewMsg]         = useState("");
   const [showAdd, setShowAdd]       = useState(false);
   const [showEdit, setShowEdit]     = useState(false);
+  const [seenMessages, setSeenMessages] = useState({});
   const [editForm, setEditForm]     = useState(EMPTY_FORM);
   const [form, setForm]             = useState(EMPTY_FORM);
   const [formDocs, setFormDocs]     = useState([...EMPTY_DOCS]);
@@ -269,6 +272,19 @@ export default function App() {
     setSyncing(false);
   }
 
+  async function deleteProject(projectId) {
+    setProjects(prev => prev.filter(p => p.id !== projectId));
+    setSel(null);
+    setSyncing(true);
+    try {
+      await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "delete_project", id: projectId }),
+      });
+    } catch(e) { console.error("Delete error", e); }
+    setSyncing(false);
+  }
+
   async function addProject() {
     if (!form.projectId.trim() || !form.programYear) return;
     const id = form.projectId.trim();
@@ -355,11 +371,25 @@ export default function App() {
   // ── MAIN DASHBOARD ──────────────────────────────────────────────────────────
   return (
     <div style={{ fontFamily:"'Helvetica Neue',sans-serif",background:"#F7F5F0",minHeight:"100vh" }}>
+      <style>{pulseStyle}</style>
 
       {/* Header */}
       <div style={{ background:"#1C1A17",padding:"14px 24px",display:"flex",alignItems:"center",justifyContent:"space-between" }}>
         <div style={{ color:"#F7F5F0",fontSize:15,fontWeight:600 }}>ILSFA Part I — Submission Review Dashboard</div>
         <div style={{ display:"flex",alignItems:"center",gap:10 }}>
+          {(()=>{
+            const totalUnread = projects.reduce((sum,p)=>{
+              const total=(p.messages||[]).length;
+              const seen=seenMessages[p.id]||0;
+              return sum+Math.max(0,total-seen);
+            },0);
+            return totalUnread>0 ? (
+              <div style={{ display:"flex",alignItems:"center",gap:6,background:"#FEF0EF",border:"1px solid #F5C0BC",borderRadius:8,padding:"4px 12px" }}>
+                <span style={{ width:8,height:8,borderRadius:"50%",background:"#B03A2E",display:"inline-block",animation:"pulse 1.5s infinite" }}></span>
+                <span style={{ color:"#B03A2E",fontSize:12,fontWeight:600 }}>{totalUnread} unread</span>
+              </div>
+            ) : null;
+          })()}
           {!sheetReady && !loading && (
             <button onClick={async()=>{ await initHeaders(); await loadFromSheet(); }} style={{ padding:"7px 14px",borderRadius:8,border:"1px solid #6FCF8A",background:"transparent",color:"#6FCF8A",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer" }}>
               ⚡ Initialize Sheet
@@ -477,9 +507,17 @@ export default function App() {
                     <td style={{ padding:"10px 14px" }}><DocsBar docs={p.finalDocs} /></td>
                     <td style={{ padding:"10px 14px" }}><Pill status={p.status} /></td>
                     <td style={{ padding:"10px 14px" }}>
-                      {(p.messages||[]).length>0
-                        ? <span style={{ display:"inline-flex",alignItems:"center",gap:4,padding:"3px 9px",borderRadius:20,fontSize:11,fontWeight:500,background:"#EBF4FF",color:"#1A5F9E",border:"1px solid #BDDAF5" }}>💬 {(p.messages||[]).length}</span>
-                        : <span style={{ color:"#C8C4BA",fontSize:11 }}>—</span>}
+                      {(()=>{
+                        const total = (p.messages||[]).length;
+                        const seen = seenMessages[p.id] || 0;
+                        const unread = Math.max(0, total - seen);
+                        if (total === 0) return <span style={{ color:"#C8C4BA",fontSize:11 }}>—</span>;
+                        return (
+                          <span style={{ display:"inline-flex",alignItems:"center",gap:5,padding:"3px 9px",borderRadius:20,fontSize:11,fontWeight:500,background:unread>0?"#FEF0EF":"#EBF4FF",color:unread>0?"#B03A2E":"#1A5F9E",border:`1px solid ${unread>0?"#F5C0BC":"#BDDAF5"}` }}>
+                            💬 {total}{unread>0 && <span style={{ background:"#B03A2E",color:"#fff",fontSize:10,fontWeight:700,padding:"1px 5px",borderRadius:8 }}>{unread} new</span>}
+                          </span>
+                        );
+                      })()}
                     </td>
                     <td style={{ padding:"10px 14px" }}><div style={{ width:20,height:20,borderRadius:4,border:"1px solid #E0DDD6",display:"flex",alignItems:"center",justifyContent:"center",color:"#8B8680",fontSize:10 }}>›</div></td>
                   </tr>
@@ -629,11 +667,18 @@ export default function App() {
 
             {/* Details / Messages tabs */}
             <div style={{ display:"flex",borderBottom:"1px solid #F0EDE6",background:"#FAFAF7",flexShrink:0 }}>
-              {[["details","📋 Details"],["messages","💬 Messages"+(sel.messages&&sel.messages.length>0?" ("+sel.messages.length+")":"")]].map(([tab,label])=>(
-                <button key={tab} onClick={()=>setDrawerTab(tab)} style={{ flex:1,padding:"10px",border:"none",background:"transparent",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",color:drawerTab===tab?"#1C1A17":"#8B8680",borderBottom:`2px solid ${drawerTab===tab?"#1C1A17":"transparent"}`,transition:"all 0.15s" }}>
-                  {label}
-                </button>
-              ))}
+              {[["details","details"],["messages","messages"]].map(([tab])=>{
+                const msgCount = (sel.messages||[]).length;
+                const seenCount = seenMessages[sel.id] || 0;
+                const unread = tab==="messages" ? Math.max(0, msgCount - seenCount) : 0;
+                const label = tab==="details" ? "📋 Details" : "💬 Messages";
+                return (
+                  <button key={tab} onClick={()=>{ setDrawerTab(tab); if(tab==="messages") setSeenMessages(prev=>({...prev,[sel.id]:(sel.messages||[]).length})); }} style={{ flex:1,padding:"10px",border:"none",background:"transparent",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",color:drawerTab===tab?"#1C1A17":"#8B8680",borderBottom:`2px solid ${drawerTab===tab?"#1C1A17":"transparent"}`,transition:"all 0.15s",position:"relative",display:"flex",alignItems:"center",justifyContent:"center",gap:6 }}>
+                    {label}
+                    {unread>0 && <span style={{ background:"#B03A2E",color:"#fff",fontSize:10,fontWeight:700,padding:"1px 6px",borderRadius:10,lineHeight:1.4 }}>{unread}</span>}
+                  </button>
+                );
+              })}
             </div>
 
             {/* DETAILS TAB */}
@@ -699,6 +744,7 @@ export default function App() {
                       <button onClick={saveProject} style={{ padding:"8px 22px",borderRadius:8,border:"none",background:"#2B5E3B",color:"#fff",fontFamily:"inherit",fontSize:13,fontWeight:500,cursor:"pointer" }}>Save changes</button>
                       {saved&&<span style={{ fontSize:12,color:"#3A8C58" }}>✓ Saved</span>}
                       <button onClick={()=>setSel(null)} style={{ marginLeft:"auto",background:"transparent",border:"none",fontSize:12,color:"#8B8680",cursor:"pointer",fontFamily:"inherit" }}>Cancel</button>
+                      {isManager && <button onClick={()=>{ if(window.confirm(`Delete project ${sel.id}? This cannot be undone.`)) deleteProject(sel.id); }} style={{ padding:"7px 14px",borderRadius:7,border:"1px solid #F5C0BC",background:"#FEF0EF",color:"#B03A2E",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer" }}>🗑 Delete</button>}
                     </div>
                   </>
                 )}
@@ -738,7 +784,7 @@ export default function App() {
                   <div style={{ fontSize:11,color:"#8B8680",marginBottom:6 }}>Sending as <span style={{ fontWeight:600,color:user?.role==="manager"?"#1A5F9E":user?.role==="admin"?"#1C1A17":"#6B4CA8" }}>{user?.role==="manager"?"Reviewer":user?.role==="admin"?"Admin":"Project Manager"}</span></div>
                   <div style={{ display:"flex",gap:8 }}>
                     <textarea value={newMsg} onChange={e=>setNewMsg(e.target.value)} onKeyDown={e=>{ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMessage();}}} placeholder="Type a message… (Enter to send)" rows={2} style={{ flex:1,padding:"9px 12px",border:"1px solid #E0DDD6",borderRadius:8,fontSize:13,color:"#1C1A17",resize:"none",background:"#FAFAF7",outline:"none",fontFamily:"inherit",lineHeight:1.5 }} />
-                    <button onClick={sendMessage} disabled={!newMsg.trim()} style={{ padding:"0 16px",borderRadius:8,border:"none",background:newMsg.trim()?"#1C1A17":"#E0DDD6",color:"#fff",cursor:newMsg.trim()?"pointer":"not-allowed",fontFamily:"inherit",fontSize:12,fontWeight:500,flexShrink:0 }}>Send</button>
+                    <button onClick={()=>sendMessage()} style={{ padding:"0 16px",borderRadius:8,border:"none",background:newMsg.trim()?"#1C1A17":"#E0DDD6",color:"#fff",cursor:newMsg.trim()?"pointer":"default",fontFamily:"inherit",fontSize:12,fontWeight:500,flexShrink:0,minWidth:60 }}>Send</button>
                   </div>
                   <div style={{ fontSize:10,color:"#C8C4BA",marginTop:4 }}>Shift+Enter for new line</div>
                 </div>
