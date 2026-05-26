@@ -541,12 +541,12 @@ export default function App() {
       {/* Add Project Modal */}
       {showAdd && (
         <div style={{ position:"fixed", inset:0, background:"rgba(28,26,23,0.55)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:200 }} onClick={e=>{ if(e.target===e.currentTarget) setShowAdd(false); }}>
-          <div style={{ width:520, background:"#fff", borderRadius:14, boxShadow:"0 8px 40px rgba(0,0,0,0.18)", overflow:"hidden" }}>
+          <div style={{ width:520, background:"#fff", borderRadius:14, boxShadow:"0 8px 40px rgba(0,0,0,0.18)", overflow:"hidden", maxHeight:"90vh", display:"flex", flexDirection:"column" }}>
             <div style={{ padding:"18px 24px", borderBottom:"1px solid #F0EDE6", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
               <div style={{ fontSize:15, fontWeight:600, color:"#1C1A17" }}>Add New Project</div>
               <button onClick={()=>setShowAdd(false)} style={{ width:28, height:28, borderRadius:6, border:"1px solid #E0DDD6", background:"transparent", cursor:"pointer", fontSize:16, color:"#8B8680" }}>×</button>
             </div>
-            <div style={{ padding:"20px 24px", display:"flex", flexDirection:"column", gap:14 }}>
+            <div style={{ padding:"20px 24px", display:"flex", flexDirection:"column", gap:14, overflowY:"auto", flex:1 }}>
               <div style={{ background:"#F3EEFF", border:"1px solid #C9B3F5", borderRadius:8, padding:"10px 14px", fontSize:12, color:"#6B4CA8" }}>
                 Fill in your project details. The manager will handle document review after submission.
               </div>
@@ -571,7 +571,7 @@ export default function App() {
                 </Field>
               </div>
             </div>
-            <div style={{ padding:"14px 24px", borderTop:"1px solid #F0EDE6", display:"flex", gap:10 }}>
+            <div style={{ padding:"14px 24px", borderTop:"1px solid #F0EDE6", display:"flex", gap:10, flexShrink:0 }}>
               <button onClick={addProject} disabled={!form.name.trim()} style={{ padding:"9px 24px", borderRadius:8, border:"none", background:form.name.trim()?"#2B5E3B":"#A8C5B2", color:"#fff", fontFamily:"inherit", fontSize:13, fontWeight:500, cursor:form.name.trim()?"pointer":"not-allowed" }}>
                 Submit Project
               </button>
