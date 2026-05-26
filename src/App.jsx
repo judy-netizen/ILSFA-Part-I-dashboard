@@ -150,6 +150,7 @@ export default function App() {
   const [fAgent, setFAgent]         = useState("");
   const [fPM, setFPM]               = useState("");
   const [fDoc, setFDoc]             = useState("");
+  const [fProgramYear, setFProgramYear] = useState("");
   const [sel, setSel]               = useState(null);
   const [drawerTab, setDrawerTab]   = useState("details");
   const [reviewTab, setReviewTab]   = useState("initial");
@@ -179,9 +180,10 @@ export default function App() {
     if (fAgent  && p.agent!==fAgent)   return false;
     if (fPM     && p.pm!==fPM)         return false;
     if (fDoc) { const idx=ITEMS.indexOf(fDoc); if(idx>=0&&!p.initialDocs[idx]) return false; }
+    if (fProgramYear && p.programYear !== fProgramYear) return false;
     if (search && ![p.name,p.id,p.customer,p.agent,p.pm].some(v=>v.toLowerCase().includes(search.toLowerCase()))) return false;
     return true;
-  }),[projects,fStatus,fAgent,fPM,fDoc,search,user]);
+  }),[projects,fStatus,fAgent,fPM,fDoc,fProgramYear,search,user]);
 
   const totals = useMemo(()=>({
     rec:      list.reduce((s,p)=>s+(p.recValue||0),0),
@@ -193,7 +195,7 @@ export default function App() {
     pending:  list.filter(p=>p.status==="pending").length,
   }),[list]);
 
-  const anyFilter = fStatus||fAgent||fPM||fDoc||search;
+  const anyFilter = fStatus||fAgent||fPM||fDoc||fProgramYear||search;
   const isAdmin   = user?.role==="admin";
   const isManager = user?.role==="manager"||isAdmin;
 
@@ -322,7 +324,7 @@ export default function App() {
     }
   }
 
-  function clearFilters() { setFStatus(""); setFAgent(""); setFPM(""); setFDoc(""); setSearch(""); }
+  function clearFilters() { setFStatus(""); setFAgent(""); setFPM(""); setFDoc(""); setFProgramYear(""); setSearch(""); }
 
   const loadFromSheet = useCallback(async () => {
     setLoading(true);
@@ -468,6 +470,10 @@ export default function App() {
             {PM_LIST.map(o=><option key={o} value={o}>{o}</option>)}
           </select>
           <SelFilter value={fDoc}    onChange={setFDoc}    placeholder="Has Document" options={ITEMS} />
+          <select value={fProgramYear} onChange={e=>setFProgramYear(e.target.value)} style={{ padding:"6px 10px",border:"1px solid #E0DDD6",borderRadius:7,fontSize:12,background:"#fff",color:fProgramYear?"#1C1A17":"#A8A49E",outline:"none",cursor:"pointer",fontFamily:"inherit" }}>
+            <option value="">Program Year</option>
+            {["PY8-2026","PY8-2026 Waitlisted"].map(y=><option key={y} value={y}>{y}</option>)}
+          </select>
           {anyFilter && <button onClick={clearFilters} style={{ padding:"5px 12px",borderRadius:6,border:"1px solid #E0DDD6",background:"#fff",fontFamily:"inherit",fontSize:11,color:"#B03A2E",cursor:"pointer",fontWeight:500 }}>✕ Clear</button>}
           <div style={{ marginLeft:"auto",fontSize:12,color:"#8B8680",fontWeight:500 }}>{list.length} project{list.length!==1?"s":""}</div>
         </div>
