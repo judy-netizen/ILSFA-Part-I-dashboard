@@ -536,6 +536,56 @@ export default function App() {
                 </div>
               </div>
             )}
+            </div>{/* end details tab */}
+
+            {/* Messages Panel */}
+            <div style={{ display: activeDrawerTab==="messages" ? "flex" : "none", flexDirection:"column", flex:1, overflow:"hidden" }}>
+              <div style={{ flex:1, overflowY:"auto", padding:"16px 22px", display:"flex", flexDirection:"column", gap:12 }}>
+                {(sel.messages||[]).length === 0 ? (
+                  <div style={{ textAlign:"center", padding:"40px 20px" }}>
+                    <div style={{ fontSize:32, marginBottom:10 }}>💬</div>
+                    <div style={{ fontSize:14, fontWeight:500, color:"#1C1A17", marginBottom:6 }}>No messages yet</div>
+                    <div style={{ fontSize:12, color:"#8B8680" }}>Start a conversation below.</div>
+                  </div>
+                ) : (sel.messages||[]).map(msg=>{
+                  const isMe = msg.role === role;
+                  const roleColor = msg.role==="manager"?"#1A5F9E":msg.role==="admin"?"#1C1A17":"#6B4CA8";
+                  const roleBg = msg.role==="manager"?"#EBF4FF":msg.role==="admin"?"#F0EDE6":"#F3EEFF";
+                  return (
+                    <div key={msg.id} style={{ display:"flex", flexDirection:"column", alignItems:isMe?"flex-end":"flex-start" }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:5, marginBottom:4, flexDirection:isMe?"row-reverse":"row" }}>
+                        <Avatar name={msg.from} size={20} />
+                        <span style={{ fontSize:11, fontWeight:600, color:roleColor }}>{msg.from}</span>
+                        <span style={{ fontSize:10, padding:"1px 6px", borderRadius:10, background:roleBg, color:roleColor, fontWeight:500 }}>
+                          {msg.role==="manager"?"Reviewer":msg.role==="admin"?"Admin":"PM"}
+                        </span>
+                        <span style={{ fontSize:10, color:"#A8A49E" }}>{msg.time}</span>
+                      </div>
+                      <div style={{ maxWidth:"82%", padding:"10px 14px", borderRadius:isMe?"12px 4px 12px 12px":"4px 12px 12px 12px", background:isMe?"#1C1A17":"#F5F3EE", color:isMe?"#F7F5F0":"#1C1A17", fontSize:13, lineHeight:1.6 }}>
+                        {msg.text}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div style={{ padding:"14px 22px", borderTop:"1px solid #F0EDE6", flexShrink:0 }}>
+                <div style={{ fontSize:11, color:"#8B8680", marginBottom:6 }}>
+                  Sending as <span style={{ fontWeight:600, color:role==="manager"?"#1A5F9E":role==="admin"?"#1C1A17":"#6B4CA8" }}>
+                    {role==="manager"?"Reviewer":role==="admin"?"Admin":"Project Manager"}
+                  </span>
+                </div>
+                <div style={{ display:"flex", gap:8 }}>
+                  <textarea value={newMsg} onChange={e=>setNewMsg(e.target.value)}
+                    onKeyDown={e=>{ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); sendMessage(); }}}
+                    placeholder="Type a message… (Enter to send, Shift+Enter for new line)"
+                    rows={2} style={{ flex:1, padding:"9px 12px", border:"1px solid #E0DDD6", borderRadius:8, fontSize:13, color:"#1C1A17", resize:"none", background:"#FAFAF7", outline:"none", fontFamily:"inherit", lineHeight:1.5 }} />
+                  <button onClick={sendMessage} disabled={!newMsg.trim()} style={{ padding:"0 16px", borderRadius:8, border:"none", background:newMsg.trim()?"#1C1A17":"#E0DDD6", color:"#fff", cursor:newMsg.trim()?"pointer":"not-allowed", fontFamily:"inherit", fontSize:12, fontWeight:500, flexShrink:0 }}>
+                    Send
+                  </button>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       )}
