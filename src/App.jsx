@@ -19,14 +19,14 @@ const STATUS = {
 const EMPTY_DOCS = [0,0,0,0,0,0,0,0,0,0,0,0,0];
 
 const DATA = [
-  { id:"ILSFA-0001", name:"Southside Community Solar", customer:"Maria Reyes", agent:"D. Alvarez", pm:"M. Torres", recValue:48250, dcSize:99.9, ejc:true, ec:true, iec:false, status:"approved", initialDocs:[1,1,1,1,1,1,1,1,1,1,1,1,1], finalDocs:[1,1,1,1,1,1,1,1,1,1,1,1,1], initialComment:"All docs received.", finalComment:"Final check passed.", initialReviewer:"J. Kim", finalReviewer:"J. Kim" },
-  { id:"ILSFA-0002", name:"Pilsen Rooftop Array", customer:"Jorge Mendez", agent:"S. Lee", pm:"J. Kim", recValue:36100, dcSize:75.0, ejc:false, ec:false, iec:false, status:"flagged", initialDocs:[1,1,0,1,0,0,0,0,0,0,0,0,0], finalDocs:[...EMPTY_DOCS], initialComment:"Missing Shading Study and Array.", finalComment:"", initialReviewer:"M. Torres", finalReviewer:"" },
-  { id:"ILSFA-0003", name:"Englewood Block 14", customer:"Tanya Brown", agent:"D. Alvarez", pm:"M. Torres", recValue:24150, dcSize:50.0, ejc:false, ec:false, iec:false, status:"final_review", initialDocs:[1,1,1,1,1,1,1,1,1,1,1,1,0], finalDocs:[1,1,1,0,1,1,1,1,1,1,1,1,0], initialComment:"IPA Linked missing, rest OK.", finalComment:"Planset still needs update.", initialReviewer:"J. Kim", finalReviewer:"J. Kim" },
-  { id:"ILSFA-0004", name:"Austin Neighborhood Solar", customer:"Kevin Park", agent:"R. Patel", pm:"", recValue:48250, dcSize:99.9, ejc:true, ec:true, iec:false, status:"pending", initialDocs:[...EMPTY_DOCS], finalDocs:[...EMPTY_DOCS], initialComment:"", finalComment:"", initialReviewer:"", finalReviewer:"" },
-  { id:"ILSFA-0005", name:"Bronzeville Commons", customer:"Lisa Chen", agent:"S. Lee", pm:"R. Patel", recValue:42720, dcSize:88.5, ejc:false, ec:false, iec:false, status:"approved", initialDocs:[1,1,1,1,1,1,1,1,1,1,1,1,1], finalDocs:[1,1,1,1,1,1,1,1,1,1,1,1,1], initialComment:"All complete.", finalComment:"Approved after final check.", initialReviewer:"M. Torres", finalReviewer:"M. Torres" },
-  { id:"ILSFA-0006", name:"Woodlawn Solar Hub", customer:"Andre Williams", agent:"D. Alvarez", pm:"J. Kim", recValue:29940, dcSize:62.0, ejc:false, ec:false, iec:false, status:"initial_review", initialDocs:[1,1,1,1,0,0,0,0,0,0,0,0,0], finalDocs:[...EMPTY_DOCS], initialComment:"", finalComment:"", initialReviewer:"", finalReviewer:"" },
-  { id:"ILSFA-0007", name:"Hyde Park Carport", customer:"Nina Okonkwo", agent:"R. Patel", pm:"M. Torres", recValue:48250, dcSize:99.9, ejc:true, ec:true, iec:false, status:"initial_review", initialDocs:[1,1,1,1,1,1,1,1,1,1,1,1,0], finalDocs:[...EMPTY_DOCS], initialComment:"Waiting on IPA Linked.", finalComment:"", initialReviewer:"J. Kim", finalReviewer:"" },
-  { id:"ILSFA-0008", name:"Lawndale Block Grant", customer:"Sam Rivera", agent:"S. Lee", pm:"", recValue:21240, dcSize:44.0, ejc:false, ec:false, iec:false, status:"pending", initialDocs:[...EMPTY_DOCS], finalDocs:[...EMPTY_DOCS], initialComment:"", finalComment:"", initialReviewer:"", finalReviewer:"" },
+  { id:"ILSFA-0001", name:"Southside Community Solar", customer:"Maria Reyes", agent:"D. Alvarez", pm:"M. Torres", recValue:48250, dcSize:99.9, ejc:true, ec:true, iec:false, status:"approved", initialDocs:[1,1,1,1,1,1,1,1,1,1,1,1,1], finalDocs:[1,1,1,1,1,1,1,1,1,1,1,1,1], initialComment:"All docs received.", finalComment:"Final check passed.", initialReviewer:"J. Kim", finalReviewer:"J. Kim", messages:[{id:1,from:"J. Kim",role:"manager",text:"All documents look good. Approved!",time:"2026-05-10 09:14"},{id:2,from:"M. Torres",role:"pm",text:"Thank you! Let me know if anything else is needed.",time:"2026-05-10 09:30"}] },
+  { id:"ILSFA-0002", name:"Pilsen Rooftop Array", customer:"Jorge Mendez", agent:"S. Lee", pm:"J. Kim", recValue:36100, dcSize:75.0, ejc:false, ec:false, iec:false, status:"flagged", initialDocs:[1,1,0,1,0,0,0,0,0,0,0,0,0], finalDocs:[...EMPTY_DOCS], initialComment:"Missing Shading Study and Array.", finalComment:"", initialReviewer:"M. Torres", finalReviewer:"", messages:[{id:1,from:"M. Torres",role:"manager",text:"Missing Shading Study and Array docs. Please resubmit.",time:"2026-05-11 11:02"},{id:2,from:"J. Kim",role:"pm",text:"Working on it, will upload by EOD.",time:"2026-05-11 11:45"}] },
+  { id:"ILSFA-0003", name:"Englewood Block 14", customer:"Tanya Brown", agent:"D. Alvarez", pm:"M. Torres", recValue:24150, dcSize:50.0, ejc:false, ec:false, iec:false, status:"final_review", initialDocs:[1,1,1,1,1,1,1,1,1,1,1,1,0], finalDocs:[1,1,1,0,1,1,1,1,1,1,1,1,0], initialComment:"IPA Linked missing, rest OK.", finalComment:"Planset still needs update.", initialReviewer:"J. Kim", finalReviewer:"J. Kim", messages:[{id:1,from:"J. Kim",role:"manager",text:"Planset still needs an update before final approval.",time:"2026-05-12 14:20"}] },
+  { id:"ILSFA-0004", name:"Austin Neighborhood Solar", customer:"Kevin Park", agent:"R. Patel", pm:"", recValue:48250, dcSize:99.9, ejc:true, ec:true, iec:false, status:"pending", initialDocs:[...EMPTY_DOCS], finalDocs:[...EMPTY_DOCS], initialComment:"", finalComment:"", initialReviewer:"", finalReviewer:"", messages:[] },
+  { id:"ILSFA-0005", name:"Bronzeville Commons", customer:"Lisa Chen", agent:"S. Lee", pm:"R. Patel", recValue:42720, dcSize:88.5, ejc:false, ec:false, iec:false, status:"approved", initialDocs:[1,1,1,1,1,1,1,1,1,1,1,1,1], finalDocs:[1,1,1,1,1,1,1,1,1,1,1,1,1], initialComment:"All complete.", finalComment:"Approved after final check.", initialReviewer:"M. Torres", finalReviewer:"M. Torres", messages:[] },
+  { id:"ILSFA-0006", name:"Woodlawn Solar Hub", customer:"Andre Williams", agent:"D. Alvarez", pm:"J. Kim", recValue:29940, dcSize:62.0, ejc:false, ec:false, iec:false, status:"initial_review", initialDocs:[1,1,1,1,0,0,0,0,0,0,0,0,0], finalDocs:[...EMPTY_DOCS], initialComment:"", finalComment:"", initialReviewer:"", finalReviewer:"", messages:[] },
+  { id:"ILSFA-0007", name:"Hyde Park Carport", customer:"Nina Okonkwo", agent:"R. Patel", pm:"M. Torres", recValue:48250, dcSize:99.9, ejc:true, ec:true, iec:false, status:"initial_review", initialDocs:[1,1,1,1,1,1,1,1,1,1,1,1,0], finalDocs:[...EMPTY_DOCS], initialComment:"Waiting on IPA Linked.", finalComment:"", initialReviewer:"J. Kim", finalReviewer:"", messages:[] },
+  { id:"ILSFA-0008", name:"Lawndale Block Grant", customer:"Sam Rivera", agent:"S. Lee", pm:"", recValue:21240, dcSize:44.0, ejc:false, ec:false, iec:false, status:"pending", initialDocs:[...EMPTY_DOCS], finalDocs:[...EMPTY_DOCS], initialComment:"", finalComment:"", initialReviewer:"", finalReviewer:"", messages:[] },
 ];
 
 const EMPTY_FORM = { name:"", customer:"", agent:"", pm:"", recValue:"", dcSize:"", ejc:false, ec:false, iec:false };
@@ -246,7 +246,7 @@ export default function App() {
             <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12 }}>
               <thead>
                 <tr style={{ background:"#FAFAF7" }}>
-                  {["Project ID","Project Name","Customer","Sales Agent","Project Manager","REC Value","DC Size","Initial Docs","Final Docs","Status",""].map(h=>(
+                  {["Project ID","Project Name","Customer","Sales Agent","Project Manager","REC Value","DC Size","Initial Docs","Final Docs","Status","Messages",""].map(h=>(
                     <th key={h} style={{ padding:"8px 14px", textAlign:"left", fontWeight:500, color:"#8B8680", fontSize:11, borderBottom:"1px solid #F0EDE6", whiteSpace:"nowrap" }}>{h}</th>
                   ))}
                 </tr>
@@ -436,6 +436,8 @@ export default function App() {
               </div>
             </div>
 
+            {/* Drawer Content */}
+            <div style={{ display: activeDrawerTab==="details" ? "flex" : "none", flexDirection:"column", flex:1, overflow:"hidden" }}>
             {/* PM view: read-only info */}
             {!isManager ? (
               <div style={{ padding:"20px 22px", flex:1 }}>
