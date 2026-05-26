@@ -160,6 +160,8 @@ export default function App() {
   const [saved, setSaved]           = useState(false);
   const [newMsg, setNewMsg]         = useState("");
   const [showAdd, setShowAdd]       = useState(false);
+  const [showEdit, setShowEdit]     = useState(false);
+  const [editForm, setEditForm]     = useState(EMPTY_FORM);
   const [form, setForm]             = useState(EMPTY_FORM);
   const [formDocs, setFormDocs]     = useState([...EMPTY_DOCS]);
 
@@ -224,6 +226,47 @@ export default function App() {
     setSel(updated);
     setNewMsg("");
     try { await saveProjectToSheet(updated); } catch(e) { console.error("Sync error",e); }
+  }
+
+  function openEdit(p) {
+    setEditForm({
+      projectId: p.id || "",
+      name: p.name || "",
+      customer: p.customer || "",
+      agent: p.agent || "",
+      pm: p.pm || "",
+      programYear: p.programYear || "",
+      recValue: p.recValue || "",
+      dcSize: p.dcSize || "",
+      ejc: p.ejc || false,
+      ec: p.ec || false,
+      iec: p.iec || false,
+    });
+    setShowEdit(true);
+  }
+
+  async function saveEdit() {
+    if (!editForm.projectId.trim()) return;
+    const updated = {
+      ...sel,
+      id: editForm.projectId.trim(),
+      name: editForm.name,
+      customer: editForm.customer,
+      agent: editForm.agent,
+      pm: editForm.pm,
+      programYear: editForm.programYear,
+      recValue: parseFloat(editForm.recValue) || 0,
+      dcSize: parseFloat(editForm.dcSize) || 0,
+      ejc: editForm.ejc,
+      ec: editForm.ec,
+      iec: editForm.iec,
+    };
+    setProjects(prev => prev.map(p => p.id === sel.id ? updated : p));
+    setSel(updated);
+    setShowEdit(false);
+    setSyncing(true);
+    try { await saveProjectToSheet(updated); } catch(e) { console.error("Sync error", e); }
+    setSyncing(false);
   }
 
   async function addProject() {
@@ -549,7 +592,12 @@ export default function App() {
                   <div style={{ fontSize:11,fontFamily:"monospace",color:"#8B8680",marginBottom:3 }}>{sel.id}</div>
                   <div style={{ fontSize:16,fontWeight:600,color:"#1C1A17" }}>{sel.name}</div>
                 </div>
-                <button onClick={()=>setSel(null)} style={{ width:28,height:28,borderRadius:6,border:"1px solid #E0DDD6",background:"transparent",cursor:"pointer",fontSize:16,color:"#8B8680" }}>×</button>
+                <div style={{ display:"flex",gap:8 }}>
+                  <button onClick={()=>openEdit(sel)} style={{ padding:"5px 12px",borderRadius:6,border:"1px solid #E0DDD6",background:"#FAFAF7",cursor:"pointer",fontSize:12,color:"#5A5652",fontFamily:"inherit",fontWeight:500,display:"flex",alignItems:"center",gap:5 }}>
+                    ✏️ Edit Info
+                  </button>
+                  <button onClick={()=>setSel(null)} style={{ width:28,height:28,borderRadius:6,border:"1px solid #E0DDD6",background:"transparent",cursor:"pointer",fontSize:16,color:"#8B8680" }}>×</button>
+                </div>
               </div>
               <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:10 }}>
                 {[["Customer",sel.customer],["Sales Agent",sel.agent],["Project Manager",sel.pm||"Unassigned"]].map(([l,v])=>(
@@ -701,6 +749,84 @@ export default function App() {
         </div>
       )}
 
+      {/* ── EDIT PROJECT MODAL ─────────────────────────────────────────────── */}
+      {showEdit && sel && (
+        <div style={{ position:"fixed",inset:0,background:"rgba(28,26,23,0.55)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:300 }} onClick={e=>{ if(e.target===e.currentTarget) setShowEdit(false); }}>
+          <div style={{ width:540,background:"#fff",borderRadius:14,boxShadow:"0 8px 40px rgba(0,0,0,0.18)",maxHeight:"90vh",display:"flex",flexDirection:"column" }}>
+            <div style={{ padding:"18px 24px",borderBottom:"1px solid #F0EDE6",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0 }}>
+              <div>
+                <div style={{ fontSize:15,fontWeight:600,color:"#1C1A17" }}>Edit Project Info</div>
+                <div style={{ fontSize:12,color:"#8B8680",marginTop:2 }}>{sel.id}</div>
+              </div>
+              <button onClick={()=>setShowEdit(false)} style={{ width:28,height:28,borderRadius:6,border:"1px solid #E0DDD6",background:"transparent",cursor:"pointer",fontSize:16,color:"#8B8680" }}>×</button>
+            </div>
+            <div style={{ padding:"20px 24px",overflowY:"auto",flex:1,display:"flex",flexDirection:"column",gap:14 }}>
+              {/* Program Year */}
+              <Field label="Program Year *">
+                <div style={{ display:"flex",gap:10 }}>
+                  {["PY8-2026","PY8-2026 Waitlisted"].map(y=>(
+                    <div key={y} onClick={()=>setEditForm(f=>({...f,programYear:y}))} style={{ flex:1,padding:"12px 16px",borderRadius:9,border:`2px solid ${editForm.programYear===y?"#6B4CA8":"#E0DDD6"}`,background:editForm.programYear===y?"#F3EEFF":"#FAFAF7",cursor:"pointer",textAlign:"center",transition:"all 0.15s" }}>
+                      <div style={{ fontSize:13,fontWeight:600,color:editForm.programYear===y?"#6B4CA8":"#5A5652" }}>{y}</div>
+                    </div>
+                  ))}
+                </div>
+              </Field>
+              <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:12 }}>
+                <Field label="Project ID *">
+                  <input value={editForm.projectId} onChange={e=>setEditForm(f=>({...f,projectId:e.target.value}))} placeholder="Enter project ID" style={inputStyle} />
+                </Field>
+                <Field label="Customer Name">
+                  <input value={editForm.customer} onChange={e=>setEditForm(f=>({...f,customer:e.target.value}))} placeholder="e.g. Maria Reyes" style={inputStyle} />
+                </Field>
+                <Field label="Project Name">
+                  <input value={editForm.name} onChange={e=>setEditForm(f=>({...f,name:e.target.value}))} placeholder="e.g. Southside Community Solar" style={inputStyle} />
+                </Field>
+                <Field label="Sales Agent">
+                  <select value={editForm.agent} onChange={e=>setEditForm(f=>({...f,agent:e.target.value}))} style={{ ...inputStyle, color:editForm.agent?"#1C1A17":"#A8A49E" }}>
+                    <option value="">Select agent…</option>
+                    {AGENTS.map(grp=>(
+                      grp.group
+                        ? <optgroup key={grp.group} label={grp.group}>{grp.options.map(o=><option key={o} value={o}>{o}</option>)}</optgroup>
+                        : grp.options.map(o=><option key={o} value={o}>{o}</option>)
+                    ))}
+                  </select>
+                </Field>
+                <Field label="Project Manager">
+                  <select value={editForm.pm} onChange={e=>setEditForm(f=>({...f,pm:e.target.value}))} style={{ ...inputStyle, color:editForm.pm?"#1C1A17":"#A8A49E" }}>
+                    <option value="">Select PM…</option>
+                    {PM_LIST.map(o=><option key={o} value={o}>{o}</option>)}
+                  </select>
+                </Field>
+                <Field label="Total REC Value ($)">
+                  <input value={editForm.recValue} onChange={e=>setEditForm(f=>({...f,recValue:e.target.value}))} placeholder="e.g. 48250" style={inputStyle} type="number" />
+                </Field>
+                <Field label="DC Size (kW)">
+                  <input value={editForm.dcSize} onChange={e=>setEditForm(f=>({...f,dcSize:e.target.value}))} placeholder="e.g. 99.9" style={inputStyle} type="number" />
+                </Field>
+              </div>
+              <Field label="Program Eligibility (optional)">
+                <div style={{ display:"flex",gap:10,marginTop:4 }}>
+                  {[["ejc","EJC"],["ec","EC"],["iec","IEC"]].map(([key,label])=>(
+                    <div key={key} onClick={()=>setEditForm(f=>({...f,[key]:!f[key]}))} style={{ display:"flex",alignItems:"center",gap:8,padding:"10px 16px",borderRadius:8,border:`1.5px solid ${editForm[key]?"#3A8C58":"#E0DDD6"}`,background:editForm[key]?"#EBF9F1":"#FAFAF7",cursor:"pointer",userSelect:"none" }}>
+                      <div style={{ width:18,height:18,borderRadius:4,border:`1.5px solid ${editForm[key]?"#3A8C58":"#D0CCC6"}`,background:editForm[key]?"#3A8C58":"#fff",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
+                        {editForm[key]?<span style={{ color:"#fff",fontSize:11,fontWeight:700 }}>✓</span>:null}
+                      </div>
+                      <span style={{ fontSize:13,fontWeight:600,color:editForm[key]?"#1A7A4A":"#5A5652" }}>{label}</span>
+                    </div>
+                  ))}
+                </div>
+              </Field>
+            </div>
+            <div style={{ padding:"14px 24px",borderTop:"1px solid #F0EDE6",display:"flex",gap:10,flexShrink:0 }}>
+              <button onClick={saveEdit} disabled={!editForm.projectId.trim()} style={{ padding:"9px 24px",borderRadius:8,border:"none",background:editForm.projectId.trim()?"#2B5E3B":"#A8C5B2",color:"#fff",fontFamily:"inherit",fontSize:13,fontWeight:500,cursor:editForm.projectId.trim()?"pointer":"not-allowed" }}>
+                Save Changes
+              </button>
+              <button onClick={()=>setShowEdit(false)} style={{ background:"transparent",border:"none",fontSize:13,color:"#8B8680",cursor:"pointer",fontFamily:"inherit" }}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── ADD PROJECT MODAL ───────────────────────────────────────────────── */}
       {showAdd&&(
         <div style={{ position:"fixed",inset:0,background:"rgba(28,26,23,0.55)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200 }} onClick={e=>{ if(e.target===e.currentTarget) setShowAdd(false); }}>
@@ -713,15 +839,19 @@ export default function App() {
               <div style={{ background:"#F3EEFF",border:"1px solid #C9B3F5",borderRadius:8,padding:"10px 14px",fontSize:12,color:"#6B4CA8" }}>
                 Fill in your project details. The manager will handle document review after submission.
               </div>
+              {/* Program Year - full width, always visible */}
+              <Field label="Program Year *">
+                <div style={{ display:"flex",gap:10 }}>
+                  {["PY8-2026","PY8-2026 Waitlisted"].map(y=>(
+                    <div key={y} onClick={()=>setForm(f=>({...f,programYear:y}))} style={{ flex:1,padding:"12px 16px",borderRadius:9,border:`2px solid ${form.programYear===y?"#6B4CA8":"#E0DDD6"}`,background:form.programYear===y?"#F3EEFF":"#FAFAF7",cursor:"pointer",textAlign:"center",transition:"all 0.15s" }}>
+                      <div style={{ fontSize:13,fontWeight:600,color:form.programYear===y?"#6B4CA8":"#5A5652" }}>{y}</div>
+                    </div>
+                  ))}
+                </div>
+              </Field>
               <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:12 }}>
                 <Field label="Project ID *">
                   <input value={form.projectId} onChange={e=>setForm(f=>({...f,projectId:e.target.value}))} placeholder="Enter project ID" style={inputStyle} />
-                </Field>
-                <Field label="Program Year *">
-                  <select value={form.programYear} onChange={e=>setForm(f=>({...f,programYear:e.target.value}))} style={{ ...inputStyle, color:form.programYear?"#1C1A17":"#A8A49E" }}>
-                    <option value="">Select year…</option>
-                    {["PY8-2026","PY8-2026 Waitlisted"].map(y=><option key={y} value={y}>{y}</option>)}
-                  </select>
                 </Field>
                 <Field label="Customer Name"><input  value={form.customer} onChange={e=>setForm(f=>({...f,customer:e.target.value}))} placeholder="e.g. Maria Reyes" style={inputStyle} /></Field>
                 <Field label="Project Name"><input value={form.name}     onChange={e=>setForm(f=>({...f,name:e.target.value}))}     placeholder="e.g. Southside Community Solar" style={inputStyle} /></Field>
