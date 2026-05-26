@@ -43,6 +43,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbxXlm6OLl1AyVHsQAkNrs3d
 function parseProject(p) {
   return {
     ...p,
+    programYear: p.programYear || "",
     recValue: parseFloat(p.recValue) || 0,
     dcSize:   parseFloat(p.dcSize)   || 0,
     ejc: p.ejc === true || p.ejc === "TRUE" || p.ejc === "true",
@@ -221,15 +222,7 @@ export default function App() {
     setSyncing(false);
   }
 
-  async function sendMessage() {
-    if (!newMsg.trim()) return;
-    const msg = { id:Date.now(), from:user?.role==="manager"?"Reviewer":user?.role==="admin"?"Admin":"Project Manager", role, text:newMsg.trim(), time:new Date().toLocaleString("en-US",{month:"2-digit",day:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}) };
-    const updated = { ...sel, messages:[...(sel.messages||[]),msg] };
-    setProjects(prev=>prev.map(p=>p.id===sel.id?updated:p));
-    setSel(updated);
-    setNewMsg("");
-    try { await saveProjectToSheet(updated); } catch(e) { console.error("Sync error",e); }
-  }
+  
 
   function openEdit(p) {
     setEditForm({
@@ -283,6 +276,24 @@ export default function App() {
       });
     } catch(e) { console.error("Delete error", e); }
     setSyncing(false);
+  }
+
+  function sendMessage() {
+    if (!newMsg.trim()) return;
+    const senderName = user?.name || "Unknown";
+    const senderRole = user?.role || "pm";
+    const msg = {
+      id: Date.now(),
+      from: senderName,
+      role: senderRole,
+      text: newMsg.trim(),
+      time: new Date().toLocaleString("en-US",{month:"2-digit",day:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})
+    };
+    const updated = { ...sel, messages:[...(sel.messages||[]), msg] };
+    setProjects(prev => prev.map(p => p.id === sel.id ? updated : p));
+    setSel(updated);
+    setNewMsg("");
+    fetch(API_URL, { method:"POST", body:JSON.stringify({ action:"save_project", project:updated }) }).catch(()=>{});
   }
 
   async function addProject() {
