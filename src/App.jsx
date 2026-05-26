@@ -166,6 +166,7 @@ export default function App() {
   const [showAdd, setShowAdd]       = useState(false);
   const [showEdit, setShowEdit]     = useState(false);
   const [seenMessages, setSeenMessages] = useState({});
+  const [msgPolling, setMsgPolling]     = useState(null);
   const [editForm, setEditForm]     = useState(EMPTY_FORM);
   const [form, setForm]             = useState(EMPTY_FORM);
   const [formDocs, setFormDocs]     = useState([...EMPTY_DOCS]);
@@ -326,23 +327,39 @@ export default function App() {
 
   function clearFilters() { setFStatus(""); setFAgent(""); setFPM(""); setFDoc(""); setFProgramYear(""); setSearch(""); }
 
-  const loadFromSheet = useCallback(async () => {
-    setLoading(true);
+  const loadFromSheet = useCallback(async (silent=false) => {
+    if (!silent) setLoading(true);
     setLoadError("");
     try {
       const data = await fetchProjects();
       setProjects(data);
       setSheetReady(true);
+      // If a project is open, refresh its messages too
+      setSel(prev => {
+        if (!prev) return prev;
+        const fresh = data.find(p => p.id === prev.id);
+        return fresh ? { ...prev, messages: fresh.messages || [] } : prev;
+      });
     } catch(err) {
-      setLoadError("Could not connect to Google Sheet. Check your connection.");
+      if (!silent) setLoadError("Could not connect to Google Sheet. Check your connection.");
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, []);
 
   useEffect(() => {
     if (user) loadFromSheet();
   }, [user]);
+
+  // Poll for new messages every 15s when drawer is open on messages tab
+  useEffect(() => {
+    if (sel && drawerTab === "messages") {
+      const interval = setInterval(() => {
+        loadFromSheet(true);
+      }, 15000);
+      return () => clearInterval(interval);
+    }
+  }, [sel, drawerTab]);
 
   // ── LOGIN SCREEN ──────────────────────────────────────────────────────────
   if (!user) return (
@@ -685,11 +702,16 @@ export default function App() {
             {/* Details / Messages tabs */}
             <div style={{ display:"flex",borderBottom:"1px solid #F0EDE6",background:"#FAFAF7",flexShrink:0 }}>
               {/* Details Tab */}
-              <button onClick={()=>setDrawerTab("details")} style={{ flex:1,padding:"10px",border:"none",background:"transparent",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",color:drawerTab==="details"?"#1C1A17":"#8B8680",borderBottom:`2px solid ${drawerTab==="details"?"#1C1A17":"transparent"}` }}>
+              <button onClick={()=>{ setDrawerTab("details"); }} style={{ flex:1,padding:"10px",border:"none",background:"transparent",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",color:drawerTab==="details"?"#1C1A17":"#8B8680",borderBottom:`2px solid ${drawerTab==="details"?"#1C1A17":"transparent"}` }}>
                 📋 Details
               </button>
               {/* Messages Tab */}
-              <button onClick={()=>{ setDrawerTab("messages"); setSeenMessages(prev=>({...prev,[sel.id]:(sel.messages||[]).length})); }} style={{ flex:1,padding:"10px",border:"none",background:"transparent",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",color:drawerTab==="messages"?"#1C1A17":"#8B8680",borderBottom:`2px solid ${drawerTab==="messages"?"#1C1A17":"transparent"}`,display:"flex",alignItems:"center",justifyContent:"center",gap:6 }}>
+              <button onClick={()=>{ 
+                  setDrawerTab("messages"); 
+                  loadFromSheet(true).then(()=>{
+                    setSel(prev=>prev ? prev : prev);
+                  });
+                }} style={{ flex:1,padding:"10px",border:"none",background:"transparent",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",color:drawerTab==="messages"?"#1C1A17":"#8B8680",borderBottom:`2px solid ${drawerTab==="messages"?"#1C1A17":"transparent"}`,display:"flex",alignItems:"center",justifyContent:"center",gap:6 }}>
                 💬 Messages
                 {(()=>{ const unread=Math.max(0,(sel.messages||[]).length-(seenMessages[sel.id]||0)); return unread>0?<span style={{ background:"#B03A2E",color:"#fff",fontSize:10,fontWeight:700,padding:"1px 6px",borderRadius:10 }}>{unread}</span>:null; })()}
               </button>
@@ -769,6 +791,10 @@ export default function App() {
             {drawerTab==="messages"&&(
               <div style={{ flex:1,display:"flex",flexDirection:"column",overflow:"hidden",minHeight:0 }}>
                 <div style={{ flex:1,overflowY:"auto",padding:"16px 22px",display:"flex",flexDirection:"column",gap:12,minHeight:0 }}>
+                  {drawerTab==="messages" && seenMessages[sel.id] !== (sel.messages||[]).length && (() => {
+                    setSeenMessages(prev=>({...prev,[sel.id]:(sel.messages||[]).length}));
+                    return null;
+                  })()}
                   {(sel.messages||[]).length===0 ? (
                     <div style={{ textAlign:"center",padding:"40px 20px" }}>
                       <div style={{ fontSize:32,marginBottom:10 }}>💬</div>
