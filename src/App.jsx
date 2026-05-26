@@ -30,6 +30,14 @@ const INIT_DATA = [
 
 const EMPTY_FORM = { name:"", customer:"", agent:"", pm:"", recValue:"", dcSize:"", ejc:false, ec:false, iec:false };
 
+const AGENTS = [
+  { group:"", options:["Abdulhalim Dayoub","Adam Kheder","Alaa Mahdi","Ashraf Dardar","Habib Maktabi","Hadi Haj Abdullah","Kai Nori","Karim Almasri","Khaled Zarzour","Luay Daboul","Marina Morcos","Mo Jaliawala","Mutawakel Nofal","Rami Alkhawandi","Romel George","Sam Aktham","Sami Alkabbani","Zack"] },
+  { group:"Fleet Solar", options:["Daniel Murillo","Daniel Ortiz","Diego Garza","Kevin Bueno","Miguel Delgado","Raul Munoz","Rene Orozco","Rene Rodriguez","Rodolfo"] },
+  { group:"VIP Team", options:["Ahmed AlSayyad","Abdal Barakat","Ahmad Shaban","Ben Qahwaji","Deana Hernandez","Hina Inayat","Marwan AlSmadi","Marwan Noweder","Matthew Romano","Mo Alkubaisi","Moe Salah"] },
+];
+
+const PM_LIST = ["Allaiza Velasquez","Angelica Capili","Francheska Alvarez","Genneva Arguelles","Mary Ann Sante","May Contestable"];
+
 const fmt   = n => "$" + Number(n).toLocaleString();
 const fmtKw = n => Number(n).toFixed(1) + " kW";
 
@@ -251,8 +259,18 @@ export default function App() {
           <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search project, customer…" style={{ padding:"6px 12px",border:"1px solid #E0DDD6",borderRadius:7,fontSize:12,width:220,outline:"none" }} />
           <div style={{ width:1,height:24,background:"#E8E5DE" }}></div>
           <SelFilter value={fStatus} onChange={setFStatus} placeholder="All Statuses" options={[{v:"pending",l:"Pending"},{v:"initial_review",l:"Initial Review"},{v:"final_review",l:"Final Review"},{v:"approved",l:"Approved"},{v:"flagged",l:"Flagged"}]} />
-          <SelFilter value={fAgent}  onChange={setFAgent}  placeholder="Sales Agent"  options={agents} />
-          <SelFilter value={fPM}     onChange={setFPM}     placeholder="Project Manager" options={pms} />
+          <select value={fAgent} onChange={e=>setFAgent(e.target.value)} style={{ padding:"6px 10px",border:"1px solid #E0DDD6",borderRadius:7,fontSize:12,background:"#fff",color:fAgent?"#1C1A17":"#A8A49E",outline:"none",cursor:"pointer",fontFamily:"inherit" }}>
+            <option value="">Sales Agent</option>
+            {AGENTS.map(grp=>(
+              grp.group
+                ? <optgroup key={grp.group} label={grp.group}>{grp.options.map(o=><option key={o} value={o}>{o}</option>)}</optgroup>
+                : grp.options.map(o=><option key={o} value={o}>{o}</option>)
+            ))}
+          </select>
+          <select value={fPM} onChange={e=>setFPM(e.target.value)} style={{ padding:"6px 10px",border:"1px solid #E0DDD6",borderRadius:7,fontSize:12,background:"#fff",color:fPM?"#1C1A17":"#A8A49E",outline:"none",cursor:"pointer",fontFamily:"inherit" }}>
+            <option value="">Project Manager</option>
+            {PM_LIST.map(o=><option key={o} value={o}>{o}</option>)}
+          </select>
           <SelFilter value={fDoc}    onChange={setFDoc}    placeholder="Has Document" options={ITEMS} />
           {anyFilter && <button onClick={clearFilters} style={{ padding:"5px 12px",borderRadius:6,border:"1px solid #E0DDD6",background:"#fff",fontFamily:"inherit",fontSize:11,color:"#B03A2E",cursor:"pointer",fontWeight:500 }}>✕ Clear</button>}
           <div style={{ marginLeft:"auto",fontSize:12,color:"#8B8680",fontWeight:500 }}>{list.length} project{list.length!==1?"s":""}</div>
@@ -568,8 +586,22 @@ export default function App() {
               <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:12 }}>
                 <Field label="Project Name *"><input value={form.name}     onChange={e=>setForm(f=>({...f,name:e.target.value}))}     placeholder="e.g. Southside Community Solar" style={inputStyle} /></Field>
                 <Field label="Customer Name"><input  value={form.customer} onChange={e=>setForm(f=>({...f,customer:e.target.value}))} placeholder="e.g. Maria Reyes" style={inputStyle} /></Field>
-                <Field label="Sales Agent">  <input  value={form.agent}    onChange={e=>setForm(f=>({...f,agent:e.target.value}))}    placeholder="e.g. D. Alvarez" style={inputStyle} /></Field>
-                <Field label="Project Manager"><input value={form.pm}      onChange={e=>setForm(f=>({...f,pm:e.target.value}))}       placeholder="e.g. M. Torres" style={inputStyle} /></Field>
+                <Field label="Sales Agent">
+                  <select value={form.agent} onChange={e=>setForm(f=>({...f,agent:e.target.value}))} style={{ ...inputStyle, color:form.agent?"#1C1A17":"#A8A49E" }}>
+                    <option value="">Select agent…</option>
+                    {AGENTS.map(grp=>(
+                      grp.group
+                        ? <optgroup key={grp.group} label={grp.group}>{grp.options.map(o=><option key={o} value={o}>{o}</option>)}</optgroup>
+                        : grp.options.map(o=><option key={o} value={o}>{o}</option>)
+                    ))}
+                  </select>
+                </Field>
+                <Field label="Project Manager">
+                  <select value={form.pm} onChange={e=>setForm(f=>({...f,pm:e.target.value}))} style={{ ...inputStyle, color:form.pm?"#1C1A17":"#A8A49E" }}>
+                    <option value="">Select PM…</option>
+                    {PM_LIST.map(o=><option key={o} value={o}>{o}</option>)}
+                  </select>
+                </Field>
                 <Field label="Total REC Value ($)"><input value={form.recValue} onChange={e=>setForm(f=>({...f,recValue:e.target.value}))} placeholder="e.g. 48250" style={inputStyle} type="number" /></Field>
                 <Field label="DC Size (kW)">  <input value={form.dcSize}   onChange={e=>setForm(f=>({...f,dcSize:e.target.value}))}   placeholder="e.g. 99.9" style={inputStyle} type="number" /></Field>
               </div>
