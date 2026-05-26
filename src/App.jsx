@@ -854,7 +854,7 @@ export default function App() {
                   <input value={form.projectId} onChange={e=>setForm(f=>({...f,projectId:e.target.value}))} placeholder="Enter project ID" style={inputStyle} />
                 </Field>
                 <Field label="Customer Name"><input  value={form.customer} onChange={e=>setForm(f=>({...f,customer:e.target.value}))} placeholder="e.g. Maria Reyes" style={inputStyle} /></Field>
-                <Field label="Project Name"><input value={form.name}     onChange={e=>setForm(f=>({...f,name:e.target.value}))}     placeholder="e.g. Southside Community Solar" style={inputStyle} /></Field>
+                
                 <Field label="Sales Agent">
                   <select value={form.agent} onChange={e=>setForm(f=>({...f,agent:e.target.value}))} style={{ ...inputStyle, color:form.agent?"#1C1A17":"#A8A49E" }}>
                     <option value="">Select agent…</option>
