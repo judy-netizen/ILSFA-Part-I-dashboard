@@ -570,6 +570,19 @@ export default function App() {
                   <input value={form.dcSize} onChange={e=>setForm(f=>({...f,dcSize:e.target.value}))} placeholder="e.g. 99.9" style={inputStyle} type="number" />
                 </Field>
               </div>
+              <Field label="Program Eligibility (optional — check all that apply)">
+                <div style={{ display:"flex", gap:10, marginTop:4, flexWrap:"wrap" }}>
+                  {[["ejc","EJC"],["ec","EC"],["iec","IEC"]].map(([key,label])=>(
+                    <div key={key} onClick={()=>setForm(f=>({...f,[key]:!f[key]}))} style={{ display:"flex", alignItems:"center", gap:8, padding:"10px 16px", borderRadius:8, border:`1.5px solid ${form[key]?"#3A8C58":"#E0DDD6"}`, background:form[key]?"#EBF9F1":"#FAFAF7", cursor:"pointer", userSelect:"none", transition:"all 0.15s" }}>
+                      <div style={{ width:18, height:18, borderRadius:4, border:`1.5px solid ${form[key]?"#3A8C58":"#D0CCC6"}`, background:form[key]?"#3A8C58":"#fff", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                        {form[key]?<span style={{ color:"#fff", fontSize:11, fontWeight:700 }}>✓</span>:null}
+                      </div>
+                      <span style={{ fontSize:13, fontWeight:600, color:form[key]?"#1A7A4A":"#5A5652" }}>{label}</span>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ fontSize:11, color:"#A8A49E", marginTop:6 }}>Not required — leave unchecked if not applicable</div>
+              </Field>
             </div>
             <div style={{ padding:"14px 24px", borderTop:"1px solid #F0EDE6", display:"flex", gap:10, flexShrink:0 }}>
               <button onClick={addProject} disabled={!form.name.trim()} style={{ padding:"9px 24px", borderRadius:8, border:"none", background:form.name.trim()?"#2B5E3B":"#A8C5B2", color:"#fff", fontFamily:"inherit", fontSize:13, fontWeight:500, cursor:form.name.trim()?"pointer":"not-allowed" }}>
