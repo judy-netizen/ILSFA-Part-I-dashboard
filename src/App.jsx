@@ -406,8 +406,9 @@ export default function App() {
       {/* Detail Drawer */}
       {sel && (
         <div style={{ position:"fixed", inset:0, background:"rgba(28,26,23,0.45)", display:"flex", justifyContent:"flex-end", zIndex:100 }} onClick={e=>{ if(e.target===e.currentTarget) setSel(null); }}>
-          <div style={{ width:540, background:"#fff", height:"100%", overflowY:"auto", display:"flex", flexDirection:"column", boxShadow:"-4px 0 24px rgba(0,0,0,0.12)" }}>
-            {/* Drawer Header */}
+          <div style={{ width:540, background:"#fff", height:"100%", display:"flex", flexDirection:"column", boxShadow:"-4px 0 24px rgba(0,0,0,0.12)" }}>
+
+            {/* Fixed header - always visible */}
             <div style={{ padding:"16px 22px", borderBottom:"1px solid #F0EDE6", flexShrink:0 }}>
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:10 }}>
                 <div>
@@ -424,7 +425,7 @@ export default function App() {
                   </div>
                 ))}
               </div>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:10 }}>
                 <div style={{ background:"#F0FBF4", border:"1px solid #A8E4C2", borderRadius:8, padding:"10px 14px" }}>
                   <div style={{ fontSize:10, color:"#1A7A4A", textTransform:"uppercase", letterSpacing:"0.05em", fontWeight:500, marginBottom:4 }}>Total REC Value</div>
                   <div style={{ fontSize:18, fontWeight:700, color:"#1A7A4A" }}>{sel.recValue?fmt(sel.recValue):"—"}</div>
@@ -434,163 +435,176 @@ export default function App() {
                   <div style={{ fontSize:18, fontWeight:700, color:"#1A5F9E" }}>{sel.dcSize?fmtKw(sel.dcSize):"—"}</div>
                 </div>
               </div>
+              <div style={{ display:"flex", gap:8 }}>
+                {[["ejc","EJC"],["ec","EC"],["iec","IEC"]].map(([key,label])=>(
+                  <span key={key} style={{ padding:"3px 12px", borderRadius:20, fontSize:11, fontWeight:600, border:`1px solid ${sel[key]?"#3A8C58":"#E0DDD6"}`, background:sel[key]?"#EBF9F1":"#F5F3EE", color:sel[key]?"#1A7A4A":"#A8A49E" }}>
+                    {sel[key]?"✓ ":""}{label}
+                  </span>
+                ))}
+              </div>
             </div>
 
-            {/* Drawer Content */}
-            <div style={{ display: activeDrawerTab==="details" ? "flex" : "none", flexDirection:"column", flex:1, overflow:"hidden" }}>
-            {/* PM view: read-only info */}
-            {!isManager ? (
-              <div style={{ padding:"20px 22px", flex:1 }}>
-                <div style={{ background:"#F3EEFF", border:"1px solid #C9B3F5", borderRadius:10, padding:"14px 16px", marginBottom:18 }}>
-                  <div style={{ fontSize:12, fontWeight:600, color:"#6B4CA8", marginBottom:4 }}>Project Manager View</div>
-                  <div style={{ fontSize:12, color:"#8B8680", lineHeight:1.6 }}>You can view your project details here. Document review and status changes are handled by the Manager.</div>
-                </div>
-                <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
-                  <div>
-                    <div style={{ fontSize:11, fontWeight:500, color:"#8B8680", textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:8 }}>Current Status</div>
-                    <Pill status={sel.status} />
+            {/* Details / Messages tab switcher */}
+            <div style={{ display:"flex", borderBottom:"1px solid #F0EDE6", background:"#FAFAF7", flexShrink:0 }}>
+              {[["details","📋 Details"],["messages","💬 Messages" + ((sel.messages||[]).length > 0 ? " ("+((sel.messages||[]).length)+")" : "")]].map(([tab,label])=>(
+                <button key={tab} onClick={()=>setActiveDrawerTab(tab)} style={{ flex:1, padding:"10px", border:"none", background:"transparent", fontFamily:"inherit", fontSize:12, fontWeight:500, cursor:"pointer", color:activeDrawerTab===tab?"#1C1A17":"#8B8680", borderBottom:`2px solid ${activeDrawerTab===tab?"#1C1A17":"transparent"}`, transition:"all 0.15s" }}>
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {/* DETAILS TAB */}
+            {activeDrawerTab === "details" && (
+              <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden" }}>
+                {!isManager ? (
+                  <div style={{ padding:"20px 22px", flex:1, overflowY:"auto" }}>
+                    <div style={{ background:"#F3EEFF", border:"1px solid #C9B3F5", borderRadius:10, padding:"14px 16px", marginBottom:16 }}>
+                      <div style={{ fontSize:12, fontWeight:600, color:"#6B4CA8", marginBottom:4 }}>Project Manager View</div>
+                      <div style={{ fontSize:12, color:"#8B8680", lineHeight:1.6 }}>Document review and status changes are handled by the Manager.</div>
+                    </div>
+                    <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+                      <div>
+                        <div style={{ fontSize:11, fontWeight:500, color:"#8B8680", textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:8 }}>Current Status</div>
+                        <Pill status={sel.status} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize:11, fontWeight:500, color:"#8B8680", textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:8 }}>Initial Review Docs ({sel.initialDocs.filter(Boolean).length}/{ITEMS.length})</div>
+                        <DocChecklist docs={sel.initialDocs} onChange={()=>{}} readOnly={true} />
+                      </div>
+                      {sel.initialComment && (
+                        <div style={{ background:"#FAFAF7", border:"1px solid #F0EDE6", borderRadius:8, padding:"12px 14px" }}>
+                          <div style={{ fontSize:10, color:"#A8A49E", textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:6 }}>Initial Review Comment</div>
+                          <div style={{ fontSize:13, color:"#1C1A17", lineHeight:1.6 }}>{sel.initialComment}</div>
+                        </div>
+                      )}
+                      {(sel.status==="final_review"||sel.status==="approved") && (
+                        <div>
+                          <div style={{ fontSize:11, fontWeight:500, color:"#8B8680", textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:8 }}>Final Review Docs ({sel.finalDocs.filter(Boolean).length}/{ITEMS.length})</div>
+                          <DocChecklist docs={sel.finalDocs} onChange={()=>{}} readOnly={true} />
+                        </div>
+                      )}
+                      {sel.finalComment && (
+                        <div style={{ background:"#FAFAF7", border:"1px solid #F0EDE6", borderRadius:8, padding:"12px 14px" }}>
+                          <div style={{ fontSize:10, color:"#A8A49E", textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:6 }}>Final Review Comment</div>
+                          <div style={{ fontSize:13, color:"#1C1A17", lineHeight:1.6 }}>{sel.finalComment}</div>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <div style={{ fontSize:11, fontWeight:500, color:"#8B8680", textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:8 }}>Initial Review — Documents ({sel.initialDocs.filter(Boolean).length}/{ITEMS.length})</div>
-                    <DocChecklist docs={sel.initialDocs} onChange={()=>{}} readOnly={true} />
-                  </div>
-                  {sel.initialComment && (
-                    <div style={{ background:"#FAFAF7", border:"1px solid #F0EDE6", borderRadius:8, padding:"12px 14px" }}>
-                      <div style={{ fontSize:10, color:"#A8A49E", textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:6 }}>Initial Review Comment</div>
-                      <div style={{ fontSize:13, color:"#1C1A17", lineHeight:1.6 }}>{sel.initialComment}</div>
+                ) : (
+                  <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden" }}>
+                    <div style={{ padding:"14px 22px", borderBottom:"1px solid #F0EDE6", flexShrink:0 }}>
+                      <Field label="Review Status">
+                        <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginTop:6 }}>
+                          {Object.entries(STATUS).map(([k,s])=>(
+                            <button key={k} onClick={()=>setEStatus(k)} style={{ padding:"6px 14px", borderRadius:20, border:`1.5px solid ${eStatus===k?s.color:s.border}`, background:eStatus===k?s.bg:"#fff", color:s.color, fontSize:12, fontWeight:500, cursor:"pointer", fontFamily:"inherit", display:"flex", alignItems:"center", gap:5 }}>
+                              <span style={{ width:6, height:6, borderRadius:"50%", background:s.color }}></span>{s.label}
+                            </button>
+                          ))}
+                        </div>
+                      </Field>
                     </div>
-                  )}
-                  {(sel.status==="final_review"||sel.status==="approved") && (
-                    <div>
-                      <div style={{ fontSize:11, fontWeight:500, color:"#8B8680", textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:8 }}>Final Review — Documents ({sel.finalDocs.filter(Boolean).length}/{ITEMS.length})</div>
-                      <DocChecklist docs={sel.finalDocs} onChange={()=>{}} readOnly={true} />
-                    </div>
-                  )}
-                  {sel.finalComment && (
-                    <div style={{ background:"#FAFAF7", border:"1px solid #F0EDE6", borderRadius:8, padding:"12px 14px" }}>
-                      <div style={{ fontSize:10, color:"#A8A49E", textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:6 }}>Final Review Comment</div>
-                      <div style={{ fontSize:13, color:"#1C1A17", lineHeight:1.6 }}>{sel.finalComment}</div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ) : (
-              /* Manager view: full edit */
-              <div style={{ flex:1, display:"flex", flexDirection:"column" }}>
-                {/* Status */}
-                <div style={{ padding:"14px 22px", borderBottom:"1px solid #F0EDE6" }}>
-                  <Field label="Review Status">
-                    <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginTop:6 }}>
-                      {Object.entries(STATUS).map(([k,s])=>(
-                        <button key={k} onClick={()=>setEStatus(k)} style={{ padding:"6px 14px", borderRadius:20, border:`1.5px solid ${eStatus===k?s.color:s.border}`, background:eStatus===k?s.bg:"#fff", color:s.color, fontSize:12, fontWeight:500, cursor:"pointer", fontFamily:"inherit", display:"flex", alignItems:"center", gap:5 }}>
-                          <span style={{ width:6, height:6, borderRadius:"50%", background:s.color }}></span>{s.label}
+                    <div style={{ display:"flex", borderBottom:"1px solid #F0EDE6", flexShrink:0 }}>
+                      {[["initial","Initial Review","#1A5F9E"],["final","Final Review","#6B4CA8"]].map(([tab,label,color])=>(
+                        <button key={tab} onClick={()=>setActiveTab(tab)} style={{ flex:1, padding:"11px", border:"none", background:"transparent", fontFamily:"inherit", fontSize:12, fontWeight:500, cursor:"pointer", color:activeTab===tab?color:"#8B8680", borderBottom:`2px solid ${activeTab===tab?color:"transparent"}` }}>
+                          {label} <span style={{ marginLeft:6, fontSize:11, background:activeTab===tab?`${color}18`:"#F0EDE6", color:activeTab===tab?color:"#8B8680", padding:"1px 7px", borderRadius:10 }}>
+                            {tab==="initial"?`${iDocs.filter(Boolean).length}/${ITEMS.length}`:`${fDocs.filter(Boolean).length}/${ITEMS.length}`}
+                          </span>
                         </button>
                       ))}
                     </div>
-                  </Field>
-                </div>
-
-                {/* Review tabs */}
-                <div style={{ display:"flex", borderBottom:"1px solid #F0EDE6" }}>
-                  {[["initial","Initial Review","#1A5F9E"],["final","Final Review","#6B4CA8"]].map(([tab,label,color])=>(
-                    <button key={tab} onClick={()=>setActiveTab(tab)} style={{ flex:1, padding:"12px", border:"none", background:"transparent", fontFamily:"inherit", fontSize:13, fontWeight:500, cursor:"pointer", color:activeTab===tab?color:"#8B8680", borderBottom:`2px solid ${activeTab===tab?color:"transparent"}`, transition:"all 0.15s" }}>
-                      {label}
-                      <span style={{ marginLeft:8, fontSize:11, background:activeTab===tab?`${color}15`:"#F0EDE6", color:activeTab===tab?color:"#8B8680", padding:"2px 7px", borderRadius:10 }}>
-                        {tab==="initial"?`${iDocs.filter(Boolean).length}/${ITEMS.length}`:`${fDocs.filter(Boolean).length}/${ITEMS.length}`}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-
-                <div style={{ padding:"18px 22px", display:"flex", flexDirection:"column", gap:16, flex:1 }}>
-                  {activeTab==="initial" ? <>
-                    <Field label={`Documents — Initial Review (${iDocs.filter(Boolean).length}/${ITEMS.length})`}>
-                      <div style={{ marginTop:6 }}><DocChecklist docs={iDocs} onChange={i=>toggleDoc(iDocs,setIDocs,i)} /></div>
-                    </Field>
-                    <Field label="Reviewer Name">
-                      <input value={iReviewer} onChange={e=>setIReviewer(e.target.value)} placeholder="Your name" style={inputStyle} />
-                    </Field>
-                    <Field label="Initial Review Comment">
-                      <textarea value={iComment} onChange={e=>setIComment(e.target.value)} placeholder="Notes from initial review…" rows={4} style={{ ...inputStyle, resize:"vertical", lineHeight:1.6 }} />
-                    </Field>
-                  </> : <>
-                    <div style={{ background:"#F3EEFF", border:"1px solid #C9B3F5", borderRadius:8, padding:"10px 14px", fontSize:12, color:"#6B4CA8" }}>
-                      Final Review re-checks all documents independently from the initial review.
+                    <div style={{ flex:1, overflowY:"auto", padding:"18px 22px", display:"flex", flexDirection:"column", gap:16 }}>
+                      {activeTab==="initial" ? <>
+                        <Field label={`Documents — Initial Review (${iDocs.filter(Boolean).length}/${ITEMS.length})`}>
+                          <div style={{ marginTop:6 }}><DocChecklist docs={iDocs} onChange={i=>toggleDoc(iDocs,setIDocs,i)} /></div>
+                        </Field>
+                        <Field label="Reviewer Name">
+                          <input value={iReviewer} onChange={e=>setIReviewer(e.target.value)} placeholder="Your name" style={inputStyle} />
+                        </Field>
+                        <Field label="Initial Review Comment">
+                          <textarea value={iComment} onChange={e=>setIComment(e.target.value)} placeholder="Notes from initial review…" rows={4} style={{ ...inputStyle, resize:"vertical", lineHeight:1.6 }} />
+                        </Field>
+                      </> : <>
+                        <div style={{ background:"#F3EEFF", border:"1px solid #C9B3F5", borderRadius:8, padding:"10px 14px", fontSize:12, color:"#6B4CA8" }}>
+                          Final Review re-checks all documents independently from the initial review.
+                        </div>
+                        <Field label={`Documents — Final Review (${fDocs.filter(Boolean).length}/${ITEMS.length})`}>
+                          <div style={{ marginTop:6 }}><DocChecklist docs={fDocs} onChange={i=>toggleDoc(fDocs,setFDocs,i)} /></div>
+                        </Field>
+                        <Field label="Reviewer Name">
+                          <input value={fReviewer} onChange={e=>setFReviewer(e.target.value)} placeholder="Your name" style={inputStyle} />
+                        </Field>
+                        <Field label="Final Review Comment">
+                          <textarea value={fComment} onChange={e=>setFComment(e.target.value)} placeholder="Notes from final review…" rows={4} style={{ ...inputStyle, resize:"vertical", lineHeight:1.6 }} />
+                        </Field>
+                      </>}
                     </div>
-                    <Field label={`Documents — Final Review (${fDocs.filter(Boolean).length}/${ITEMS.length})`}>
-                      <div style={{ marginTop:6 }}><DocChecklist docs={fDocs} onChange={i=>toggleDoc(fDocs,setFDocs,i)} /></div>
-                    </Field>
-                    <Field label="Reviewer Name">
-                      <input value={fReviewer} onChange={e=>setFReviewer(e.target.value)} placeholder="Your name" style={inputStyle} />
-                    </Field>
-                    <Field label="Final Review Comment">
-                      <textarea value={fComment} onChange={e=>setFComment(e.target.value)} placeholder="Notes from final review…" rows={4} style={{ ...inputStyle, resize:"vertical", lineHeight:1.6 }} />
-                    </Field>
-                  </>}
-                </div>
+                    <div style={{ padding:"14px 22px", borderTop:"1px solid #F0EDE6", display:"flex", alignItems:"center", gap:12, flexShrink:0 }}>
+                      <button onClick={save} style={{ padding:"8px 22px", borderRadius:8, border:"none", background:"#2B5E3B", color:"#fff", fontFamily:"inherit", fontSize:13, fontWeight:500, cursor:"pointer" }}>Save changes</button>
+                      {saved && <span style={{ fontSize:12, color:"#3A8C58" }}>✓ Saved</span>}
+                      <button onClick={()=>setSel(null)} style={{ marginLeft:"auto", background:"transparent", border:"none", fontSize:12, color:"#8B8680", cursor:"pointer", fontFamily:"inherit" }}>Cancel</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
-                <div style={{ padding:"14px 22px", borderTop:"1px solid #F0EDE6", display:"flex", alignItems:"center", gap:12, flexShrink:0 }}>
-                  <button onClick={save} style={{ padding:"8px 22px", borderRadius:8, border:"none", background:"#2B5E3B", color:"#fff", fontFamily:"inherit", fontSize:13, fontWeight:500, cursor:"pointer" }}>Save changes</button>
-                  {saved && <span style={{ fontSize:12, color:"#3A8C58" }}>✓ Saved</span>}
-                  <button onClick={()=>setSel(null)} style={{ marginLeft:"auto", background:"transparent", border:"none", fontSize:12, color:"#8B8680", cursor:"pointer", fontFamily:"inherit" }}>Cancel</button>
+            {/* MESSAGES TAB */}
+            {activeDrawerTab === "messages" && (
+              <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden" }}>
+                <div style={{ flex:1, overflowY:"auto", padding:"16px 22px", display:"flex", flexDirection:"column", gap:12 }}>
+                  {(sel.messages||[]).length === 0 ? (
+                    <div style={{ textAlign:"center", padding:"40px 20px" }}>
+                      <div style={{ fontSize:32, marginBottom:10 }}>💬</div>
+                      <div style={{ fontSize:14, fontWeight:500, color:"#1C1A17", marginBottom:6 }}>No messages yet</div>
+                      <div style={{ fontSize:12, color:"#8B8680" }}>Start a conversation below.</div>
+                    </div>
+                  ) : (sel.messages||[]).map(msg=>{
+                    const isMe = msg.role === role;
+                    const roleColor = msg.role==="manager"?"#1A5F9E":msg.role==="admin"?"#1C1A17":"#6B4CA8";
+                    const roleBg = msg.role==="manager"?"#EBF4FF":msg.role==="admin"?"#F0EDE6":"#F3EEFF";
+                    return (
+                      <div key={msg.id} style={{ display:"flex", flexDirection:"column", alignItems:isMe?"flex-end":"flex-start" }}>
+                        <div style={{ display:"flex", alignItems:"center", gap:5, marginBottom:4, flexDirection:isMe?"row-reverse":"row" }}>
+                          <Avatar name={msg.from} size={20} />
+                          <span style={{ fontSize:11, fontWeight:600, color:roleColor }}>{msg.from}</span>
+                          <span style={{ fontSize:10, padding:"1px 6px", borderRadius:10, background:roleBg, color:roleColor, fontWeight:500 }}>
+                            {msg.role==="manager"?"Reviewer":msg.role==="admin"?"Admin":"PM"}
+                          </span>
+                          <span style={{ fontSize:10, color:"#A8A49E" }}>{msg.time}</span>
+                        </div>
+                        <div style={{ maxWidth:"82%", padding:"10px 14px", borderRadius:isMe?"12px 4px 12px 12px":"4px 12px 12px 12px", background:isMe?"#1C1A17":"#F5F3EE", color:isMe?"#F7F5F0":"#1C1A17", fontSize:13, lineHeight:1.6 }}>
+                          {msg.text}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div style={{ padding:"14px 22px", borderTop:"1px solid #F0EDE6", flexShrink:0 }}>
+                  <div style={{ fontSize:11, color:"#8B8680", marginBottom:6 }}>
+                    Sending as <span style={{ fontWeight:600, color:role==="manager"?"#1A5F9E":role==="admin"?"#1C1A17":"#6B4CA8" }}>
+                      {role==="manager"?"Reviewer":role==="admin"?"Admin":"Project Manager"}
+                    </span>
+                  </div>
+                  <div style={{ display:"flex", gap:8 }}>
+                    <textarea value={newMsg} onChange={e=>setNewMsg(e.target.value)}
+                      onKeyDown={e=>{ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); sendMessage(); }}}
+                      placeholder="Type a message… (Enter to send)"
+                      rows={2} style={{ flex:1, padding:"9px 12px", border:"1px solid #E0DDD6", borderRadius:8, fontSize:13, color:"#1C1A17", resize:"none", background:"#FAFAF7", outline:"none", fontFamily:"inherit", lineHeight:1.5 }} />
+                    <button onClick={sendMessage} disabled={!newMsg.trim()} style={{ padding:"0 16px", borderRadius:8, border:"none", background:newMsg.trim()?"#1C1A17":"#E0DDD6", color:"#fff", cursor:newMsg.trim()?"pointer":"not-allowed", fontFamily:"inherit", fontSize:12, fontWeight:500, flexShrink:0 }}>
+                      Send
+                    </button>
+                  </div>
+                  <div style={{ fontSize:10, color:"#C8C4BA", marginTop:4 }}>Shift+Enter for new line</div>
                 </div>
               </div>
             )}
-            </div>{/* end details tab */}
-
-            {/* Messages Panel */}
-            <div style={{ display: activeDrawerTab==="messages" ? "flex" : "none", flexDirection:"column", flex:1, overflow:"hidden" }}>
-              <div style={{ flex:1, overflowY:"auto", padding:"16px 22px", display:"flex", flexDirection:"column", gap:12 }}>
-                {(sel.messages||[]).length === 0 ? (
-                  <div style={{ textAlign:"center", padding:"40px 20px" }}>
-                    <div style={{ fontSize:32, marginBottom:10 }}>💬</div>
-                    <div style={{ fontSize:14, fontWeight:500, color:"#1C1A17", marginBottom:6 }}>No messages yet</div>
-                    <div style={{ fontSize:12, color:"#8B8680" }}>Start a conversation below.</div>
-                  </div>
-                ) : (sel.messages||[]).map(msg=>{
-                  const isMe = msg.role === role;
-                  const roleColor = msg.role==="manager"?"#1A5F9E":msg.role==="admin"?"#1C1A17":"#6B4CA8";
-                  const roleBg = msg.role==="manager"?"#EBF4FF":msg.role==="admin"?"#F0EDE6":"#F3EEFF";
-                  return (
-                    <div key={msg.id} style={{ display:"flex", flexDirection:"column", alignItems:isMe?"flex-end":"flex-start" }}>
-                      <div style={{ display:"flex", alignItems:"center", gap:5, marginBottom:4, flexDirection:isMe?"row-reverse":"row" }}>
-                        <Avatar name={msg.from} size={20} />
-                        <span style={{ fontSize:11, fontWeight:600, color:roleColor }}>{msg.from}</span>
-                        <span style={{ fontSize:10, padding:"1px 6px", borderRadius:10, background:roleBg, color:roleColor, fontWeight:500 }}>
-                          {msg.role==="manager"?"Reviewer":msg.role==="admin"?"Admin":"PM"}
-                        </span>
-                        <span style={{ fontSize:10, color:"#A8A49E" }}>{msg.time}</span>
-                      </div>
-                      <div style={{ maxWidth:"82%", padding:"10px 14px", borderRadius:isMe?"12px 4px 12px 12px":"4px 12px 12px 12px", background:isMe?"#1C1A17":"#F5F3EE", color:isMe?"#F7F5F0":"#1C1A17", fontSize:13, lineHeight:1.6 }}>
-                        {msg.text}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              <div style={{ padding:"14px 22px", borderTop:"1px solid #F0EDE6", flexShrink:0 }}>
-                <div style={{ fontSize:11, color:"#8B8680", marginBottom:6 }}>
-                  Sending as <span style={{ fontWeight:600, color:role==="manager"?"#1A5F9E":role==="admin"?"#1C1A17":"#6B4CA8" }}>
-                    {role==="manager"?"Reviewer":role==="admin"?"Admin":"Project Manager"}
-                  </span>
-                </div>
-                <div style={{ display:"flex", gap:8 }}>
-                  <textarea value={newMsg} onChange={e=>setNewMsg(e.target.value)}
-                    onKeyDown={e=>{ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); sendMessage(); }}}
-                    placeholder="Type a message… (Enter to send, Shift+Enter for new line)"
-                    rows={2} style={{ flex:1, padding:"9px 12px", border:"1px solid #E0DDD6", borderRadius:8, fontSize:13, color:"#1C1A17", resize:"none", background:"#FAFAF7", outline:"none", fontFamily:"inherit", lineHeight:1.5 }} />
-                  <button onClick={sendMessage} disabled={!newMsg.trim()} style={{ padding:"0 16px", borderRadius:8, border:"none", background:newMsg.trim()?"#1C1A17":"#E0DDD6", color:"#fff", cursor:newMsg.trim()?"pointer":"not-allowed", fontFamily:"inherit", fontSize:12, fontWeight:500, flexShrink:0 }}>
-                    Send
-                  </button>
-                </div>
-              </div>
-            </div>
 
           </div>
         </div>
       )}
 
-      {/* Add Project Modal */}
+            {/* Add Project Modal */}
       {showAdd && (
         <div style={{ position:"fixed", inset:0, background:"rgba(28,26,23,0.55)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:200 }} onClick={e=>{ if(e.target===e.currentTarget) setShowAdd(false); }}>
           <div style={{ width:520, background:"#fff", borderRadius:14, boxShadow:"0 8px 40px rgba(0,0,0,0.18)", overflow:"hidden", maxHeight:"90vh", display:"flex", flexDirection:"column" }}>
