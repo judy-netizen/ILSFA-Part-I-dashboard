@@ -389,8 +389,9 @@ export default function App() {
             {/* Export button */}
             <div style={{ display:"flex", justifyContent:"flex-end" }}>
               <button onClick={()=>{
-                const rows = [["Project ID","Name","Customer","Agent","PM","REC Value","DC Size","Status","Initial Docs","Final Docs","Initial Comment","Final Comment"].join(","),...projects.map(p=>[p.id,`"${p.name}"`,`"${p.customer}"`,p.agent,p.pm,p.recValue,p.dcSize,p.status,p.initialDocs.filter(Boolean).length+"/"+ITEMS.length,p.finalDocs.filter(Boolean).length+"/"+ITEMS.length,`"${p.initialComment}"`,`"${p.finalComment}"`].join(","))].join("
-");
+                const header = ["Project ID","Name","Customer","Agent","PM","REC Value","DC Size","Status","Initial Docs","Final Docs","Initial Comment","Final Comment"].join(",");
+                const rowData = projects.map(p=>[p.id,'"'+p.name+'"','"'+p.customer+'"',p.agent,p.pm,p.recValue,p.dcSize,p.status,p.initialDocs.filter(Boolean).length+"/"+ITEMS.length,p.finalDocs.filter(Boolean).length+"/"+ITEMS.length,'"'+p.initialComment+'"','"'+p.finalComment+'"'].join(","));
+                const rows = [header,...rowData].join("\n");
                 const blob = new Blob([rows],{type:"text/csv"});
                 const a = document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="ILSFA_projects.csv"; a.click();
               }} style={{ padding:"8px 20px", borderRadius:8, border:"1px solid #3A3830", background:"transparent", color:"#A8A49E", fontFamily:"inherit", fontSize:12, fontWeight:500, cursor:"pointer", display:"flex", alignItems:"center", gap:7 }}>
