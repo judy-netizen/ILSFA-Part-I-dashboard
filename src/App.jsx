@@ -632,7 +632,7 @@ export default function App() {
       {/* ── DETAIL DRAWER ───────────────────────────────────────────────────── */}
       {sel&&(
         <div style={{ position:"fixed",inset:0,background:"rgba(28,26,23,0.45)",display:"flex",justifyContent:"flex-end",zIndex:100 }} onClick={e=>{ if(e.target===e.currentTarget) setSel(null); }}>
-          <div style={{ width:540,background:"#fff",height:"100%",display:"flex",flexDirection:"column",boxShadow:"-4px 0 24px rgba(0,0,0,0.12)" }}>
+          <div style={{ width:540,background:"#fff",height:"100vh",maxHeight:"100vh",display:"flex",flexDirection:"column",boxShadow:"-4px 0 24px rgba(0,0,0,0.12)",overflow:"hidden" }}>
 
             {/* Fixed top info */}
             <div style={{ padding:"16px 22px",borderBottom:"1px solid #F0EDE6",flexShrink:0 }}>
@@ -678,23 +678,20 @@ export default function App() {
 
             {/* Details / Messages tabs */}
             <div style={{ display:"flex",borderBottom:"1px solid #F0EDE6",background:"#FAFAF7",flexShrink:0 }}>
-              {[["details","details"],["messages","messages"]].map(([tab])=>{
-                const msgCount = (sel.messages||[]).length;
-                const seenCount = seenMessages[sel.id] || 0;
-                const unread = tab==="messages" ? Math.max(0, msgCount - seenCount) : 0;
-                const label = tab==="details" ? "📋 Details" : "💬 Messages";
-                return (
-                  <button key={tab} onClick={()=>{ setDrawerTab(tab); if(tab==="messages") setSeenMessages(prev=>({...prev,[sel.id]:(sel.messages||[]).length})); }} style={{ flex:1,padding:"10px",border:"none",background:"transparent",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",color:drawerTab===tab?"#1C1A17":"#8B8680",borderBottom:`2px solid ${drawerTab===tab?"#1C1A17":"transparent"}`,transition:"all 0.15s",position:"relative",display:"flex",alignItems:"center",justifyContent:"center",gap:6 }}>
-                    {label}
-                    {unread>0 && <span style={{ background:"#B03A2E",color:"#fff",fontSize:10,fontWeight:700,padding:"1px 6px",borderRadius:10,lineHeight:1.4 }}>{unread}</span>}
-                  </button>
-                );
-              })}
+              {/* Details Tab */}
+              <button onClick={()=>setDrawerTab("details")} style={{ flex:1,padding:"10px",border:"none",background:"transparent",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",color:drawerTab==="details"?"#1C1A17":"#8B8680",borderBottom:`2px solid ${drawerTab==="details"?"#1C1A17":"transparent"}` }}>
+                📋 Details
+              </button>
+              {/* Messages Tab */}
+              <button onClick={()=>{ setDrawerTab("messages"); setSeenMessages(prev=>({...prev,[sel.id]:(sel.messages||[]).length})); }} style={{ flex:1,padding:"10px",border:"none",background:"transparent",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",color:drawerTab==="messages"?"#1C1A17":"#8B8680",borderBottom:`2px solid ${drawerTab==="messages"?"#1C1A17":"transparent"}`,display:"flex",alignItems:"center",justifyContent:"center",gap:6 }}>
+                💬 Messages
+                {(()=>{ const unread=Math.max(0,(sel.messages||[]).length-(seenMessages[sel.id]||0)); return unread>0?<span style={{ background:"#B03A2E",color:"#fff",fontSize:10,fontWeight:700,padding:"1px 6px",borderRadius:10 }}>{unread}</span>:null; })()}
+              </button>
             </div>
 
             {/* DETAILS TAB */}
             {drawerTab==="details"&&(
-              <div style={{ flex:1,display:"flex",flexDirection:"column",overflow:"hidden" }}>
+              <div style={{ flex:1,display:"flex",flexDirection:"column",overflow:"hidden",minHeight:0 }}>
                 {!isManager ? (
                   /* PM: read-only */
                   <div style={{ flex:1,overflowY:"auto",padding:"20px 22px" }}>
@@ -764,8 +761,8 @@ export default function App() {
 
             {/* MESSAGES TAB */}
             {drawerTab==="messages"&&(
-              <div style={{ flex:1,display:"flex",flexDirection:"column",overflow:"hidden" }}>
-                <div style={{ flex:1,overflowY:"auto",padding:"16px 22px",display:"flex",flexDirection:"column",gap:12 }}>
+              <div style={{ flex:1,display:"flex",flexDirection:"column",overflow:"hidden",minHeight:0 }}>
+                <div style={{ flex:1,overflowY:"auto",padding:"16px 22px",display:"flex",flexDirection:"column",gap:12,minHeight:0 }}>
                   {(sel.messages||[]).length===0 ? (
                     <div style={{ textAlign:"center",padding:"40px 20px" }}>
                       <div style={{ fontSize:32,marginBottom:10 }}>💬</div>
@@ -773,7 +770,7 @@ export default function App() {
                       <div style={{ fontSize:12,color:"#8B8680" }}>Start the conversation below.</div>
                     </div>
                   ) : (sel.messages||[]).map(msg=>{
-                    const isMe=msg.role===role;
+                    const isMe=msg.role===user?.role;
                     const rc=msg.role==="manager"?"#1A5F9E":msg.role==="admin"?"#1C1A17":"#6B4CA8";
                     const rb=msg.role==="manager"?"#EBF4FF":msg.role==="admin"?"#F0EDE6":"#F3EEFF";
                     return (
