@@ -11,7 +11,7 @@ const ROLES = {
 
 const USERS = [
   // Managers / Reviewers
-  { username:"judy",     password:"judy2026",     role:"manager", name:"Judy Netizen",          pm: null },
+  { username:"judy",     password:"judy2026",     role:"manager", name:"Judy",          pm: null },
   { username:"mary",     password:"mary2026",     role:"manager", name:"Mary Ann Sante",        pm: null },
   // Admin
   { username:"admin",    password:"admin2026",    role:"admin",   name:"Admin",                 pm: null },
