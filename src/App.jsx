@@ -9,6 +9,21 @@ const ROLES = {
   pm:      { label:"Project Manager",    color:"#6B4CA8", bg:"#F3EEFF" },
 };
 
+const USERS = [
+  // Managers / Reviewers
+  { username:"judy",     password:"judy2026",     role:"manager", name:"Judy Netizen",          pm: null },
+  { username:"mary",     password:"mary2026",     role:"manager", name:"Mary Ann Sante",        pm: null },
+  // Admin
+  { username:"admin",    password:"admin2026",    role:"admin",   name:"Admin",                 pm: null },
+  // Project Managers - can only see their own projects
+  { username:"allaiza",  password:"pm2026",       role:"pm",      name:"Allaiza Velasquez",     pm:"Allaiza Velasquez" },
+  { username:"angelica", password:"pm2026",       role:"pm",      name:"Angelica Capili",       pm:"Angelica Capili" },
+  { username:"franchise",password:"pm2026",       role:"pm",      name:"Francheska Alvarez",    pm:"Francheska Alvarez" },
+  { username:"genneva",  password:"pm2026",       role:"pm",      name:"Genneva Arguelles",     pm:"Genneva Arguelles" },
+  { username:"maryann",  password:"pm2026",       role:"pm",      name:"Mary Ann Sante",        pm:"Mary Ann Sante" },
+  { username:"may",      password:"pm2026",       role:"pm",      name:"May Contestable",       pm:"May Contestable" },
+];
+
 const STATUS = {
   pending:        { label:"Pending",        color:"#8B7355", bg:"#FDF6EC", border:"#E8D5B0" },
   initial_review: { label:"Initial Review", color:"#1A5F9E", bg:"#EBF4FF", border:"#BDDAF5" },
@@ -19,7 +34,7 @@ const STATUS = {
 
 const INIT_DATA = [];
 
-const EMPTY_FORM = { name:"", customer:"", agent:"", pm:"", recValue:"", dcSize:"", ejc:false, ec:false, iec:false };
+const EMPTY_FORM = { projectId:"", name:"", customer:"", agent:"", pm:"", recValue:"", dcSize:"", ejc:false, ec:false, iec:false };
 
 const API_URL = "https://script.google.com/macros/s/AKfycbxXlm6OLl1AyVHsQAkNrs3dDpicmBJ0tPSJj-OIyB-ZLX24VdLbEpXLl4ErHxojsgibWQ/exec";
 
@@ -118,7 +133,10 @@ function DocChecklist({ docs, onChange, readOnly=false }) {
 const inputStyle = { width:"100%",padding:"8px 12px",border:"1px solid #E0DDD6",borderRadius:8,fontSize:13,color:"#1C1A17",background:"#FAFAF7",outline:"none",fontFamily:"inherit",boxSizing:"border-box" };
 
 export default function App() {
-  const [role, setRole]             = useState(null);
+  const [user, setUser]             = useState(null);
+  const [loginUser, setLoginUser]   = useState("");
+  const [loginPass, setLoginPass]   = useState("");
+  const [loginError, setLoginError] = useState("");
   const [projects, setProjects]     = useState(INIT_DATA);
   const [loading, setLoading]       = useState(false);
   const [syncing, setSyncing]       = useState(false);
@@ -149,13 +167,15 @@ export default function App() {
   const pms    = useMemo(()=>[...new Set(projects.map(p=>p.pm).filter(Boolean))].sort(),[projects]);
 
   const list = useMemo(()=>projects.filter(p=>{
+    // PMs can only see their own projects
+    if (user?.role==="pm" && user?.pm && p.pm !== user.pm) return false;
     if (fStatus && p.status!==fStatus) return false;
     if (fAgent  && p.agent!==fAgent)   return false;
     if (fPM     && p.pm!==fPM)         return false;
     if (fDoc) { const idx=ITEMS.indexOf(fDoc); if(idx>=0&&!p.initialDocs[idx]) return false; }
     if (search && ![p.name,p.id,p.customer,p.agent,p.pm].some(v=>v.toLowerCase().includes(search.toLowerCase()))) return false;
     return true;
-  }),[projects,fStatus,fAgent,fPM,fDoc,search]);
+  }),[projects,fStatus,fAgent,fPM,fDoc,search,user]);
 
   const totals = useMemo(()=>({
     rec:      list.reduce((s,p)=>s+(p.recValue||0),0),
@@ -168,8 +188,8 @@ export default function App() {
   }),[list]);
 
   const anyFilter = fStatus||fAgent||fPM||fDoc||search;
-  const isAdmin   = role==="admin";
-  const isManager = role==="manager"||isAdmin;
+  const isAdmin   = user?.role==="admin";
+  const isManager = user?.role==="manager"||isAdmin;
 
   function openProject(p) {
     setSel(p);
@@ -198,7 +218,7 @@ export default function App() {
 
   async function sendMessage() {
     if (!newMsg.trim()) return;
-    const msg = { id:Date.now(), from:role==="manager"?"Reviewer":role==="admin"?"Admin":"Project Manager", role, text:newMsg.trim(), time:new Date().toLocaleString("en-US",{month:"2-digit",day:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}) };
+    const msg = { id:Date.now(), from:user?.role==="manager"?"Reviewer":user?.role==="admin"?"Admin":"Project Manager", role, text:newMsg.trim(), time:new Date().toLocaleString("en-US",{month:"2-digit",day:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}) };
     const updated = { ...sel, messages:[...(sel.messages||[]),msg] };
     setProjects(prev=>prev.map(p=>p.id===sel.id?updated:p));
     setSel(updated);
@@ -207,8 +227,8 @@ export default function App() {
   }
 
   async function addProject() {
-    if (!form.name.trim()) return;
-    const id = "ILSFA-"+String(projects.length+1).padStart(4,"0");
+    if (!form.name.trim() || !form.projectId.trim()) return;
+    const id = form.projectId.trim();
     const newProject = { ...form, id, recValue:parseFloat(form.recValue)||0, dcSize:parseFloat(form.dcSize)||0, status:"pending", initialDocs:[...formDocs], finalDocs:[...EMPTY_DOCS], initialComment:"", finalComment:"", initialReviewer:"", finalReviewer:"", messages:[] };
     setProjects(prev=>[newProject,...prev]);
     setForm(EMPTY_FORM);
@@ -220,6 +240,18 @@ export default function App() {
   }
 
   function toggleDoc(arr, setArr, i) { const n=[...arr]; n[i]=n[i]?0:1; setArr(n); }
+  function handleLogin() {
+    const found = USERS.find(u => u.username.toLowerCase() === loginUser.toLowerCase().trim() && u.password === loginPass);
+    if (found) {
+      setUser(found);
+      setLoginError("");
+      setLoginUser("");
+      setLoginPass("");
+    } else {
+      setLoginError("Incorrect username or password.");
+    }
+  }
+
   function clearFilters() { setFStatus(""); setFAgent(""); setFPM(""); setFDoc(""); setSearch(""); }
 
   const loadFromSheet = useCallback(async () => {
@@ -237,35 +269,42 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (role) loadFromSheet();
-  }, [role]);
+    if (user) loadFromSheet();
+  }, [user]);
 
-  // ── ROLE SELECTOR ──────────────────────────────────────────────────────────
-  if (!role) return (
+  // ── LOGIN SCREEN ──────────────────────────────────────────────────────────
+  if (!user) return (
     <div style={{ fontFamily:"'Helvetica Neue',sans-serif",background:"#F7F5F0",minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center" }}>
-      <div style={{ marginBottom:32,textAlign:"center" }}>
-        <div style={{ width:48,height:48,background:"#1C1A17",borderRadius:12,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 14px" }}>
-          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 4h16v3H3zm0 5h11v3H3zm0 5h13v3H3z" fill="#fff" opacity="0.9"/><circle cx="18" cy="16" r="3" fill="#6FCF8A"/></svg>
+      <div style={{ width:380,background:"#fff",borderRadius:16,boxShadow:"0 4px 32px rgba(0,0,0,0.10)",overflow:"hidden" }}>
+        <div style={{ background:"#1C1A17",padding:"28px 32px 24px" }}>
+          <div style={{ display:"flex",alignItems:"center",gap:12,marginBottom:8 }}>
+            <div style={{ width:40,height:40,background:"#3A8C58",borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 3h16v3H2zm0 5h10v3H2zm0 5h12v3H2z" fill="#fff" opacity="0.9"/><circle cx="16" cy="15" r="3" fill="#6FCF8A"/></svg>
+            </div>
+            <div>
+              <div style={{ color:"#F7F5F0",fontSize:16,fontWeight:700 }}>ILSFA Part I</div>
+              <div style={{ color:"#6B6760",fontSize:12 }}>Submission Review Dashboard</div>
+            </div>
+          </div>
         </div>
-        <div style={{ fontSize:20,fontWeight:700,color:"#1C1A17" }}>ILSFA Part I Dashboard</div>
-        <div style={{ fontSize:13,color:"#8B8680",marginTop:6 }}>Select your role to continue</div>
-      </div>
-      <div style={{ display:"flex",gap:16 }}>
-        {Object.entries(ROLES).map(([key,r])=>(
-          <button key={key} onClick={()=>setRole(key)} style={{ width:200,padding:"24px 20px",borderRadius:14,border:`2px solid ${r.color}20`,background:"#fff",cursor:"pointer",fontFamily:"inherit",textAlign:"left",boxShadow:"0 2px 12px rgba(0,0,0,0.06)" }}
-            onMouseEnter={e=>{e.currentTarget.style.borderColor=r.color;e.currentTarget.style.boxShadow=`0 4px 20px ${r.color}25`;}}
-            onMouseLeave={e=>{e.currentTarget.style.borderColor=`${r.color}20`;e.currentTarget.style.boxShadow="0 2px 12px rgba(0,0,0,0.06)";}}>
-            <div style={{ width:36,height:36,borderRadius:10,background:r.bg,display:"flex",alignItems:"center",justifyContent:"center",marginBottom:12 }}>
-              {key==="admin"   && <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4z" fill={r.color}/></svg>}
-              {key==="manager" && <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 4h14v2H2zm0 4h9v2H2zm0 4h11v2H2z" fill={r.color}/></svg>}
-              {key==="pm"      && <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" fill={r.color}/><path d="M3 15c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke={r.color} strokeWidth="1.5" strokeLinecap="round"/></svg>}
+        <div style={{ padding:"28px 32px 32px" }}>
+          <div style={{ fontSize:15,fontWeight:600,color:"#1C1A17",marginBottom:4 }}>Sign in</div>
+          <div style={{ fontSize:12,color:"#8B8680",marginBottom:24 }}>Enter your username and password to continue</div>
+          <div style={{ display:"flex",flexDirection:"column",gap:14 }}>
+            <div>
+              <div style={{ fontSize:11,fontWeight:500,color:"#8B8680",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6 }}>Username</div>
+              <input value={loginUser} onChange={e=>setLoginUser(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handleLogin()} placeholder="Enter username" style={{ width:"100%",padding:"10px 14px",border:`1px solid ${loginError?"#F5C0BC":"#E0DDD6"}`,borderRadius:9,fontSize:13,color:"#1C1A17",background:"#FAFAF7",outline:"none",fontFamily:"inherit",boxSizing:"border-box" }} autoFocus />
             </div>
-            <div style={{ fontSize:14,fontWeight:600,color:"#1C1A17",marginBottom:4 }}>{r.label}</div>
-            <div style={{ fontSize:12,color:"#8B8680",lineHeight:1.5 }}>
-              {key==="admin"?"Full access — analytics & export":key==="manager"?"Review documents & approve":key==="pm"?"Add & track your projects":""}
+            <div>
+              <div style={{ fontSize:11,fontWeight:500,color:"#8B8680",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6 }}>Password</div>
+              <input value={loginPass} onChange={e=>setLoginPass(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handleLogin()} type="password" placeholder="Enter password" style={{ width:"100%",padding:"10px 14px",border:`1px solid ${loginError?"#F5C0BC":"#E0DDD6"}`,borderRadius:9,fontSize:13,color:"#1C1A17",background:"#FAFAF7",outline:"none",fontFamily:"inherit",boxSizing:"border-box" }} />
             </div>
-          </button>
-        ))}
+            {loginError && <div style={{ background:"#FEF0EF",border:"1px solid #F5C0BC",borderRadius:8,padding:"9px 14px",fontSize:12,color:"#B03A2E" }}>⚠️ {loginError}</div>}
+            <button onClick={handleLogin} style={{ padding:"11px",borderRadius:9,border:"none",background:"#2B5E3B",color:"#fff",fontFamily:"inherit",fontSize:14,fontWeight:600,cursor:"pointer",marginTop:4 }}>
+              Sign in
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -290,14 +329,18 @@ export default function App() {
               ↺ Refresh
             </button>
           )}
-          <button onClick={()=>setShowAdd(true)} style={{ padding:"7px 16px",borderRadius:8,border:"none",background:"#3A8C58",color:"#fff",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",display:"flex",alignItems:"center",gap:6 }}>
+          <button onClick={()=>{ setForm({...EMPTY_FORM, pm: user?.role==="pm" ? user.pm : ""}); setFormDocs([...EMPTY_DOCS]); setShowAdd(true); }} style={{ padding:"7px 16px",borderRadius:8,border:"none",background:"#3A8C58",color:"#fff",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",display:"flex",alignItems:"center",gap:6 }}>
             <span style={{ fontSize:16,lineHeight:1 }}>+</span> Add Project
           </button>
-          <div onClick={()=>setRole(null)} style={{ background:ROLES[role].bg,border:`1px solid ${ROLES[role].color}40`,borderRadius:8,padding:"4px 12px",display:"flex",alignItems:"center",gap:7,cursor:"pointer" }}>
-            <div style={{ width:7,height:7,borderRadius:"50%",background:ROLES[role].color }}></div>
-            <span style={{ color:ROLES[role].color,fontSize:12,fontWeight:500 }}>{ROLES[role].label}</span>
-            <span style={{ color:ROLES[role].color,fontSize:10,opacity:0.6 }}>▾</span>
+          <div style={{ display:"flex",alignItems:"center",gap:8,background:ROLES[user.role].bg,border:`1px solid ${ROLES[user.role].color}40`,borderRadius:8,padding:"5px 14px" }}>
+            <div style={{ width:7,height:7,borderRadius:"50%",background:ROLES[user.role].color }}></div>
+            <span style={{ color:ROLES[user.role].color,fontSize:12,fontWeight:500 }}>{user.name}</span>
+            <span style={{ color:"#C8C4BA",fontSize:11,margin:"0 2px" }}>·</span>
+            <span style={{ color:ROLES[user.role].color,fontSize:11,opacity:0.7 }}>{ROLES[user.role].label}</span>
           </div>
+          <button onClick={()=>{ setUser(null); setProjects([]); setSheetReady(false); }} style={{ padding:"5px 12px",borderRadius:7,border:"1px solid #3A3830",background:"transparent",color:"#A8A49E",fontFamily:"inherit",fontSize:11,cursor:"pointer" }}>
+            Sign out
+          </button>
         </div>
       </div>
 
@@ -643,7 +686,7 @@ export default function App() {
                   })}
                 </div>
                 <div style={{ padding:"14px 22px",borderTop:"1px solid #F0EDE6",flexShrink:0 }}>
-                  <div style={{ fontSize:11,color:"#8B8680",marginBottom:6 }}>Sending as <span style={{ fontWeight:600,color:role==="manager"?"#1A5F9E":role==="admin"?"#1C1A17":"#6B4CA8" }}>{role==="manager"?"Reviewer":role==="admin"?"Admin":"Project Manager"}</span></div>
+                  <div style={{ fontSize:11,color:"#8B8680",marginBottom:6 }}>Sending as <span style={{ fontWeight:600,color:user?.role==="manager"?"#1A5F9E":user?.role==="admin"?"#1C1A17":"#6B4CA8" }}>{user?.role==="manager"?"Reviewer":user?.role==="admin"?"Admin":"Project Manager"}</span></div>
                   <div style={{ display:"flex",gap:8 }}>
                     <textarea value={newMsg} onChange={e=>setNewMsg(e.target.value)} onKeyDown={e=>{ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMessage();}}} placeholder="Type a message… (Enter to send)" rows={2} style={{ flex:1,padding:"9px 12px",border:"1px solid #E0DDD6",borderRadius:8,fontSize:13,color:"#1C1A17",resize:"none",background:"#FAFAF7",outline:"none",fontFamily:"inherit",lineHeight:1.5 }} />
                     <button onClick={sendMessage} disabled={!newMsg.trim()} style={{ padding:"0 16px",borderRadius:8,border:"none",background:newMsg.trim()?"#1C1A17":"#E0DDD6",color:"#fff",cursor:newMsg.trim()?"pointer":"not-allowed",fontFamily:"inherit",fontSize:12,fontWeight:500,flexShrink:0 }}>Send</button>
@@ -670,6 +713,9 @@ export default function App() {
                 Fill in your project details. The manager will handle document review after submission.
               </div>
               <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:12 }}>
+                <Field label="Project ID *">
+                  <input value={form.projectId} onChange={e=>setForm(f=>({...f,projectId:e.target.value}))} placeholder="Enter project ID" style={{ ...inputStyle, borderColor: form.projectId ? "#E0DDD6" : "#E0DDD6" }} />
+                </Field>
                 <Field label="Project Name *"><input value={form.name}     onChange={e=>setForm(f=>({...f,name:e.target.value}))}     placeholder="e.g. Southside Community Solar" style={inputStyle} /></Field>
                 <Field label="Customer Name"><input  value={form.customer} onChange={e=>setForm(f=>({...f,customer:e.target.value}))} placeholder="e.g. Maria Reyes" style={inputStyle} /></Field>
                 <Field label="Sales Agent">
@@ -709,7 +755,7 @@ export default function App() {
               </Field>
             </div>
             <div style={{ padding:"14px 24px",borderTop:"1px solid #F0EDE6",display:"flex",gap:10,flexShrink:0 }}>
-              <button onClick={addProject} disabled={!form.name.trim()} style={{ padding:"9px 24px",borderRadius:8,border:"none",background:form.name.trim()?"#2B5E3B":"#A8C5B2",color:"#fff",fontFamily:"inherit",fontSize:13,fontWeight:500,cursor:form.name.trim()?"pointer":"not-allowed" }}>
+              <button onClick={addProject} disabled={!form.name.trim()||!form.projectId.trim()} style={{ padding:"9px 24px",borderRadius:8,border:"none",background:(form.name.trim()&&form.projectId.trim())?"#2B5E3B":"#A8C5B2",color:"#fff",fontFamily:"inherit",fontSize:13,fontWeight:500,cursor:(form.name.trim()&&form.projectId.trim())?"pointer":"not-allowed" }}>
                 Submit Project
               </button>
               <button onClick={()=>setShowAdd(false)} style={{ background:"transparent",border:"none",fontSize:13,color:"#8B8680",cursor:"pointer",fontFamily:"inherit" }}>Cancel</button>
