@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 
 const ITEMS = ["IPA","PPA","Shading Study","Planset","Array","SS","SSR","POO","UB","ES Box","ES Date","ILSFA Verified","IPA Linked"];
 const EMPTY_DOCS = [0,0,0,0,0,0,0,0,0,0,0,0,0];
@@ -17,18 +17,45 @@ const STATUS = {
   flagged:        { label:"Flagged",        color:"#B03A2E", bg:"#FEF0EF", border:"#F5C0BC" },
 };
 
-const INIT_DATA = [
-  { id:"ILSFA-0001", name:"Southside Community Solar", customer:"Maria Reyes",    agent:"D. Alvarez", pm:"M. Torres", recValue:48250, dcSize:99.9, ejc:true,  ec:true,  iec:true,  status:"approved",       initialDocs:[1,1,1,1,1,1,1,1,1,1,1,1,1], finalDocs:[1,1,1,1,1,1,1,1,1,1,1,1,1], initialComment:"All docs received.",          finalComment:"Final check passed.",       initialReviewer:"J. Kim",   finalReviewer:"J. Kim",   messages:[{id:1,from:"J. Kim",role:"manager",text:"All documents look good. Approved!",time:"05/10/2026 09:14 AM"},{id:2,from:"M. Torres",role:"pm",text:"Thank you! Let me know if anything else is needed.",time:"05/10/2026 09:30 AM"}] },
-  { id:"ILSFA-0002", name:"Pilsen Rooftop Array",       customer:"Jorge Mendez",  agent:"S. Lee",     pm:"J. Kim",   recValue:36100, dcSize:75.0, ejc:false, ec:false, iec:false, status:"flagged",         initialDocs:[1,1,0,1,0,0,0,0,0,0,0,0,0], finalDocs:[...EMPTY_DOCS],              initialComment:"Missing Shading Study.",      finalComment:"",                          initialReviewer:"M. Torres",finalReviewer:"",         messages:[{id:1,from:"M. Torres",role:"manager",text:"Missing Shading Study and Array docs. Please resubmit.",time:"05/11/2026 11:02 AM"},{id:2,from:"J. Kim",role:"pm",text:"Working on it, will upload by EOD.",time:"05/11/2026 11:45 AM"}] },
-  { id:"ILSFA-0003", name:"Englewood Block 14",         customer:"Tanya Brown",   agent:"D. Alvarez", pm:"M. Torres", recValue:24150, dcSize:50.0, ejc:true,  ec:false, iec:false, status:"final_review",   initialDocs:[1,1,1,1,1,1,1,1,1,1,1,1,0], finalDocs:[1,1,1,0,1,1,1,1,1,1,1,1,0], initialComment:"IPA Linked missing.",         finalComment:"Planset needs update.",     initialReviewer:"J. Kim",   finalReviewer:"J. Kim",   messages:[{id:1,from:"J. Kim",role:"manager",text:"Planset still needs an update before final approval.",time:"05/12/2026 14:20 PM"}] },
-  { id:"ILSFA-0004", name:"Austin Neighborhood Solar",  customer:"Kevin Park",    agent:"R. Patel",   pm:"",         recValue:48250, dcSize:99.9, ejc:false, ec:false, iec:false, status:"pending",         initialDocs:[...EMPTY_DOCS],              finalDocs:[...EMPTY_DOCS],              initialComment:"",                            finalComment:"",                          initialReviewer:"",         finalReviewer:"",         messages:[] },
-  { id:"ILSFA-0005", name:"Bronzeville Commons",        customer:"Lisa Chen",     agent:"S. Lee",     pm:"R. Patel", recValue:42720, dcSize:88.5, ejc:true,  ec:true,  iec:true,  status:"approved",       initialDocs:[1,1,1,1,1,1,1,1,1,1,1,1,1], finalDocs:[1,1,1,1,1,1,1,1,1,1,1,1,1], initialComment:"All complete.",               finalComment:"Approved after final check.",initialReviewer:"M. Torres",finalReviewer:"M. Torres", messages:[] },
-  { id:"ILSFA-0006", name:"Woodlawn Solar Hub",         customer:"Andre Williams",agent:"D. Alvarez", pm:"J. Kim",   recValue:29940, dcSize:62.0, ejc:false, ec:false, iec:false, status:"initial_review", initialDocs:[1,1,1,1,0,0,0,0,0,0,0,0,0], finalDocs:[...EMPTY_DOCS],              initialComment:"",                            finalComment:"",                          initialReviewer:"",         finalReviewer:"",         messages:[] },
-  { id:"ILSFA-0007", name:"Hyde Park Carport",          customer:"Nina Okonkwo",  agent:"R. Patel",   pm:"M. Torres",recValue:48250, dcSize:99.9, ejc:true,  ec:false, iec:false, status:"initial_review", initialDocs:[1,1,1,1,1,1,1,1,1,1,1,1,0], finalDocs:[...EMPTY_DOCS],              initialComment:"Waiting on IPA Linked.",      finalComment:"",                          initialReviewer:"J. Kim",   finalReviewer:"",         messages:[] },
-  { id:"ILSFA-0008", name:"Lawndale Block Grant",       customer:"Sam Rivera",    agent:"S. Lee",     pm:"",         recValue:21240, dcSize:44.0, ejc:false, ec:false, iec:false, status:"pending",         initialDocs:[...EMPTY_DOCS],              finalDocs:[...EMPTY_DOCS],              initialComment:"",                            finalComment:"",                          initialReviewer:"",         finalReviewer:"",         messages:[] },
-];
+const INIT_DATA = [];
 
 const EMPTY_FORM = { name:"", customer:"", agent:"", pm:"", recValue:"", dcSize:"", ejc:false, ec:false, iec:false };
+
+const API_URL = "https://script.google.com/macros/s/AKfycbxXlm6OLl1AyVHsQAkNrs3dDpicmBJ0tPSJj-OIyB-ZLX24VdLbEpXLl4ErHxojsgibWQ/exec";
+
+function parseProject(p) {
+  return {
+    ...p,
+    recValue: parseFloat(p.recValue) || 0,
+    dcSize:   parseFloat(p.dcSize)   || 0,
+    ejc: p.ejc === true || p.ejc === "TRUE" || p.ejc === "true",
+    ec:  p.ec  === true || p.ec  === "TRUE" || p.ec  === "true",
+    iec: p.iec === true || p.iec === "TRUE" || p.iec === "true",
+    initialDocs: typeof p.initialDocs === "string" ? JSON.parse(p.initialDocs || "[]") : (p.initialDocs || [...EMPTY_DOCS]),
+    finalDocs:   typeof p.finalDocs   === "string" ? JSON.parse(p.finalDocs   || "[]") : (p.finalDocs   || [...EMPTY_DOCS]),
+    messages:    typeof p.messages    === "string" ? JSON.parse(p.messages    || "[]") : (p.messages    || []),
+  };
+}
+
+async function fetchProjects() {
+  const res = await fetch(API_URL);
+  const json = await res.json();
+  return (json.data || []).filter(p => p.id).map(parseProject);
+}
+
+async function saveProjectToSheet(project) {
+  await fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify({ action: "save_project", project }),
+  });
+}
+
+async function initHeaders() {
+  await fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify({ action: "init_headers" }),
+  });
+}
 
 const AGENTS = [
   { group:"", options:["Abdulhalim Dayoub","Adam Kheder","Alaa Mahdi","Ashraf Dardar","Habib Maktabi","Hadi Haj Abdullah","Kai Nori","Karim Almasri","Khaled Zarzour","Luay Daboul","Marina Morcos","Mo Jaliawala","Mutawakel Nofal","Rami Alkhawandi","Romel George","Sam Aktham","Sami Alkabbani","Zack"] },
@@ -93,6 +120,10 @@ const inputStyle = { width:"100%",padding:"8px 12px",border:"1px solid #E0DDD6",
 export default function App() {
   const [role, setRole]             = useState(null);
   const [projects, setProjects]     = useState(INIT_DATA);
+  const [loading, setLoading]       = useState(false);
+  const [syncing, setSyncing]       = useState(false);
+  const [sheetReady, setSheetReady] = useState(false);
+  const [loadError, setLoadError]   = useState("");
   const [search, setSearch]         = useState("");
   const [fStatus, setFStatus]       = useState("");
   const [fAgent, setFAgent]         = useState("");
@@ -155,33 +186,59 @@ export default function App() {
     setSaved(false);
   }
 
-  function saveProject() {
+  async function saveProject() {
     const updated = { ...sel, status:eStatus, initialDocs:iDocs, initialComment:iComment, initialReviewer:iReviewer, finalDocs:fDocs, finalComment:fComment, finalReviewer:fReviewer };
     setProjects(prev=>prev.map(p=>p.id===sel.id?updated:p));
     setSel(updated);
     setSaved(true);
+    setSyncing(true);
+    try { await saveProjectToSheet(updated); } catch(e) { console.error("Sync error",e); }
+    setSyncing(false);
   }
 
-  function sendMessage() {
+  async function sendMessage() {
     if (!newMsg.trim()) return;
     const msg = { id:Date.now(), from:role==="manager"?"Reviewer":role==="admin"?"Admin":"Project Manager", role, text:newMsg.trim(), time:new Date().toLocaleString("en-US",{month:"2-digit",day:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}) };
     const updated = { ...sel, messages:[...(sel.messages||[]),msg] };
     setProjects(prev=>prev.map(p=>p.id===sel.id?updated:p));
     setSel(updated);
     setNewMsg("");
+    try { await saveProjectToSheet(updated); } catch(e) { console.error("Sync error",e); }
   }
 
-  function addProject() {
+  async function addProject() {
     if (!form.name.trim()) return;
     const id = "ILSFA-"+String(projects.length+1).padStart(4,"0");
-    setProjects(prev=>[{ ...form, id, recValue:parseFloat(form.recValue)||0, dcSize:parseFloat(form.dcSize)||0, status:"pending", initialDocs:[...formDocs], finalDocs:[...EMPTY_DOCS], initialComment:"", finalComment:"", initialReviewer:"", finalReviewer:"", messages:[] },...prev]);
+    const newProject = { ...form, id, recValue:parseFloat(form.recValue)||0, dcSize:parseFloat(form.dcSize)||0, status:"pending", initialDocs:[...formDocs], finalDocs:[...EMPTY_DOCS], initialComment:"", finalComment:"", initialReviewer:"", finalReviewer:"", messages:[] };
+    setProjects(prev=>[newProject,...prev]);
     setForm(EMPTY_FORM);
     setFormDocs([...EMPTY_DOCS]);
     setShowAdd(false);
+    setSyncing(true);
+    try { await saveProjectToSheet(newProject); } catch(e) { console.error("Sync error",e); }
+    setSyncing(false);
   }
 
   function toggleDoc(arr, setArr, i) { const n=[...arr]; n[i]=n[i]?0:1; setArr(n); }
   function clearFilters() { setFStatus(""); setFAgent(""); setFPM(""); setFDoc(""); setSearch(""); }
+
+  const loadFromSheet = useCallback(async () => {
+    setLoading(true);
+    setLoadError("");
+    try {
+      const data = await fetchProjects();
+      setProjects(data);
+      setSheetReady(true);
+    } catch(err) {
+      setLoadError("Could not connect to Google Sheet. Check your connection.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (role) loadFromSheet();
+  }, [role]);
 
   // ── ROLE SELECTOR ──────────────────────────────────────────────────────────
   if (!role) return (
@@ -221,6 +278,18 @@ export default function App() {
       <div style={{ background:"#1C1A17",padding:"14px 24px",display:"flex",alignItems:"center",justifyContent:"space-between" }}>
         <div style={{ color:"#F7F5F0",fontSize:15,fontWeight:600 }}>ILSFA Part I — Submission Review Dashboard</div>
         <div style={{ display:"flex",alignItems:"center",gap:10 }}>
+          {!sheetReady && !loading && (
+            <button onClick={async()=>{ await initHeaders(); await loadFromSheet(); }} style={{ padding:"7px 14px",borderRadius:8,border:"1px solid #6FCF8A",background:"transparent",color:"#6FCF8A",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer" }}>
+              ⚡ Initialize Sheet
+            </button>
+          )}
+          {loading && <span style={{ fontSize:12,color:"#A8A49E" }}>⏳ Loading…</span>}
+          {syncing && <span style={{ fontSize:12,color:"#6FCF8A" }}>⟳ Saving…</span>}
+          {sheetReady && !loading && !syncing && (
+            <button onClick={loadFromSheet} style={{ padding:"5px 12px",borderRadius:7,border:"1px solid #3A3830",background:"transparent",color:"#A8A49E",fontFamily:"inherit",fontSize:11,cursor:"pointer",display:"flex",alignItems:"center",gap:5 }}>
+              ↺ Refresh
+            </button>
+          )}
           <button onClick={()=>setShowAdd(true)} style={{ padding:"7px 16px",borderRadius:8,border:"none",background:"#3A8C58",color:"#fff",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",display:"flex",alignItems:"center",gap:6 }}>
             <span style={{ fontSize:16,lineHeight:1 }}>+</span> Add Project
           </button>
@@ -288,8 +357,25 @@ export default function App() {
                 </tr>
               </thead>
               <tbody>
-                {list.length===0 ? (
-                  <tr><td colSpan={12} style={{ padding:"40px",textAlign:"center",color:"#A8A49E",fontSize:13 }}>No projects match your filters.</td></tr>
+                {loading ? (
+                  <tr><td colSpan={12} style={{ padding:"60px",textAlign:"center" }}>
+                    <div style={{ fontSize:14,color:"#8B8680",marginBottom:8 }}>⏳ Loading projects from Google Sheet…</div>
+                  </td></tr>
+                ) : loadError ? (
+                  <tr><td colSpan={12} style={{ padding:"40px",textAlign:"center" }}>
+                    <div style={{ fontSize:13,color:"#B03A2E",marginBottom:12 }}>⚠️ {loadError}</div>
+                    <button onClick={loadFromSheet} style={{ padding:"7px 16px",borderRadius:7,border:"1px solid #E0DDD6",background:"#fff",fontFamily:"inherit",fontSize:12,cursor:"pointer",color:"#1C1A17" }}>Try again</button>
+                  </td></tr>
+                ) : !sheetReady ? (
+                  <tr><td colSpan={12} style={{ padding:"60px",textAlign:"center" }}>
+                    <div style={{ fontSize:14,color:"#8B8680",marginBottom:6 }}>📋 Sheet not initialized yet</div>
+                    <div style={{ fontSize:12,color:"#A8A49E",marginBottom:16 }}>Click "Initialize Sheet" in the header to set up your Google Sheet headers first.</div>
+                  </td></tr>
+                ) : list.length===0 ? (
+                  <tr><td colSpan={12} style={{ padding:"60px",textAlign:"center" }}>
+                    <div style={{ fontSize:14,color:"#8B8680",marginBottom:6 }}>No projects yet</div>
+                    <div style={{ fontSize:12,color:"#A8A49E" }}>Click "+ Add Project" to add your first project.</div>
+                  </td></tr>
                 ) : list.map((p,i)=>(
                   <tr key={p.id} onClick={()=>openProject(p)} style={{ background:i%2===0?"#fff":"#FDFCFA",borderBottom:"1px solid #F5F3EE",cursor:"pointer" }}
                     onMouseEnter={e=>e.currentTarget.style.background="#EFEDE7"}
