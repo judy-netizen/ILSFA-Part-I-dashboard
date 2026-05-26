@@ -348,7 +348,17 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (user) loadFromSheet();
+    if (user) {
+      loadFromSheet();
+      // Load seen messages from localStorage for this user
+      try {
+        const stored = localStorage.getItem("seenMessages_" + user.username);
+        if (stored) setSeenMessages(JSON.parse(stored));
+      } catch(e) {}
+    } else {
+      // Clear seen messages when logged out
+      setSeenMessages({});
+    }
   }, [user]);
 
   // Poll for new messages every 15s when drawer is open on messages tab
@@ -360,6 +370,15 @@ export default function App() {
       return () => clearInterval(interval);
     }
   }, [sel, drawerTab]);
+
+  // Persist seenMessages to localStorage whenever it changes
+  useEffect(() => {
+    if (user && Object.keys(seenMessages).length > 0) {
+      try {
+        localStorage.setItem("seenMessages_" + user.username, JSON.stringify(seenMessages));
+      } catch(e) {}
+    }
+  }, [seenMessages, user]);
 
   // ── LOGIN SCREEN ──────────────────────────────────────────────────────────
   if (!user) return (
