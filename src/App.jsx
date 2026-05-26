@@ -353,8 +353,11 @@ export default function App() {
       // Load seen message IDs from sessionStorage for this user
       try {
         const stored = sessionStorage.getItem("seen_" + user.username);
-        if (stored) setSeenMessages(JSON.parse(stored));
-      } catch(e) {}
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed && typeof parsed === "object") setSeenMessages(parsed);
+        }
+      } catch(e) { sessionStorage.removeItem("seen_" + user.username); }
     } else {
       setSeenMessages({});
     }
@@ -561,7 +564,7 @@ export default function App() {
                     <td style={{ padding:"10px 14px" }}>
                       {(()=>{
                         const msgs = (p.messages||[]);
-                        const lastId = msgs.length > 0 ? Math.max(...msgs.map(m=>m.id||0)) : 0;
+                        const lastId = msgs.length > 0 ? msgs.reduce((max,m)=>Math.max(max,m.id||0),0) : 0;
                         const seenId = seenMessages[p.id] || 0;
                         const unread = msgs.filter(m => (m.id||0) > seenId).length;
                         if (total === 0) return <span style={{ color:"#C8C4BA",fontSize:11 }}>—</span>;
@@ -817,7 +820,7 @@ export default function App() {
                 <div style={{ flex:1,overflowY:"auto",padding:"16px 22px",display:"flex",flexDirection:"column",gap:12,minHeight:0 }}>
                   {drawerTab==="messages" && (() => {
                     const msgs = sel.messages||[];
-                    const lastId = msgs.length > 0 ? Math.max(...msgs.map(m=>m.id||0)) : 0;
+                    const lastId = msgs.length > 0 ? msgs.reduce((max,m)=>Math.max(max,m.id||0),0) : 0;
                     if (lastId > 0 && (seenMessages[sel.id]||0) < lastId) {
                       setTimeout(()=>setSeenMessages(prev=>{
                         const updated = {...prev,[sel.id]:lastId};
