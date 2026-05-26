@@ -19,17 +19,17 @@ const STATUS = {
 const EMPTY_DOCS = [0,0,0,0,0,0,0,0,0,0,0,0,0];
 
 const DATA = [
-  { id:"ILSFA-0001", name:"Southside Community Solar", customer:"Maria Reyes", agent:"D. Alvarez", pm:"M. Torres", recValue:48250, dcSize:99.9, status:"approved", initialDocs:[1,1,1,1,1,1,1,1,1,1,1,1,1], finalDocs:[1,1,1,1,1,1,1,1,1,1,1,1,1], initialComment:"All docs received.", finalComment:"Final check passed.", initialReviewer:"J. Kim", finalReviewer:"J. Kim" },
-  { id:"ILSFA-0002", name:"Pilsen Rooftop Array", customer:"Jorge Mendez", agent:"S. Lee", pm:"J. Kim", recValue:36100, dcSize:75.0, status:"flagged", initialDocs:[1,1,0,1,0,0,0,0,0,0,0,0,0], finalDocs:[...EMPTY_DOCS], initialComment:"Missing Shading Study and Array.", finalComment:"", initialReviewer:"M. Torres", finalReviewer:"" },
-  { id:"ILSFA-0003", name:"Englewood Block 14", customer:"Tanya Brown", agent:"D. Alvarez", pm:"M. Torres", recValue:24150, dcSize:50.0, status:"final_review", initialDocs:[1,1,1,1,1,1,1,1,1,1,1,1,0], finalDocs:[1,1,1,0,1,1,1,1,1,1,1,1,0], initialComment:"IPA Linked missing, rest OK.", finalComment:"Planset still needs update.", initialReviewer:"J. Kim", finalReviewer:"J. Kim" },
-  { id:"ILSFA-0004", name:"Austin Neighborhood Solar", customer:"Kevin Park", agent:"R. Patel", pm:"", recValue:48250, dcSize:99.9, status:"pending", initialDocs:[...EMPTY_DOCS], finalDocs:[...EMPTY_DOCS], initialComment:"", finalComment:"", initialReviewer:"", finalReviewer:"" },
-  { id:"ILSFA-0005", name:"Bronzeville Commons", customer:"Lisa Chen", agent:"S. Lee", pm:"R. Patel", recValue:42720, dcSize:88.5, status:"approved", initialDocs:[1,1,1,1,1,1,1,1,1,1,1,1,1], finalDocs:[1,1,1,1,1,1,1,1,1,1,1,1,1], initialComment:"All complete.", finalComment:"Approved after final check.", initialReviewer:"M. Torres", finalReviewer:"M. Torres" },
-  { id:"ILSFA-0006", name:"Woodlawn Solar Hub", customer:"Andre Williams", agent:"D. Alvarez", pm:"J. Kim", recValue:29940, dcSize:62.0, status:"initial_review", initialDocs:[1,1,1,1,0,0,0,0,0,0,0,0,0], finalDocs:[...EMPTY_DOCS], initialComment:"", finalComment:"", initialReviewer:"", finalReviewer:"" },
-  { id:"ILSFA-0007", name:"Hyde Park Carport", customer:"Nina Okonkwo", agent:"R. Patel", pm:"M. Torres", recValue:48250, dcSize:99.9, status:"initial_review", initialDocs:[1,1,1,1,1,1,1,1,1,1,1,1,0], finalDocs:[...EMPTY_DOCS], initialComment:"Waiting on IPA Linked.", finalComment:"", initialReviewer:"J. Kim", finalReviewer:"" },
-  { id:"ILSFA-0008", name:"Lawndale Block Grant", customer:"Sam Rivera", agent:"S. Lee", pm:"", recValue:21240, dcSize:44.0, status:"pending", initialDocs:[...EMPTY_DOCS], finalDocs:[...EMPTY_DOCS], initialComment:"", finalComment:"", initialReviewer:"", finalReviewer:"" },
+  { id:"ILSFA-0001", name:"Southside Community Solar", customer:"Maria Reyes", agent:"D. Alvarez", pm:"M. Torres", recValue:48250, dcSize:99.9, ejc:true, ec:true, iec:false, status:"approved", initialDocs:[1,1,1,1,1,1,1,1,1,1,1,1,1], finalDocs:[1,1,1,1,1,1,1,1,1,1,1,1,1], initialComment:"All docs received.", finalComment:"Final check passed.", initialReviewer:"J. Kim", finalReviewer:"J. Kim" },
+  { id:"ILSFA-0002", name:"Pilsen Rooftop Array", customer:"Jorge Mendez", agent:"S. Lee", pm:"J. Kim", recValue:36100, dcSize:75.0, ejc:false, ec:false, iec:false, status:"flagged", initialDocs:[1,1,0,1,0,0,0,0,0,0,0,0,0], finalDocs:[...EMPTY_DOCS], initialComment:"Missing Shading Study and Array.", finalComment:"", initialReviewer:"M. Torres", finalReviewer:"" },
+  { id:"ILSFA-0003", name:"Englewood Block 14", customer:"Tanya Brown", agent:"D. Alvarez", pm:"M. Torres", recValue:24150, dcSize:50.0, ejc:false, ec:false, iec:false, status:"final_review", initialDocs:[1,1,1,1,1,1,1,1,1,1,1,1,0], finalDocs:[1,1,1,0,1,1,1,1,1,1,1,1,0], initialComment:"IPA Linked missing, rest OK.", finalComment:"Planset still needs update.", initialReviewer:"J. Kim", finalReviewer:"J. Kim" },
+  { id:"ILSFA-0004", name:"Austin Neighborhood Solar", customer:"Kevin Park", agent:"R. Patel", pm:"", recValue:48250, dcSize:99.9, ejc:true, ec:true, iec:false, status:"pending", initialDocs:[...EMPTY_DOCS], finalDocs:[...EMPTY_DOCS], initialComment:"", finalComment:"", initialReviewer:"", finalReviewer:"" },
+  { id:"ILSFA-0005", name:"Bronzeville Commons", customer:"Lisa Chen", agent:"S. Lee", pm:"R. Patel", recValue:42720, dcSize:88.5, ejc:false, ec:false, iec:false, status:"approved", initialDocs:[1,1,1,1,1,1,1,1,1,1,1,1,1], finalDocs:[1,1,1,1,1,1,1,1,1,1,1,1,1], initialComment:"All complete.", finalComment:"Approved after final check.", initialReviewer:"M. Torres", finalReviewer:"M. Torres" },
+  { id:"ILSFA-0006", name:"Woodlawn Solar Hub", customer:"Andre Williams", agent:"D. Alvarez", pm:"J. Kim", recValue:29940, dcSize:62.0, ejc:false, ec:false, iec:false, status:"initial_review", initialDocs:[1,1,1,1,0,0,0,0,0,0,0,0,0], finalDocs:[...EMPTY_DOCS], initialComment:"", finalComment:"", initialReviewer:"", finalReviewer:"" },
+  { id:"ILSFA-0007", name:"Hyde Park Carport", customer:"Nina Okonkwo", agent:"R. Patel", pm:"M. Torres", recValue:48250, dcSize:99.9, ejc:true, ec:true, iec:false, status:"initial_review", initialDocs:[1,1,1,1,1,1,1,1,1,1,1,1,0], finalDocs:[...EMPTY_DOCS], initialComment:"Waiting on IPA Linked.", finalComment:"", initialReviewer:"J. Kim", finalReviewer:"" },
+  { id:"ILSFA-0008", name:"Lawndale Block Grant", customer:"Sam Rivera", agent:"S. Lee", pm:"", recValue:21240, dcSize:44.0, ejc:false, ec:false, iec:false, status:"pending", initialDocs:[...EMPTY_DOCS], finalDocs:[...EMPTY_DOCS], initialComment:"", finalComment:"", initialReviewer:"", finalReviewer:"" },
 ];
 
-const EMPTY_FORM = { name:"", customer:"", agent:"", pm:"", recValue:"", dcSize:"" };
+const EMPTY_FORM = { name:"", customer:"", agent:"", pm:"", recValue:"", dcSize:"", ejc:false, ec:false, iec:false };
 
 function fmt(n) { return "$" + Number(n).toLocaleString(); }
 function fmtKw(n) { return Number(n).toFixed(1) + " kW"; }
@@ -151,7 +151,7 @@ export default function App() {
   function addProject() {
     if (!form.name.trim()) return;
     const nextNum = String(projects.length+1).padStart(4,"0");
-    setProjects(prev=>[{...form,id:`ILSFA-${nextNum}`,recValue:parseFloat(form.recValue)||0,dcSize:parseFloat(form.dcSize)||0,status:"pending",initialDocs:[...EMPTY_DOCS],finalDocs:[...EMPTY_DOCS],initialComment:"",finalComment:"",initialReviewer:"",finalReviewer:""},...prev]);
+    setProjects(prev=>[{...form,id:`ILSFA-${nextNum}`,recValue:parseFloat(form.recValue)||0,dcSize:parseFloat(form.dcSize)||0,ejc:form.ejc||false,ec:form.ec||false,iec:form.iec||false,status:"pending",initialDocs:[...EMPTY_DOCS],finalDocs:[...EMPTY_DOCS],initialComment:"",finalComment:"",initialReviewer:"",finalReviewer:""},...prev]);
     setForm(EMPTY_FORM);
     setShowAdd(false);
   }
