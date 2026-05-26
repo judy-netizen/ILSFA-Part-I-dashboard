@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 
-const ITEMS = ["IPA","PPA","Shading Study","Planset","Array","SS","SSR","POO","UB","ES Box","ES Date","ILSFA Verified","IPA Linked"];
-const EMPTY_DOCS = [0,0,0,0,0,0,0,0,0,0,0,0,0];
+const ITEMS = ["IPA","PPA","Shading Study","Planset","Array","SS","SSR","POO","UB","ES Box","ES Date","ILSFA Verified","IPA Linked","HRUP","Invoice"];
+const EMPTY_DOCS = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
 const ROLES = {
   admin:   { label:"Admin",              color:"#1C1A17", bg:"#F0EDE6" },
