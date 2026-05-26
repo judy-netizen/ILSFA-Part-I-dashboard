@@ -186,6 +186,13 @@ export default function App() {
     return true;
   }),[projects,fStatus,fAgent,fPM,fDoc,fProgramYear,search,user]);
 
+  const unreadCount = useMemo(()=>{
+    if (!sel) return 0;
+    const msgs = sel.messages||[];
+    const seenId = seenMessages[sel.id]||0;
+    return msgs.filter(m=>(m.id||0)>seenId).length;
+  },[sel,seenMessages]);
+
   const totals = useMemo(()=>({
     rec:      list.reduce((s,p)=>s+(p.recValue||0),0),
     dc:       list.reduce((s,p)=>s+(p.dcSize||0),0),
@@ -371,7 +378,25 @@ export default function App() {
       }, 15000);
       return () => clearInterval(interval);
     }
-  }, [sel, drawerTab]);
+  }, [sel?.id, drawerTab]);
+
+  // Mark messages as seen when messages tab is open
+  useEffect(() => {
+    if (sel && drawerTab === "messages" && (sel.messages||[]).length > 0) {
+      const msgs = sel.messages||[];
+      const lastId = msgs.reduce((max,m)=>Math.max(max,m.id||0),0);
+      const seenId = seenMessages[sel.id]||0;
+      if (lastId > seenId) {
+        setSeenMessages(prev => {
+          const updated = {...prev, [sel.id]: lastId};
+          if (user) {
+            try { sessionStorage.setItem("seen_"+user.username, JSON.stringify(updated)); } catch(e){}
+          }
+          return updated;
+        });
+      }
+    }
+  }, [sel?.id, sel?.messages?.length, drawerTab]);
 
   // Persist seenMessages to sessionStorage whenever it changes
   useEffect(() => {
@@ -428,19 +453,7 @@ export default function App() {
       <div style={{ background:"#1C1A17",padding:"14px 24px",display:"flex",alignItems:"center",justifyContent:"space-between" }}>
         <div style={{ color:"#F7F5F0",fontSize:15,fontWeight:600 }}>ILSFA Part I — Submission Review Dashboard</div>
         <div style={{ display:"flex",alignItems:"center",gap:10 }}>
-          {(()=>{
-            const totalUnread = projects.reduce((sum,p)=>{
-              const msgs=(p.messages||[]);
-              const seenId=seenMessages[p.id]||0;
-              return sum+msgs.filter(m=>(m.id||0)>seenId).length;
-            },0);
-            return totalUnread>0 ? (
-              <div style={{ display:"flex",alignItems:"center",gap:6,background:"#FEF0EF",border:"1px solid #F5C0BC",borderRadius:8,padding:"4px 12px" }}>
-                <span style={{ width:8,height:8,borderRadius:"50%",background:"#B03A2E",display:"inline-block",animation:"pulse 1.5s infinite" }}></span>
-                <span style={{ color:"#B03A2E",fontSize:12,fontWeight:600 }}>{totalUnread} unread</span>
-              </div>
-            ) : null;
-          })()}
+
           {!sheetReady && !loading && (
             <button onClick={async()=>{ await initHeaders(); await loadFromSheet(); }} style={{ padding:"7px 14px",borderRadius:8,border:"1px solid #6FCF8A",background:"transparent",color:"#6FCF8A",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer" }}>
               ⚡ Initialize Sheet
@@ -562,18 +575,16 @@ export default function App() {
                     <td style={{ padding:"10px 14px" }}><DocsBar docs={p.finalDocs} /></td>
                     <td style={{ padding:"10px 14px" }}><Pill status={p.status} /></td>
                     <td style={{ padding:"10px 14px" }}>
-                      {(()=>{
-                        const msgs = (p.messages||[]);
-                        const lastId = msgs.length > 0 ? msgs.reduce((max,m)=>Math.max(max,m.id||0),0) : 0;
-                        const seenId = seenMessages[p.id] || 0;
-                        const unread = msgs.filter(m => (m.id||0) > seenId).length;
-                        if (total === 0) return <span style={{ color:"#C8C4BA",fontSize:11 }}>—</span>;
-                        return (
-                          <span style={{ display:"inline-flex",alignItems:"center",gap:5,padding:"3px 9px",borderRadius:20,fontSize:11,fontWeight:500,background:unread>0?"#FEF0EF":"#EBF4FF",color:unread>0?"#B03A2E":"#1A5F9E",border:`1px solid ${unread>0?"#F5C0BC":"#BDDAF5"}` }}>
-                            💬 {total}{unread>0 && <span style={{ background:"#B03A2E",color:"#fff",fontSize:10,fontWeight:700,padding:"1px 5px",borderRadius:8 }}>{unread} new</span>}
-                          </span>
-                        );
-                      })()}
+                      {(p.messages||[]).length > 0
+                        ? (() => {
+                            const msgs = p.messages||[];
+                            const seenId = seenMessages[p.id]||0;
+                            const unread = msgs.filter(m=>(m.id||0)>seenId).length;
+                            return <span style={{ display:"inline-flex",alignItems:"center",gap:5,padding:"3px 9px",borderRadius:20,fontSize:11,fontWeight:500,background:unread>0?"#FEF0EF":"#EBF4FF",color:unread>0?"#B03A2E":"#1A5F9E",border:`1px solid ${unread>0?"#F5C0BC":"#BDDAF5"}` }}>
+                              💬 {msgs.length}{unread>0 && <span style={{ background:"#B03A2E",color:"#fff",fontSize:10,fontWeight:700,padding:"1px 5px",borderRadius:8 }}>{unread} new</span>}
+                            </span>;
+                          })()
+                        : <span style={{ color:"#C8C4BA",fontSize:11 }}>—</span>}
                     </td>
                     <td style={{ padding:"10px 14px" }}><div style={{ width:20,height:20,borderRadius:4,border:"1px solid #E0DDD6",display:"flex",alignItems:"center",justifyContent:"center",color:"#8B8680",fontSize:10 }}>›</div></td>
                   </tr>
@@ -735,12 +746,7 @@ export default function App() {
                   });
                 }} style={{ flex:1,padding:"10px",border:"none",background:"transparent",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",color:drawerTab==="messages"?"#1C1A17":"#8B8680",borderBottom:`2px solid ${drawerTab==="messages"?"#1C1A17":"transparent"}`,display:"flex",alignItems:"center",justifyContent:"center",gap:6 }}>
                 💬 Messages
-                {(()=>{ 
-                  const msgs=sel.messages||[];
-                  const seenId=seenMessages[sel.id]||0;
-                  const unread=msgs.filter(m=>(m.id||0)>seenId).length;
-                  return unread>0?<span style={{ background:"#B03A2E",color:"#fff",fontSize:10,fontWeight:700,padding:"1px 6px",borderRadius:10 }}>{unread}</span>:null;
-                })()}
+{unreadCount > 0 && <span style={{ background:"#B03A2E",color:"#fff",fontSize:10,fontWeight:700,padding:"1px 6px",borderRadius:10 }}>{unreadCount}</span>}
               </button>
             </div>
 
@@ -818,18 +824,7 @@ export default function App() {
             {drawerTab==="messages"&&(
               <div style={{ flex:1,display:"flex",flexDirection:"column",overflow:"hidden",minHeight:0 }}>
                 <div style={{ flex:1,overflowY:"auto",padding:"16px 22px",display:"flex",flexDirection:"column",gap:12,minHeight:0 }}>
-                  {drawerTab==="messages" && (() => {
-                    const msgs = sel.messages||[];
-                    const lastId = msgs.length > 0 ? msgs.reduce((max,m)=>Math.max(max,m.id||0),0) : 0;
-                    if (lastId > 0 && (seenMessages[sel.id]||0) < lastId) {
-                      setTimeout(()=>setSeenMessages(prev=>{
-                        const updated = {...prev,[sel.id]:lastId};
-                        if(user) { try { sessionStorage.setItem("seen_"+user.username, JSON.stringify(updated)); } catch(e){} }
-                        return updated;
-                      }), 500);
-                    }
-                    return null;
-                  })()}
+
                   {(sel.messages||[]).length===0 ? (
                     <div style={{ textAlign:"center",padding:"40px 20px" }}>
                       <div style={{ fontSize:32,marginBottom:10 }}>💬</div>
