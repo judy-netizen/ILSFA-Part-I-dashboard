@@ -6,7 +6,7 @@ const ITEMS = ["IPA","PPA","Shading Study","Planset","Array","SS","SSR","POO","U
 const EMPTY_DOCS = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
 const ROLES = {
-  admin:   { label:"Admin",              color:"#1C1A17", bg:"#F0EDE6" },
+  admin:   { label:"Admin",              color:"#0A1628", bg:"#F0EDE6" },
   manager: { label:"Manager / Reviewer", color:"#1A5F9E", bg:"#EBF4FF" },
   pm:      { label:"Project Manager",    color:"#6B4CA8", bg:"#F3EEFF" },
 };
@@ -111,7 +111,7 @@ function Field({ label, children }) {
 
 function SelFilter({ value, onChange, options, placeholder }) {
   return (
-    <select value={value} onChange={e=>onChange(e.target.value)} style={{ padding:"6px 10px",border:"1px solid #E0DDD6",borderRadius:7,fontSize:12,background:"#fff",color:value?"#1C1A17":"#A8A49E",outline:"none",cursor:"pointer",fontFamily:"inherit" }}>
+    <select value={value} onChange={e=>onChange(e.target.value)} style={{ padding:"6px 10px",border:"1px solid #E0DDD6",borderRadius:7,fontSize:12,background:"#fff",color:value?"#0A1628":"#94A3B8",outline:"none",cursor:"pointer",fontFamily:"inherit" }}>
       <option value="">{placeholder}</option>
       {options.map(o=><option key={o.v||o} value={o.v||o}>{o.l||o}</option>)}
     </select>
@@ -133,7 +133,7 @@ function DocChecklist({ docs, onChange, readOnly=false }) {
   );
 }
 
-const inputStyle = { width:"100%",padding:"8px 12px",border:"1px solid #E0DDD6",borderRadius:8,fontSize:13,color:"#1C1A17",background:"#FAFAF7",outline:"none",fontFamily:"inherit",boxSizing:"border-box" };
+const inputStyle = { width:"100%",padding:"8px 12px",border:"1px solid #E0DDD6",borderRadius:8,fontSize:13,color:"#0A1628",background:"#FAFAF7",outline:"none",fontFamily:"inherit",boxSizing:"border-box" };
 
 export default function App() {
   const [user, setUser]             = useState(null);
@@ -412,28 +412,28 @@ export default function App() {
   if (!user) return (
     <div style={{ fontFamily:"'Helvetica Neue',sans-serif",background:"#F7F5F0",minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center" }}>
       <div style={{ width:380,background:"#fff",borderRadius:16,boxShadow:"0 4px 32px rgba(0,0,0,0.10)",overflow:"hidden" }}>
-        <div style={{ background:"#0A1628",padding:"28px 32px 24px" }}>
+        <div style={{ background:"#0F2044",padding:"28px 32px 24px" }}>
           <div style={{ display:"flex",alignItems:"center",gap:12,marginBottom:8 }}>
             <div style={{ width:40,height:40,background:"#3A8C58",borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 3h16v3H2zm0 5h10v3H2zm0 5h12v3H2z" fill="#fff" opacity="0.9"/><circle cx="16" cy="15" r="3" fill="#6FCF8A"/></svg>
             </div>
             <div>
-              <div style={{ color:"#F7F5F0",fontSize:16,fontWeight:700 }}>ILSFA Part I</div>
-              <div style={{ color:"#6B6760",fontSize:12 }}>Submission Review Dashboard</div>
+              <div style={{ color:"#FFFFFF",fontSize:16,fontWeight:700 }}>ILSFA Part I</div>
+              <div style={{ color:"#94A3B8",fontSize:12 }}>Submission Review Dashboard</div>
             </div>
           </div>
         </div>
         <div style={{ padding:"28px 32px 32px" }}>
-          <div style={{ fontSize:15,fontWeight:600,color:"#1C1A17",marginBottom:4 }}>Sign in</div>
+          <div style={{ fontSize:15,fontWeight:600,color:"#0A1628",marginBottom:4 }}>Sign in</div>
           <div style={{ fontSize:12,color:"#8B8680",marginBottom:24 }}>Enter your username and password to continue</div>
           <div style={{ display:"flex",flexDirection:"column",gap:14 }}>
             <div>
               <div style={{ fontSize:11,fontWeight:500,color:"#8B8680",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6 }}>Username</div>
-              <input value={loginUser} onChange={e=>setLoginUser(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handleLogin()} placeholder="Enter username" style={{ width:"100%",padding:"10px 14px",border:`1px solid ${loginError?"#F5C0BC":"#E0DDD6"}`,borderRadius:9,fontSize:13,color:"#1C1A17",background:"#FAFAF7",outline:"none",fontFamily:"inherit",boxSizing:"border-box" }} autoFocus />
+              <input value={loginUser} onChange={e=>setLoginUser(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handleLogin()} placeholder="Enter username" style={{ width:"100%",padding:"10px 14px",border:`1px solid ${loginError?"#F5C0BC":"#E0DDD6"}`,borderRadius:9,fontSize:13,color:"#0A1628",background:"#FAFAF7",outline:"none",fontFamily:"inherit",boxSizing:"border-box" }} autoFocus />
             </div>
             <div>
               <div style={{ fontSize:11,fontWeight:500,color:"#8B8680",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6 }}>Password</div>
-              <input value={loginPass} onChange={e=>setLoginPass(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handleLogin()} type="password" placeholder="Enter password" style={{ width:"100%",padding:"10px 14px",border:`1px solid ${loginError?"#F5C0BC":"#E0DDD6"}`,borderRadius:9,fontSize:13,color:"#1C1A17",background:"#FAFAF7",outline:"none",fontFamily:"inherit",boxSizing:"border-box" }} />
+              <input value={loginPass} onChange={e=>setLoginPass(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handleLogin()} type="password" placeholder="Enter password" style={{ width:"100%",padding:"10px 14px",border:`1px solid ${loginError?"#F5C0BC":"#E0DDD6"}`,borderRadius:9,fontSize:13,color:"#0A1628",background:"#FAFAF7",outline:"none",fontFamily:"inherit",boxSizing:"border-box" }} />
             </div>
             {loginError && <div style={{ background:"#FEF0EF",border:"1px solid #F5C0BC",borderRadius:8,padding:"9px 14px",fontSize:12,color:"#B03A2E" }}>⚠️ {loginError}</div>}
             <button onClick={handleLogin} style={{ padding:"11px",borderRadius:9,border:"none",background:"#2B5E3B",color:"#fff",fontFamily:"inherit",fontSize:14,fontWeight:600,cursor:"pointer",marginTop:4 }}>
@@ -451,12 +451,12 @@ export default function App() {
       <style>{pulseStyle}</style>
 
       {/* Header */}
-      <div style={{ background:"#0A1628",padding:"14px 24px",display:"flex",alignItems:"center",justifyContent:"space-between" }}>
+      <div style={{ background:"#0F2044",padding:"14px 24px",display:"flex",alignItems:"center",justifyContent:"space-between" }}>
         <div style={{ display:"flex",alignItems:"center",gap:24 }}>
-          <div style={{ color:"#F7F5F0",fontSize:15,fontWeight:600 }}>ILSFA Part I</div>
+          <div style={{ color:"#FFFFFF",fontSize:15,fontWeight:600 }}>ILSFA Part I</div>
           <div style={{ display:"flex",gap:4 }}>
             {["dashboard","messages","reports"].map(p=>(
-              <button key={p} onClick={()=>setPage(p)} style={{ padding:"6px 14px",borderRadius:7,border:"none",background:page===p?"#1E3A5F":"transparent",color:page===p?"#F97316":"#8BA3C0",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",textTransform:"capitalize" }}>
+              <button key={p} onClick={()=>setPage(p)} style={{ padding:"6px 14px",borderRadius:7,border:"none",background:page===p?"#F97316":"transparent",color:page===p?"#FFFFFF":"#94A3B8",borderRadius:page===p?"8px":"8px",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",textTransform:"capitalize" }}>
                 {p==="dashboard"?"📋 Dashboard":p==="messages"?"💬 Messages"+((()=>{const t=projects.reduce((s,pr)=>s+(pr.messages||[]).filter(m=>(m.id||0)>(seenMessages[pr.id]||0)).length,0);return t>0?` (${t})`:""})()):"📊 Reports"}
               </button>
             ))}
@@ -469,10 +469,10 @@ export default function App() {
               ⚡ Initialize Sheet
             </button>
           )}
-          {loading && <span style={{ fontSize:12,color:"#A8A49E" }}>⏳ Loading…</span>}
+          {loading && <span style={{ fontSize:12,color:"#94A3B8" }}>⏳ Loading…</span>}
           {syncing && <span style={{ fontSize:12,color:"#6FCF8A" }}>⟳ Saving…</span>}
           {sheetReady && !loading && !syncing && (
-            <button onClick={loadFromSheet} style={{ padding:"5px 12px",borderRadius:7,border:"1px solid #1E3A5F",background:"transparent",color:"#8BA3C0",fontFamily:"inherit",fontSize:11,cursor:"pointer",display:"flex",alignItems:"center",gap:5 }}>
+            <button onClick={loadFromSheet} style={{ padding:"5px 12px",borderRadius:7,border:"1px solid #94A3B8",background:"transparent",color:"#FFFFFF",fontFamily:"inherit",fontSize:11,cursor:"pointer",display:"flex",alignItems:"center",gap:5 }}>
               ↺ Refresh
             </button>
           )}
@@ -485,7 +485,7 @@ export default function App() {
             <span style={{ color:"#C8C4BA",fontSize:11,margin:"0 2px" }}>·</span>
             <span style={{ color:ROLES[user.role].color,fontSize:11,opacity:0.7 }}>{ROLES[user.role].label}</span>
           </div>
-          <button onClick={()=>{ setUser(null); setProjects([]); setSheetReady(false); }} style={{ padding:"5px 12px",borderRadius:7,border:"1px solid #1E3A5F",background:"transparent",color:"#8BA3C0",fontFamily:"inherit",fontSize:11,cursor:"pointer" }}>
+          <button onClick={()=>{ setUser(null); setProjects([]); setSheetReady(false); }} style={{ padding:"5px 12px",borderRadius:7,border:"1px solid #94A3B8",background:"transparent",color:"#FFFFFF",fontFamily:"inherit",fontSize:11,cursor:"pointer" }}>
             Sign out
           </button>
         </div>
@@ -519,7 +519,7 @@ export default function App() {
           <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search project, customer…" style={{ padding:"6px 12px",border:"1px solid #E0DDD6",borderRadius:7,fontSize:12,width:220,outline:"none" }} />
           <div style={{ width:1,height:24,background:"#E8E5DE" }}></div>
           <SelFilter value={fStatus} onChange={setFStatus} placeholder="All Statuses" options={[{v:"pending",l:"Pending"},{v:"initial_review",l:"Initial Review"},{v:"final_review",l:"Final Review"},{v:"approved",l:"Approved"},{v:"flagged",l:"Flagged"}]} />
-          <select value={fAgent} onChange={e=>setFAgent(e.target.value)} style={{ padding:"6px 10px",border:"1px solid #E0DDD6",borderRadius:7,fontSize:12,background:"#fff",color:fAgent?"#1C1A17":"#A8A49E",outline:"none",cursor:"pointer",fontFamily:"inherit" }}>
+          <select value={fAgent} onChange={e=>setFAgent(e.target.value)} style={{ padding:"6px 10px",border:"1px solid #E0DDD6",borderRadius:7,fontSize:12,background:"#fff",color:fAgent?"#0A1628":"#94A3B8",outline:"none",cursor:"pointer",fontFamily:"inherit" }}>
             <option value="">Sales Agent</option>
             {AGENTS.map(grp=>(
               grp.group
@@ -527,12 +527,12 @@ export default function App() {
                 : grp.options.map(o=><option key={o} value={o}>{o}</option>)
             ))}
           </select>
-          <select value={fPM} onChange={e=>setFPM(e.target.value)} style={{ padding:"6px 10px",border:"1px solid #E0DDD6",borderRadius:7,fontSize:12,background:"#fff",color:fPM?"#1C1A17":"#A8A49E",outline:"none",cursor:"pointer",fontFamily:"inherit" }}>
+          <select value={fPM} onChange={e=>setFPM(e.target.value)} style={{ padding:"6px 10px",border:"1px solid #E0DDD6",borderRadius:7,fontSize:12,background:"#fff",color:fPM?"#0A1628":"#94A3B8",outline:"none",cursor:"pointer",fontFamily:"inherit" }}>
             <option value="">Project Manager</option>
             {PM_LIST.map(o=><option key={o} value={o}>{o}</option>)}
           </select>
           <SelFilter value={fDoc}    onChange={setFDoc}    placeholder="Has Document" options={ITEMS} />
-          <select value={fProgramYear} onChange={e=>setFProgramYear(e.target.value)} style={{ padding:"6px 10px",border:"1px solid #E0DDD6",borderRadius:7,fontSize:12,background:"#fff",color:fProgramYear?"#1C1A17":"#A8A49E",outline:"none",cursor:"pointer",fontFamily:"inherit" }}>
+          <select value={fProgramYear} onChange={e=>setFProgramYear(e.target.value)} style={{ padding:"6px 10px",border:"1px solid #E0DDD6",borderRadius:7,fontSize:12,background:"#fff",color:fProgramYear?"#0A1628":"#94A3B8",outline:"none",cursor:"pointer",fontFamily:"inherit" }}>
             <option value="">Program Year</option>
             {["PY8-2026","PY8-2026 Waitlisted"].map(y=><option key={y} value={y}>{y}</option>)}
           </select>
@@ -559,17 +559,17 @@ export default function App() {
                 ) : loadError ? (
                   <tr><td colSpan={12} style={{ padding:"40px",textAlign:"center" }}>
                     <div style={{ fontSize:13,color:"#B03A2E",marginBottom:12 }}>⚠️ {loadError}</div>
-                    <button onClick={loadFromSheet} style={{ padding:"7px 16px",borderRadius:7,border:"1px solid #E0DDD6",background:"#fff",fontFamily:"inherit",fontSize:12,cursor:"pointer",color:"#1C1A17" }}>Try again</button>
+                    <button onClick={loadFromSheet} style={{ padding:"7px 16px",borderRadius:7,border:"1px solid #E0DDD6",background:"#fff",fontFamily:"inherit",fontSize:12,cursor:"pointer",color:"#0A1628" }}>Try again</button>
                   </td></tr>
                 ) : !sheetReady ? (
                   <tr><td colSpan={12} style={{ padding:"60px",textAlign:"center" }}>
                     <div style={{ fontSize:14,color:"#8B8680",marginBottom:6 }}>📋 Sheet not initialized yet</div>
-                    <div style={{ fontSize:12,color:"#A8A49E",marginBottom:16 }}>Click "Initialize Sheet" in the header to set up your Google Sheet headers first.</div>
+                    <div style={{ fontSize:12,color:"#94A3B8",marginBottom:16 }}>Click "Initialize Sheet" in the header to set up your Google Sheet headers first.</div>
                   </td></tr>
                 ) : list.length===0 ? (
                   <tr><td colSpan={12} style={{ padding:"60px",textAlign:"center" }}>
                     <div style={{ fontSize:14,color:"#8B8680",marginBottom:6 }}>No projects yet</div>
-                    <div style={{ fontSize:12,color:"#A8A49E" }}>Click "+ Add Project" to add your first project.</div>
+                    <div style={{ fontSize:12,color:"#94A3B8" }}>Click "+ Add Project" to add your first project.</div>
                   </td></tr>
                 ) : list.map((p,i)=>(
                   <tr key={p.id} onClick={()=>openProject(p)} style={{ background:i%2===0?"#fff":"#FDFCFA",borderBottom:"1px solid #F5F3EE",cursor:"pointer" }}
@@ -617,11 +617,11 @@ export default function App() {
 
         {/* Admin Analytics */}
         {isAdmin&&(
-          <div style={{ background:"#1C1A17",borderRadius:12,padding:"20px 24px",marginBottom:20 }}>
+          <div style={{ background:"#0A1628",borderRadius:12,padding:"20px 24px",marginBottom:20 }}>
             <div style={{ fontSize:13,fontWeight:600,color:"#F7F5F0",marginBottom:16 }}>⭐ Admin Overview</div>
             <div style={{ display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:16 }}>
-              <div style={{ background:"#2B2925",borderRadius:10,padding:"14px 16px" }}>
-                <div style={{ fontSize:11,color:"#6B6760",fontWeight:500,textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:10 }}>By Sales Agent</div>
+              <div style={{ background:"#0F2044",borderRadius:10,padding:"14px 16px" }}>
+                <div style={{ fontSize:11,color:"#94A3B8",fontWeight:500,textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:10 }}>By Sales Agent</div>
                 {agents.map(agent=>{
                   const ap=projects.filter(p=>p.agent===agent);
                   return <div key={agent} style={{ marginBottom:10,paddingBottom:10,borderBottom:"1px solid #3A3830" }}>
@@ -629,12 +629,12 @@ export default function App() {
                       <div style={{ display:"flex",alignItems:"center",gap:6 }}><Avatar name={agent} size={20}/><span style={{ fontSize:12,fontWeight:500,color:"#F7F5F0" }}>{agent}</span></div>
                       <span style={{ fontSize:11,color:"#6FCF8A",fontFamily:"monospace" }}>{fmt(ap.reduce((s,p)=>s+(p.recValue||0),0))}</span>
                     </div>
-                    <div style={{ fontSize:10,color:"#6B6760" }}>{ap.length} projects · <span style={{ color:"#6FCF8A" }}>{ap.filter(p=>p.status==="approved").length} approved</span></div>
+                    <div style={{ fontSize:10,color:"#94A3B8" }}>{ap.length} projects · <span style={{ color:"#6FCF8A" }}>{ap.filter(p=>p.status==="approved").length} approved</span></div>
                   </div>;
                 })}
               </div>
-              <div style={{ background:"#2B2925",borderRadius:10,padding:"14px 16px" }}>
-                <div style={{ fontSize:11,color:"#6B6760",fontWeight:500,textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:10 }}>By Project Manager</div>
+              <div style={{ background:"#0F2044",borderRadius:10,padding:"14px 16px" }}>
+                <div style={{ fontSize:11,color:"#94A3B8",fontWeight:500,textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:10 }}>By Project Manager</div>
                 {pms.length>0?pms.map(pm=>{
                   const pp=projects.filter(p=>p.pm===pm);
                   return <div key={pm} style={{ marginBottom:10,paddingBottom:10,borderBottom:"1px solid #3A3830" }}>
@@ -642,42 +642,42 @@ export default function App() {
                       <div style={{ display:"flex",alignItems:"center",gap:6 }}><Avatar name={pm} size={20}/><span style={{ fontSize:12,fontWeight:500,color:"#F7F5F0" }}>{pm}</span></div>
                       <span style={{ fontSize:11,color:"#6FCF8A",fontFamily:"monospace" }}>{fmt(pp.reduce((s,p)=>s+(p.recValue||0),0))}</span>
                     </div>
-                    <div style={{ fontSize:10,color:"#6B6760" }}>{pp.length} projects · <span style={{ color:"#6FCF8A" }}>{pp.filter(p=>p.status==="approved").length} approved</span></div>
+                    <div style={{ fontSize:10,color:"#94A3B8" }}>{pp.length} projects · <span style={{ color:"#6FCF8A" }}>{pp.filter(p=>p.status==="approved").length} approved</span></div>
                   </div>;
-                }):<div style={{ fontSize:12,color:"#6B6760" }}>No PMs assigned yet.</div>}
+                }):<div style={{ fontSize:12,color:"#94A3B8" }}>No PMs assigned yet.</div>}
               </div>
-              <div style={{ background:"#2B2925",borderRadius:10,padding:"14px 16px" }}>
-                <div style={{ fontSize:11,color:"#6B6760",fontWeight:500,textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:10 }}>Document Completion</div>
+              <div style={{ background:"#0F2044",borderRadius:10,padding:"14px 16px" }}>
+                <div style={{ fontSize:11,color:"#94A3B8",fontWeight:500,textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:10 }}>Document Completion</div>
                 {ITEMS.map((item,idx)=>{
                   const pct=Math.round((projects.filter(p=>p.initialDocs[idx]).length/projects.length)*100);
                   return <div key={item} style={{ marginBottom:7 }}>
                     <div style={{ display:"flex",justifyContent:"space-between",marginBottom:2 }}>
-                      <span style={{ fontSize:11,color:"#A8A49E" }}>{item}</span>
+                      <span style={{ fontSize:11,color:"#94A3B8" }}>{item}</span>
                       <span style={{ fontSize:11,color:pct===100?"#6FCF8A":pct>=50?"#4A8FCC":"#D4614F",fontFamily:"monospace" }}>{pct}%</span>
                     </div>
-                    <div style={{ height:4,background:"#3A3830",borderRadius:2,overflow:"hidden" }}>
+                    <div style={{ height:4,background:"#1E3A5F",borderRadius:2,overflow:"hidden" }}>
                       <div style={{ width:`${pct}%`,height:"100%",background:pct===100?"#3A8C58":pct>=50?"#4A8FCC":"#D4614F",borderRadius:2 }}></div>
                     </div>
                   </div>;
                 })}
               </div>
-              <div style={{ background:"#2B2925",borderRadius:10,padding:"14px 16px" }}>
-                <div style={{ fontSize:11,color:"#6B6760",fontWeight:500,textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:10 }}>Pipeline Summary</div>
+              <div style={{ background:"#0F2044",borderRadius:10,padding:"14px 16px" }}>
+                <div style={{ fontSize:11,color:"#94A3B8",fontWeight:500,textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:10 }}>Pipeline Summary</div>
                 {Object.entries(STATUS).map(([k,s])=>{
                   const cnt=projects.filter(p=>p.status===k).length;
                   const pct=Math.round((cnt/projects.length)*100);
                   return <div key={k} style={{ marginBottom:10 }}>
                     <div style={{ display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3 }}>
                       <span style={{ fontSize:12,fontWeight:500,color:s.color }}>{s.label}</span>
-                      <span style={{ fontSize:11,color:"#A8A49E" }}>{cnt} · {fmt(projects.filter(p=>p.status===k).reduce((sum,p)=>sum+(p.recValue||0),0))}</span>
+                      <span style={{ fontSize:11,color:"#94A3B8" }}>{cnt} · {fmt(projects.filter(p=>p.status===k).reduce((sum,p)=>sum+(p.recValue||0),0))}</span>
                     </div>
-                    <div style={{ height:5,background:"#3A3830",borderRadius:3,overflow:"hidden" }}>
+                    <div style={{ height:5,background:"#1E3A5F",borderRadius:3,overflow:"hidden" }}>
                       <div style={{ width:`${pct}%`,height:"100%",background:s.color,borderRadius:3,opacity:0.8 }}></div>
                     </div>
                   </div>;
                 })}
                 <div style={{ marginTop:14,paddingTop:12,borderTop:"1px solid #3A3830" }}>
-                  <div style={{ fontSize:11,color:"#6B6760",marginBottom:4 }}>Total Portfolio</div>
+                  <div style={{ fontSize:11,color:"#94A3B8",marginBottom:4 }}>Total Portfolio</div>
                   <div style={{ fontSize:18,fontWeight:700,color:"#6FCF8A" }}>{fmt(projects.reduce((s,p)=>s+(p.recValue||0),0))}</div>
                   <div style={{ fontSize:12,color:"#4A8FCC",marginTop:2 }}>{fmtKw(projects.reduce((s,p)=>s+(p.dcSize||0),0))}</div>
                 </div>
@@ -688,7 +688,7 @@ export default function App() {
                 const header=["Project ID","Name","Customer","Agent","PM","REC Value","DC Size","Status","Initial Docs","Final Docs","Initial Comment","Final Comment"].join(",");
                 const rows=[header,...projects.map(p=>[p.id,'"'+p.name+'"','"'+p.customer+'"',p.agent,p.pm,p.recValue,p.dcSize,p.status,p.initialDocs.filter(Boolean).length+"/"+ITEMS.length,p.finalDocs.filter(Boolean).length+"/"+ITEMS.length,'"'+p.initialComment+'"','"'+p.finalComment+'"'].join(","))].join("\n");
                 const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([rows],{type:"text/csv"})); a.download="ILSFA_projects.csv"; a.click();
-              }} style={{ padding:"8px 20px",borderRadius:8,border:"1px solid #1E3A5F",background:"transparent",color:"#8BA3C0",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",display:"flex",alignItems:"center",gap:7 }}>
+              }} style={{ padding:"8px 20px",borderRadius:8,border:"1px solid #94A3B8",background:"transparent",color:"#FFFFFF",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",display:"flex",alignItems:"center",gap:7 }}>
                 ↓ Export CSV
               </button>
             </div>
@@ -700,14 +700,14 @@ export default function App() {
         {page === "messages" && (
           <div style={{ background:"#fff",border:"1px solid #E8E5DE",borderRadius:12,overflow:"hidden" }}>
             <div style={{ padding:"16px 20px",borderBottom:"1px solid #F0EDE6",display:"flex",alignItems:"center",justifyContent:"space-between" }}>
-              <div style={{ fontSize:14,fontWeight:600,color:"#1C1A17" }}>All Messages</div>
+              <div style={{ fontSize:14,fontWeight:600,color:"#0A1628" }}>All Messages</div>
               <div style={{ fontSize:12,color:"#8B8680" }}>{projects.filter(p=>(p.messages||[]).length>0).length} conversations</div>
             </div>
             <div style={{ display:"grid",gridTemplateColumns:"280px 1fr",height:"calc(100vh - 220px)" }}>
               {/* Left: conversation list */}
               <div style={{ borderRight:"1px solid #F0EDE6",overflowY:"auto" }}>
                 {projects.filter(p=>(p.messages||[]).length>0).length===0 && (
-                  <div style={{ padding:"40px 20px",textAlign:"center",color:"#A8A49E",fontSize:13 }}>No conversations yet</div>
+                  <div style={{ padding:"40px 20px",textAlign:"center",color:"#94A3B8",fontSize:13 }}>No conversations yet</div>
                 )}
                 {projects.filter(p=>(p.messages||[]).length>0).map(p=>{
                   const msgs=p.messages||[];
@@ -720,11 +720,11 @@ export default function App() {
                       onMouseEnter={e=>{ if(!isActive) e.currentTarget.style.background="#FAFAF7"; }}
                       onMouseLeave={e=>{ e.currentTarget.style.background=isActive?"#F0FBF4":unread>0?"#FEF9F0":"#fff"; }}>
                       <div style={{ display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:4 }}>
-                        <div style={{ fontSize:12,fontWeight:600,color:"#1C1A17" }}>{p.id}</div>
+                        <div style={{ fontSize:12,fontWeight:600,color:"#0A1628" }}>{p.id}</div>
                         {unread>0 && <span style={{ background:"#B03A2E",color:"#fff",fontSize:10,fontWeight:700,padding:"1px 7px",borderRadius:10 }}>{unread}</span>}
                       </div>
                       <div style={{ fontSize:11,color:"#5A5652",marginBottom:4 }}>{p.customer}</div>
-                      {last && <div style={{ fontSize:11,color:"#A8A49E",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap" }}>{last.from}: {last.text}</div>}
+                      {last && <div style={{ fontSize:11,color:"#94A3B8",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap" }}>{last.from}: {last.text}</div>}
                       {last && <div style={{ fontSize:10,color:"#C8C4BA",marginTop:3 }}>{last.time}</div>}
                     </div>
                   );
@@ -733,19 +733,19 @@ export default function App() {
               {/* Right: active conversation */}
               <div style={{ display:"flex",flexDirection:"column",overflow:"hidden" }}>
                 {!sel ? (
-                  <div style={{ flex:1,display:"flex",alignItems:"center",justifyContent:"center",color:"#A8A49E",fontSize:13 }}>
+                  <div style={{ flex:1,display:"flex",alignItems:"center",justifyContent:"center",color:"#94A3B8",fontSize:13 }}>
                     <div style={{ textAlign:"center" }}><div style={{ fontSize:32,marginBottom:10 }}>💬</div>Select a conversation</div>
                   </div>
                 ) : (
                   <>
                     <div style={{ padding:"14px 20px",borderBottom:"1px solid #F0EDE6",flexShrink:0 }}>
-                      <div style={{ fontSize:13,fontWeight:600,color:"#1C1A17" }}>{sel.id} — {sel.customer}</div>
+                      <div style={{ fontSize:13,fontWeight:600,color:"#0A1628" }}>{sel.id} — {sel.customer}</div>
                       <div style={{ fontSize:11,color:"#8B8680",marginTop:2 }}>PM: {sel.pm||"Unassigned"} · Agent: {sel.agent}</div>
                     </div>
                     <div style={{ flex:1,overflowY:"auto",padding:"16px 20px",display:"flex",flexDirection:"column",gap:12,minHeight:0 }}>
                       {(sel.messages||[]).map(msg=>{
                         const isMe=msg.role===user?.role;
-                        const rc=msg.role==="manager"?"#1A5F9E":msg.role==="admin"?"#1C1A17":"#6B4CA8";
+                        const rc=msg.role==="manager"?"#1A5F9E":msg.role==="admin"?"#0A1628":"#6B4CA8";
                         const rb=msg.role==="manager"?"#EBF4FF":msg.role==="admin"?"#F0EDE6":"#F3EEFF";
                         return (
                           <div key={msg.id} style={{ display:"flex",flexDirection:"column",alignItems:isMe?"flex-end":"flex-start" }}>
@@ -753,9 +753,9 @@ export default function App() {
                               <Avatar name={msg.from} size={20}/>
                               <span style={{ fontSize:11,fontWeight:600,color:rc }}>{msg.from}</span>
                               <span style={{ fontSize:10,padding:"1px 6px",borderRadius:10,background:rb,color:rc,fontWeight:500 }}>{msg.role==="manager"?"Reviewer":msg.role==="admin"?"Admin":"PM"}</span>
-                              <span style={{ fontSize:10,color:"#A8A49E" }}>{msg.time}</span>
+                              <span style={{ fontSize:10,color:"#94A3B8" }}>{msg.time}</span>
                             </div>
-                            <div style={{ maxWidth:"75%",padding:"10px 14px",borderRadius:isMe?"12px 4px 12px 12px":"4px 12px 12px 12px",background:isMe?"#1C1A17":"#F5F3EE",color:isMe?"#F7F5F0":"#1C1A17",fontSize:13,lineHeight:1.6 }}>
+                            <div style={{ maxWidth:"75%",padding:"10px 14px",borderRadius:isMe?"12px 4px 12px 12px":"4px 12px 12px 12px",background:isMe?"#0F2044":"#F5F3EE",color:isMe?"#F7F5F0":"#0A1628",fontSize:13,lineHeight:1.6 }}>
                               {msg.text}
                             </div>
                           </div>
@@ -764,8 +764,8 @@ export default function App() {
                     </div>
                     <div style={{ padding:"14px 20px",borderTop:"1px solid #F0EDE6",flexShrink:0 }}>
                       <div style={{ display:"flex",gap:8 }}>
-                        <textarea value={newMsg} onChange={e=>setNewMsg(e.target.value)} onKeyDown={e=>{ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMessage();}}} placeholder="Type a message… (Enter to send)" rows={2} style={{ flex:1,padding:"9px 12px",border:"1px solid #E0DDD6",borderRadius:8,fontSize:13,color:"#1C1A17",resize:"none",background:"#FAFAF7",outline:"none",fontFamily:"inherit",lineHeight:1.5 }} />
-                        <button onClick={()=>sendMessage()} style={{ padding:"0 18px",borderRadius:8,border:"none",background:newMsg.trim()?"#1C1A17":"#E0DDD6",color:"#fff",cursor:newMsg.trim()?"pointer":"default",fontFamily:"inherit",fontSize:12,fontWeight:500,flexShrink:0 }}>Send</button>
+                        <textarea value={newMsg} onChange={e=>setNewMsg(e.target.value)} onKeyDown={e=>{ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMessage();}}} placeholder="Type a message… (Enter to send)" rows={2} style={{ flex:1,padding:"9px 12px",border:"1px solid #E0DDD6",borderRadius:8,fontSize:13,color:"#0A1628",resize:"none",background:"#FAFAF7",outline:"none",fontFamily:"inherit",lineHeight:1.5 }} />
+                        <button onClick={()=>sendMessage()} style={{ padding:"0 18px",borderRadius:8,border:"none",background:newMsg.trim()?"#0A1628":"#E0DDD6",color:"#fff",cursor:newMsg.trim()?"pointer":"default",fontFamily:"inherit",fontSize:12,fontWeight:500,flexShrink:0 }}>Send</button>
                       </div>
                     </div>
                   </>
@@ -796,7 +796,7 @@ export default function App() {
             <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:16 }}>
               {/* Status Breakdown */}
               <div style={{ background:"#fff",border:"1px solid #E8E5DE",borderRadius:12,padding:"20px" }}>
-                <div style={{ fontSize:13,fontWeight:600,color:"#1C1A17",marginBottom:16 }}>Status Breakdown</div>
+                <div style={{ fontSize:13,fontWeight:600,color:"#0A1628",marginBottom:16 }}>Status Breakdown</div>
                 {Object.entries(STATUS).map(([k,s])=>{
                   const cnt=projects.filter(p=>p.status===k).length;
                   const pct=projects.length>0?Math.round((cnt/projects.length)*100):0;
@@ -806,7 +806,7 @@ export default function App() {
                       <div style={{ display:"flex",justifyContent:"space-between",marginBottom:5 }}>
                         <div style={{ display:"flex",alignItems:"center",gap:8 }}>
                           <span style={{ width:10,height:10,borderRadius:"50%",background:s.color,display:"inline-block" }}></span>
-                          <span style={{ fontSize:13,fontWeight:500,color:"#1C1A17" }}>{s.label}</span>
+                          <span style={{ fontSize:13,fontWeight:500,color:"#0A1628" }}>{s.label}</span>
                         </div>
                         <div style={{ textAlign:"right" }}>
                           <span style={{ fontSize:13,fontWeight:600,color:s.color }}>{cnt}</span>
@@ -823,7 +823,7 @@ export default function App() {
 
               {/* Program Year Breakdown */}
               <div style={{ background:"#fff",border:"1px solid #E8E5DE",borderRadius:12,padding:"20px" }}>
-                <div style={{ fontSize:13,fontWeight:600,color:"#1C1A17",marginBottom:16 }}>Program Year Breakdown</div>
+                <div style={{ fontSize:13,fontWeight:600,color:"#0A1628",marginBottom:16 }}>Program Year Breakdown</div>
                 {["PY8-2026","PY8-2026 Waitlisted"].map(py=>{
                   const pyProjects=projects.filter(p=>p.programYear===py);
                   const rec=pyProjects.reduce((s,p)=>s+(p.recValue||0),0);
@@ -833,7 +833,7 @@ export default function App() {
                     <div key={py} style={{ marginBottom:16,padding:"14px 16px",background:py==="PY8-2026"?"#F3EEFF":"#FDF6EC",border:`1px solid ${py==="PY8-2026"?"#C9B3F5":"#E8D5B0"}`,borderRadius:10 }}>
                       <div style={{ fontSize:13,fontWeight:600,color:py==="PY8-2026"?"#6B4CA8":"#8B7355",marginBottom:8 }}>{py}</div>
                       <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8 }}>
-                        <div><div style={{ fontSize:10,color:"#8B8680",marginBottom:2 }}>PROJECTS</div><div style={{ fontSize:16,fontWeight:700,color:"#1C1A17" }}>{pyProjects.length}</div></div>
+                        <div><div style={{ fontSize:10,color:"#8B8680",marginBottom:2 }}>PROJECTS</div><div style={{ fontSize:16,fontWeight:700,color:"#0A1628" }}>{pyProjects.length}</div></div>
                         <div><div style={{ fontSize:10,color:"#8B8680",marginBottom:2 }}>REC VALUE</div><div style={{ fontSize:14,fontWeight:700,color:"#1A7A4A" }}>{fmt(rec)}</div></div>
                         <div><div style={{ fontSize:10,color:"#8B8680",marginBottom:2 }}>DC SIZE</div><div style={{ fontSize:14,fontWeight:700,color:"#1A5F9E" }}>{fmtKw(dc)}</div></div>
                       </div>
@@ -846,7 +846,7 @@ export default function App() {
             <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:16 }}>
               {/* By Sales Agent */}
               <div style={{ background:"#fff",border:"1px solid #E8E5DE",borderRadius:12,padding:"20px" }}>
-                <div style={{ fontSize:13,fontWeight:600,color:"#1C1A17",marginBottom:16 }}>By Sales Agent</div>
+                <div style={{ fontSize:13,fontWeight:600,color:"#0A1628",marginBottom:16 }}>By Sales Agent</div>
                 <div style={{ overflowY:"auto",maxHeight:300 }}>
                   <table style={{ width:"100%",borderCollapse:"collapse",fontSize:12 }}>
                     <thead><tr style={{ background:"#FAFAF7" }}>
@@ -857,7 +857,7 @@ export default function App() {
                         const ap=projects.filter(p=>p.agent===agent);
                         return <tr key={agent} style={{ borderBottom:"1px solid #F5F3EE" }}>
                           <td style={{ padding:"8px 10px" }}><div style={{ display:"flex",alignItems:"center",gap:7 }}><Avatar name={agent} size={22}/>{agent}</div></td>
-                          <td style={{ padding:"8px 10px",color:"#1C1A17",fontWeight:500 }}>{ap.length}</td>
+                          <td style={{ padding:"8px 10px",color:"#0A1628",fontWeight:500 }}>{ap.length}</td>
                           <td style={{ padding:"8px 10px",color:"#1A7A4A",fontWeight:500 }}>{fmt(ap.reduce((s,p)=>s+(p.recValue||0),0))}</td>
                           <td style={{ padding:"8px 10px",color:"#1A5F9E" }}>{fmtKw(ap.reduce((s,p)=>s+(p.dcSize||0),0))}</td>
                           <td style={{ padding:"8px 10px" }}><span style={{ color:"#1A7A4A",fontWeight:600 }}>{ap.filter(p=>p.status==="approved").length}</span><span style={{ color:"#C8C4BA" }}>/{ap.length}</span></td>
@@ -870,7 +870,7 @@ export default function App() {
 
               {/* By Project Manager */}
               <div style={{ background:"#fff",border:"1px solid #E8E5DE",borderRadius:12,padding:"20px" }}>
-                <div style={{ fontSize:13,fontWeight:600,color:"#1C1A17",marginBottom:16 }}>By Project Manager</div>
+                <div style={{ fontSize:13,fontWeight:600,color:"#0A1628",marginBottom:16 }}>By Project Manager</div>
                 <div style={{ overflowY:"auto",maxHeight:300 }}>
                   <table style={{ width:"100%",borderCollapse:"collapse",fontSize:12 }}>
                     <thead><tr style={{ background:"#FAFAF7" }}>
@@ -882,7 +882,7 @@ export default function App() {
                         if(pp.length===0) return null;
                         return <tr key={pm} style={{ borderBottom:"1px solid #F5F3EE" }}>
                           <td style={{ padding:"8px 10px" }}><div style={{ display:"flex",alignItems:"center",gap:7 }}><Avatar name={pm} size={22}/>{pm}</div></td>
-                          <td style={{ padding:"8px 10px",color:"#1C1A17",fontWeight:500 }}>{pp.length}</td>
+                          <td style={{ padding:"8px 10px",color:"#0A1628",fontWeight:500 }}>{pp.length}</td>
                           <td style={{ padding:"8px 10px",color:"#1A7A4A",fontWeight:500 }}>{fmt(pp.reduce((s,p)=>s+(p.recValue||0),0))}</td>
                           <td style={{ padding:"8px 10px",color:"#1A5F9E" }}>{fmtKw(pp.reduce((s,p)=>s+(p.dcSize||0),0))}</td>
                           <td style={{ padding:"8px 10px" }}><span style={{ color:"#1A7A4A",fontWeight:600 }}>{pp.filter(p=>p.status==="approved").length}</span><span style={{ color:"#C8C4BA" }}>/{pp.length}</span></td>
@@ -896,7 +896,7 @@ export default function App() {
 
             {/* Document completion */}
             <div style={{ background:"#fff",border:"1px solid #E8E5DE",borderRadius:12,padding:"20px" }}>
-              <div style={{ fontSize:13,fontWeight:600,color:"#1C1A17",marginBottom:16 }}>Document Completion Rate (Initial Review)</div>
+              <div style={{ fontSize:13,fontWeight:600,color:"#0A1628",marginBottom:16 }}>Document Completion Rate (Initial Review)</div>
               <div style={{ display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:10 }}>
                 {ITEMS.map((item,idx)=>{
                   const checked=projects.filter(p=>p.initialDocs&&p.initialDocs[idx]).length;
@@ -904,7 +904,7 @@ export default function App() {
                   const color=pct===100?"#3A8C58":pct>=70?"#4A8FCC":pct>=40?"#F5A623":"#D4614F";
                   return (
                     <div key={item} style={{ background:"#FAFAF7",border:"1px solid #F0EDE6",borderRadius:8,padding:"12px" }}>
-                      <div style={{ fontSize:11,fontWeight:600,color:"#1C1A17",marginBottom:8 }}>{item}</div>
+                      <div style={{ fontSize:11,fontWeight:600,color:"#0A1628",marginBottom:8 }}>{item}</div>
                       <div style={{ height:6,background:"#F0EDE6",borderRadius:3,overflow:"hidden",marginBottom:6 }}>
                         <div style={{ width:`${pct}%`,height:"100%",background:color,borderRadius:3 }}></div>
                       </div>
@@ -948,7 +948,7 @@ export default function App() {
               <div style={{ display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10 }}>
                 <div>
                   <div style={{ fontSize:11,fontFamily:"monospace",color:"#8B8680",marginBottom:3 }}>{sel.id}</div>
-                  <div style={{ fontSize:16,fontWeight:600,color:"#1C1A17" }}>{sel.name}</div>
+                  <div style={{ fontSize:16,fontWeight:600,color:"#0A1628" }}>{sel.name}</div>
                 </div>
                 <div style={{ display:"flex",gap:8 }}>
                   <button onClick={()=>openEdit(sel)} style={{ padding:"5px 12px",borderRadius:6,border:"1px solid #E0DDD6",background:"#FAFAF7",cursor:"pointer",fontSize:12,color:"#5A5652",fontFamily:"inherit",fontWeight:500,display:"flex",alignItems:"center",gap:5 }}>
@@ -960,8 +960,8 @@ export default function App() {
               <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:10 }}>
                 {[["Customer",sel.customer],["Sales Agent",sel.agent],["Project Manager",sel.pm||"Unassigned"]].map(([l,v])=>(
                   <div key={l} style={{ background:"#FAFAF7",border:"1px solid #F0EDE6",borderRadius:8,padding:"8px 10px" }}>
-                    <div style={{ fontSize:10,color:"#A8A49E",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:5 }}>{l}</div>
-                    <div style={{ display:"flex",alignItems:"center",gap:6 }}><Avatar name={v!=="Unassigned"?v:""} size={20}/><span style={{ fontSize:12,fontWeight:500,color:v==="Unassigned"?"#C8C4BA":"#1C1A17" }}>{v}</span></div>
+                    <div style={{ fontSize:10,color:"#94A3B8",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:5 }}>{l}</div>
+                    <div style={{ display:"flex",alignItems:"center",gap:6 }}><Avatar name={v!=="Unassigned"?v:""} size={20}/><span style={{ fontSize:12,fontWeight:500,color:v==="Unassigned"?"#C8C4BA":"#0A1628" }}>{v}</span></div>
                   </div>
                 ))}
               </div>
@@ -978,7 +978,7 @@ export default function App() {
               <div style={{ display:"flex",gap:8,alignItems:"center",flexWrap:"wrap" }}>
                 {sel.programYear && <span style={{ padding:"3px 12px",borderRadius:20,fontSize:11,fontWeight:600,background:"#F3EEFF",color:"#6B4CA8",border:"1px solid #C9B3F5" }}>📅 {sel.programYear}</span>}
                 {[["ejc","EJC"],["ec","EC"],["iec","IEC"]].map(([key,label])=>(
-                  <span key={key} style={{ padding:"3px 12px",borderRadius:20,fontSize:11,fontWeight:600,border:`1px solid ${sel[key]?"#3A8C58":"#E0DDD6"}`,background:sel[key]?"#EBF9F1":"#F5F3EE",color:sel[key]?"#1A7A4A":"#A8A49E" }}>
+                  <span key={key} style={{ padding:"3px 12px",borderRadius:20,fontSize:11,fontWeight:600,border:`1px solid ${sel[key]?"#3A8C58":"#E0DDD6"}`,background:sel[key]?"#EBF9F1":"#F5F3EE",color:sel[key]?"#1A7A4A":"#94A3B8" }}>
                     {sel[key]?"✓ ":""}{label}
                   </span>
                 ))}
@@ -988,7 +988,7 @@ export default function App() {
             {/* Details / Messages tabs */}
             <div style={{ display:"flex",borderBottom:"1px solid #F0EDE6",background:"#FAFAF7",flexShrink:0 }}>
               {/* Details Tab */}
-              <button onClick={()=>{ setDrawerTab("details"); }} style={{ flex:1,padding:"10px",border:"none",background:"transparent",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",color:drawerTab==="details"?"#1C1A17":"#8B8680",borderBottom:`2px solid ${drawerTab==="details"?"#1C1A17":"transparent"}` }}>
+              <button onClick={()=>{ setDrawerTab("details"); }} style={{ flex:1,padding:"10px",border:"none",background:"transparent",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",color:drawerTab==="details"?"#0A1628":"#8B8680",borderBottom:`2px solid ${drawerTab==="details"?"#0A1628":"transparent"}` }}>
                 📋 Details
               </button>
               {/* Messages Tab */}
@@ -997,7 +997,7 @@ export default function App() {
                   loadFromSheet(true).then(()=>{
                     setSel(prev=>prev ? prev : prev);
                   });
-                }} style={{ flex:1,padding:"10px",border:"none",background:"transparent",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",color:drawerTab==="messages"?"#1C1A17":"#8B8680",borderBottom:`2px solid ${drawerTab==="messages"?"#1C1A17":"transparent"}`,display:"flex",alignItems:"center",justifyContent:"center",gap:6 }}>
+                }} style={{ flex:1,padding:"10px",border:"none",background:"transparent",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",color:drawerTab==="messages"?"#0A1628":"#8B8680",borderBottom:`2px solid ${drawerTab==="messages"?"#0A1628":"transparent"}`,display:"flex",alignItems:"center",justifyContent:"center",gap:6 }}>
                 💬 Messages
 {unreadCount > 0 && <span style={{ background:"#B03A2E",color:"#fff",fontSize:10,fontWeight:700,padding:"1px 6px",borderRadius:10 }}>{unreadCount}</span>}
               </button>
@@ -1022,9 +1022,9 @@ export default function App() {
                         <div style={{ fontSize:11,fontWeight:500,color:"#8B8680",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:8 }}>Initial Review ({sel.initialDocs.filter(Boolean).length}/{ITEMS.length})</div>
                         <DocChecklist docs={sel.initialDocs} onChange={()=>{}} readOnly />
                       </div>
-                      {sel.initialComment&&<div style={{ background:"#FAFAF7",border:"1px solid #F0EDE6",borderRadius:8,padding:"12px 14px" }}><div style={{ fontSize:10,color:"#A8A49E",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6 }}>Initial Comment</div><div style={{ fontSize:13,color:"#1C1A17",lineHeight:1.6 }}>{sel.initialComment}</div></div>}
+                      {sel.initialComment&&<div style={{ background:"#FAFAF7",border:"1px solid #F0EDE6",borderRadius:8,padding:"12px 14px" }}><div style={{ fontSize:10,color:"#94A3B8",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6 }}>Initial Comment</div><div style={{ fontSize:13,color:"#0A1628",lineHeight:1.6 }}>{sel.initialComment}</div></div>}
                       {(sel.status==="final_review"||sel.status==="approved")&&<div><div style={{ fontSize:11,fontWeight:500,color:"#8B8680",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:8 }}>Final Review ({sel.finalDocs.filter(Boolean).length}/{ITEMS.length})</div><DocChecklist docs={sel.finalDocs} onChange={()=>{}} readOnly /></div>}
-                      {sel.finalComment&&<div style={{ background:"#FAFAF7",border:"1px solid #F0EDE6",borderRadius:8,padding:"12px 14px" }}><div style={{ fontSize:10,color:"#A8A49E",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6 }}>Final Comment</div><div style={{ fontSize:13,color:"#1C1A17",lineHeight:1.6 }}>{sel.finalComment}</div></div>}
+                      {sel.finalComment&&<div style={{ background:"#FAFAF7",border:"1px solid #F0EDE6",borderRadius:8,padding:"12px 14px" }}><div style={{ fontSize:10,color:"#94A3B8",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6 }}>Final Comment</div><div style={{ fontSize:13,color:"#0A1628",lineHeight:1.6 }}>{sel.finalComment}</div></div>}
                     </div>
                   </div>
                 ) : (
@@ -1081,12 +1081,12 @@ export default function App() {
                   {(sel.messages||[]).length===0 ? (
                     <div style={{ textAlign:"center",padding:"40px 20px" }}>
                       <div style={{ fontSize:32,marginBottom:10 }}>💬</div>
-                      <div style={{ fontSize:14,fontWeight:500,color:"#1C1A17",marginBottom:6 }}>No messages yet</div>
+                      <div style={{ fontSize:14,fontWeight:500,color:"#0A1628",marginBottom:6 }}>No messages yet</div>
                       <div style={{ fontSize:12,color:"#8B8680" }}>Start the conversation below.</div>
                     </div>
                   ) : (sel.messages||[]).map(msg=>{
                     const isMe=msg.role===user?.role;
-                    const rc=msg.role==="manager"?"#1A5F9E":msg.role==="admin"?"#1C1A17":"#6B4CA8";
+                    const rc=msg.role==="manager"?"#1A5F9E":msg.role==="admin"?"#0A1628":"#6B4CA8";
                     const rb=msg.role==="manager"?"#EBF4FF":msg.role==="admin"?"#F0EDE6":"#F3EEFF";
                     return (
                       <div key={msg.id} style={{ display:"flex",flexDirection:"column",alignItems:isMe?"flex-end":"flex-start" }}>
@@ -1094,9 +1094,9 @@ export default function App() {
                           <Avatar name={msg.from} size={20}/>
                           <span style={{ fontSize:11,fontWeight:600,color:rc }}>{msg.from}</span>
                           <span style={{ fontSize:10,padding:"1px 6px",borderRadius:10,background:rb,color:rc,fontWeight:500 }}>{msg.role==="manager"?"Reviewer":msg.role==="admin"?"Admin":"PM"}</span>
-                          <span style={{ fontSize:10,color:"#A8A49E" }}>{msg.time}</span>
+                          <span style={{ fontSize:10,color:"#94A3B8" }}>{msg.time}</span>
                         </div>
-                        <div style={{ maxWidth:"82%",padding:"10px 14px",borderRadius:isMe?"12px 4px 12px 12px":"4px 12px 12px 12px",background:isMe?"#1C1A17":"#F5F3EE",color:isMe?"#F7F5F0":"#1C1A17",fontSize:13,lineHeight:1.6 }}>
+                        <div style={{ maxWidth:"82%",padding:"10px 14px",borderRadius:isMe?"12px 4px 12px 12px":"4px 12px 12px 12px",background:isMe?"#0F2044":"#F5F3EE",color:isMe?"#F7F5F0":"#0A1628",fontSize:13,lineHeight:1.6 }}>
                           {msg.text}
                         </div>
                       </div>
@@ -1104,10 +1104,10 @@ export default function App() {
                   })}
                 </div>
                 <div style={{ padding:"14px 22px",borderTop:"1px solid #F0EDE6",flexShrink:0 }}>
-                  <div style={{ fontSize:11,color:"#8B8680",marginBottom:6 }}>Sending as <span style={{ fontWeight:600,color:user?.role==="manager"?"#1A5F9E":user?.role==="admin"?"#1C1A17":"#6B4CA8" }}>{user?.role==="manager"?"Reviewer":user?.role==="admin"?"Admin":"Project Manager"}</span></div>
+                  <div style={{ fontSize:11,color:"#8B8680",marginBottom:6 }}>Sending as <span style={{ fontWeight:600,color:user?.role==="manager"?"#1A5F9E":user?.role==="admin"?"#0A1628":"#6B4CA8" }}>{user?.role==="manager"?"Reviewer":user?.role==="admin"?"Admin":"Project Manager"}</span></div>
                   <div style={{ display:"flex",gap:8 }}>
-                    <textarea value={newMsg} onChange={e=>setNewMsg(e.target.value)} onKeyDown={e=>{ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMessage();}}} placeholder="Type a message… (Enter to send)" rows={2} style={{ flex:1,padding:"9px 12px",border:"1px solid #E0DDD6",borderRadius:8,fontSize:13,color:"#1C1A17",resize:"none",background:"#FAFAF7",outline:"none",fontFamily:"inherit",lineHeight:1.5 }} />
-                    <button onClick={()=>sendMessage()} style={{ padding:"0 16px",borderRadius:8,border:"none",background:newMsg.trim()?"#1C1A17":"#E0DDD6",color:"#fff",cursor:newMsg.trim()?"pointer":"default",fontFamily:"inherit",fontSize:12,fontWeight:500,flexShrink:0,minWidth:60 }}>Send</button>
+                    <textarea value={newMsg} onChange={e=>setNewMsg(e.target.value)} onKeyDown={e=>{ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMessage();}}} placeholder="Type a message… (Enter to send)" rows={2} style={{ flex:1,padding:"9px 12px",border:"1px solid #E0DDD6",borderRadius:8,fontSize:13,color:"#0A1628",resize:"none",background:"#FAFAF7",outline:"none",fontFamily:"inherit",lineHeight:1.5 }} />
+                    <button onClick={()=>sendMessage()} style={{ padding:"0 16px",borderRadius:8,border:"none",background:newMsg.trim()?"#0A1628":"#E0DDD6",color:"#fff",cursor:newMsg.trim()?"pointer":"default",fontFamily:"inherit",fontSize:12,fontWeight:500,flexShrink:0,minWidth:60 }}>Send</button>
                   </div>
                   <div style={{ fontSize:10,color:"#C8C4BA",marginTop:4 }}>Shift+Enter for new line</div>
                 </div>
@@ -1124,7 +1124,7 @@ export default function App() {
           <div style={{ width:540,background:"#fff",borderRadius:14,boxShadow:"0 8px 40px rgba(0,0,0,0.18)",maxHeight:"90vh",display:"flex",flexDirection:"column" }}>
             <div style={{ padding:"18px 24px",borderBottom:"1px solid #F0EDE6",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0 }}>
               <div>
-                <div style={{ fontSize:15,fontWeight:600,color:"#1C1A17" }}>Edit Project Info</div>
+                <div style={{ fontSize:15,fontWeight:600,color:"#0A1628" }}>Edit Project Info</div>
                 <div style={{ fontSize:12,color:"#8B8680",marginTop:2 }}>{sel.id}</div>
               </div>
               <button onClick={()=>setShowEdit(false)} style={{ width:28,height:28,borderRadius:6,border:"1px solid #E0DDD6",background:"transparent",cursor:"pointer",fontSize:16,color:"#8B8680" }}>×</button>
@@ -1151,7 +1151,7 @@ export default function App() {
                   <input value={editForm.name} onChange={e=>setEditForm(f=>({...f,name:e.target.value}))} placeholder="e.g. Southside Community Solar" style={inputStyle} />
                 </Field>
                 <Field label="Sales Agent">
-                  <select value={editForm.agent} onChange={e=>setEditForm(f=>({...f,agent:e.target.value}))} style={{ ...inputStyle, color:editForm.agent?"#1C1A17":"#A8A49E" }}>
+                  <select value={editForm.agent} onChange={e=>setEditForm(f=>({...f,agent:e.target.value}))} style={{ ...inputStyle, color:editForm.agent?"#0A1628":"#94A3B8" }}>
                     <option value="">Select agent…</option>
                     {AGENTS.map(grp=>(
                       grp.group
@@ -1161,7 +1161,7 @@ export default function App() {
                   </select>
                 </Field>
                 <Field label="Project Manager">
-                  <select value={editForm.pm} onChange={e=>setEditForm(f=>({...f,pm:e.target.value}))} style={{ ...inputStyle, color:editForm.pm?"#1C1A17":"#A8A49E" }}>
+                  <select value={editForm.pm} onChange={e=>setEditForm(f=>({...f,pm:e.target.value}))} style={{ ...inputStyle, color:editForm.pm?"#0A1628":"#94A3B8" }}>
                     <option value="">Select PM…</option>
                     {PM_LIST.map(o=><option key={o} value={o}>{o}</option>)}
                   </select>
@@ -1201,7 +1201,7 @@ export default function App() {
         <div style={{ position:"fixed",inset:0,background:"rgba(28,26,23,0.55)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200 }} onClick={e=>{ if(e.target===e.currentTarget) setShowAdd(false); }}>
           <div style={{ width:540,background:"#fff",borderRadius:14,boxShadow:"0 8px 40px rgba(0,0,0,0.18)",maxHeight:"90vh",display:"flex",flexDirection:"column" }}>
             <div style={{ padding:"18px 24px",borderBottom:"1px solid #F0EDE6",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0 }}>
-              <div style={{ fontSize:15,fontWeight:600,color:"#1C1A17" }}>Add New Project</div>
+              <div style={{ fontSize:15,fontWeight:600,color:"#0A1628" }}>Add New Project</div>
               <button onClick={()=>setShowAdd(false)} style={{ width:28,height:28,borderRadius:6,border:"1px solid #E0DDD6",background:"transparent",cursor:"pointer",fontSize:16,color:"#8B8680" }}>×</button>
             </div>
             <div style={{ padding:"20px 24px",overflowY:"auto",flex:1,display:"flex",flexDirection:"column",gap:14 }}>
@@ -1225,7 +1225,7 @@ export default function App() {
                 <Field label="Customer Name"><input  value={form.customer} onChange={e=>setForm(f=>({...f,customer:e.target.value}))} placeholder="e.g. Maria Reyes" style={inputStyle} /></Field>
                 
                 <Field label="Sales Agent">
-                  <select value={form.agent} onChange={e=>setForm(f=>({...f,agent:e.target.value}))} style={{ ...inputStyle, color:form.agent?"#1C1A17":"#A8A49E" }}>
+                  <select value={form.agent} onChange={e=>setForm(f=>({...f,agent:e.target.value}))} style={{ ...inputStyle, color:form.agent?"#0A1628":"#94A3B8" }}>
                     <option value="">Select agent…</option>
                     {AGENTS.map(grp=>(
                       grp.group
@@ -1235,7 +1235,7 @@ export default function App() {
                   </select>
                 </Field>
                 <Field label="Project Manager">
-                  <select value={form.pm} onChange={e=>setForm(f=>({...f,pm:e.target.value}))} style={{ ...inputStyle, color:form.pm?"#1C1A17":"#A8A49E" }}>
+                  <select value={form.pm} onChange={e=>setForm(f=>({...f,pm:e.target.value}))} style={{ ...inputStyle, color:form.pm?"#0A1628":"#94A3B8" }}>
                     <option value="">Select PM…</option>
                     {PM_LIST.map(o=><option key={o} value={o}>{o}</option>)}
                   </select>
@@ -1254,7 +1254,7 @@ export default function App() {
                     </div>
                   ))}
                 </div>
-                <div style={{ fontSize:11,color:"#A8A49E",marginTop:6 }}>Leave unchecked if not applicable</div>
+                <div style={{ fontSize:11,color:"#94A3B8",marginTop:6 }}>Leave unchecked if not applicable</div>
               </Field>
               <Field label={`Initial Documents (${formDocs.filter(Boolean).length}/${ITEMS.length} checked — optional)`}>
                 <div style={{ marginTop:6 }}><DocChecklist docs={formDocs} onChange={i=>{ const n=[...formDocs]; n[i]=n[i]?0:1; setFormDocs(n); }} /></div>
