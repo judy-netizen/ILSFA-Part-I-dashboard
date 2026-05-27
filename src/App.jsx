@@ -412,7 +412,7 @@ export default function App() {
   if (!user) return (
     <div style={{ fontFamily:"'Helvetica Neue',sans-serif",background:"#F7F5F0",minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center" }}>
       <div style={{ width:380,background:"#fff",borderRadius:16,boxShadow:"0 4px 32px rgba(0,0,0,0.10)",overflow:"hidden" }}>
-        <div style={{ background:"#1C1A17",padding:"28px 32px 24px" }}>
+        <div style={{ background:"#0A1628",padding:"28px 32px 24px" }}>
           <div style={{ display:"flex",alignItems:"center",gap:12,marginBottom:8 }}>
             <div style={{ width:40,height:40,background:"#3A8C58",borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 3h16v3H2zm0 5h10v3H2zm0 5h12v3H2z" fill="#fff" opacity="0.9"/><circle cx="16" cy="15" r="3" fill="#6FCF8A"/></svg>
@@ -451,12 +451,12 @@ export default function App() {
       <style>{pulseStyle}</style>
 
       {/* Header */}
-      <div style={{ background:"#1C1A17",padding:"14px 24px",display:"flex",alignItems:"center",justifyContent:"space-between" }}>
+      <div style={{ background:"#0A1628",padding:"14px 24px",display:"flex",alignItems:"center",justifyContent:"space-between" }}>
         <div style={{ display:"flex",alignItems:"center",gap:24 }}>
           <div style={{ color:"#F7F5F0",fontSize:15,fontWeight:600 }}>ILSFA Part I</div>
           <div style={{ display:"flex",gap:4 }}>
             {["dashboard","messages","reports"].map(p=>(
-              <button key={p} onClick={()=>setPage(p)} style={{ padding:"6px 14px",borderRadius:7,border:"none",background:page===p?"#2B2925":"transparent",color:page===p?"#F7F5F0":"#6B6760",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",textTransform:"capitalize" }}>
+              <button key={p} onClick={()=>setPage(p)} style={{ padding:"6px 14px",borderRadius:7,border:"none",background:page===p?"#1E3A5F":"transparent",color:page===p?"#F97316":"#8BA3C0",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",textTransform:"capitalize" }}>
                 {p==="dashboard"?"📋 Dashboard":p==="messages"?"💬 Messages"+((()=>{const t=projects.reduce((s,pr)=>s+(pr.messages||[]).filter(m=>(m.id||0)>(seenMessages[pr.id]||0)).length,0);return t>0?` (${t})`:""})()):"📊 Reports"}
               </button>
             ))}
@@ -472,20 +472,20 @@ export default function App() {
           {loading && <span style={{ fontSize:12,color:"#A8A49E" }}>⏳ Loading…</span>}
           {syncing && <span style={{ fontSize:12,color:"#6FCF8A" }}>⟳ Saving…</span>}
           {sheetReady && !loading && !syncing && (
-            <button onClick={loadFromSheet} style={{ padding:"5px 12px",borderRadius:7,border:"1px solid #3A3830",background:"transparent",color:"#A8A49E",fontFamily:"inherit",fontSize:11,cursor:"pointer",display:"flex",alignItems:"center",gap:5 }}>
+            <button onClick={loadFromSheet} style={{ padding:"5px 12px",borderRadius:7,border:"1px solid #1E3A5F",background:"transparent",color:"#8BA3C0",fontFamily:"inherit",fontSize:11,cursor:"pointer",display:"flex",alignItems:"center",gap:5 }}>
               ↺ Refresh
             </button>
           )}
           <button onClick={()=>{ setForm({...EMPTY_FORM, pm: user?.role==="pm" ? user.pm : ""}); setFormDocs([...EMPTY_DOCS]); setShowAdd(true); }} style={{ padding:"7px 16px",borderRadius:8,border:"none",background:"#3A8C58",color:"#fff",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",display:"flex",alignItems:"center",gap:6 }}>
             <span style={{ fontSize:16,lineHeight:1 }}>+</span> Add Project
           </button>
-          <div style={{ display:"flex",alignItems:"center",gap:8,background:ROLES[user.role].bg,border:`1px solid ${ROLES[user.role].color}40`,borderRadius:8,padding:"5px 14px" }}>
+          <div style={{ display:"flex",alignItems:"center",gap:8,background:ROLES[user.role].bg,border:`1px solid ${ROLES[user.role].color}60`,borderRadius:8,padding:"5px 14px" }}>
             <div style={{ width:7,height:7,borderRadius:"50%",background:ROLES[user.role].color }}></div>
             <span style={{ color:ROLES[user.role].color,fontSize:12,fontWeight:500 }}>{user.name}</span>
             <span style={{ color:"#C8C4BA",fontSize:11,margin:"0 2px" }}>·</span>
             <span style={{ color:ROLES[user.role].color,fontSize:11,opacity:0.7 }}>{ROLES[user.role].label}</span>
           </div>
-          <button onClick={()=>{ setUser(null); setProjects([]); setSheetReady(false); }} style={{ padding:"5px 12px",borderRadius:7,border:"1px solid #3A3830",background:"transparent",color:"#A8A49E",fontFamily:"inherit",fontSize:11,cursor:"pointer" }}>
+          <button onClick={()=>{ setUser(null); setProjects([]); setSheetReady(false); }} style={{ padding:"5px 12px",borderRadius:7,border:"1px solid #1E3A5F",background:"transparent",color:"#8BA3C0",fontFamily:"inherit",fontSize:11,cursor:"pointer" }}>
             Sign out
           </button>
         </div>
@@ -688,7 +688,7 @@ export default function App() {
                 const header=["Project ID","Name","Customer","Agent","PM","REC Value","DC Size","Status","Initial Docs","Final Docs","Initial Comment","Final Comment"].join(",");
                 const rows=[header,...projects.map(p=>[p.id,'"'+p.name+'"','"'+p.customer+'"',p.agent,p.pm,p.recValue,p.dcSize,p.status,p.initialDocs.filter(Boolean).length+"/"+ITEMS.length,p.finalDocs.filter(Boolean).length+"/"+ITEMS.length,'"'+p.initialComment+'"','"'+p.finalComment+'"'].join(","))].join("\n");
                 const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([rows],{type:"text/csv"})); a.download="ILSFA_projects.csv"; a.click();
-              }} style={{ padding:"8px 20px",borderRadius:8,border:"1px solid #3A3830",background:"transparent",color:"#A8A49E",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",display:"flex",alignItems:"center",gap:7 }}>
+              }} style={{ padding:"8px 20px",borderRadius:8,border:"1px solid #1E3A5F",background:"transparent",color:"#8BA3C0",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",display:"flex",alignItems:"center",gap:7 }}>
                 ↓ Export CSV
               </button>
             </div>
