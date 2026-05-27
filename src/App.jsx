@@ -457,7 +457,10 @@ export default function App() {
           <div style={{ display:"flex",gap:4 }}>
             {["dashboard","messages","reports"].map(p=>(
               <button key={p} onClick={()=>setPage(p)} style={{ padding:"6px 14px",borderRadius:7,border:"none",background:page===p?"#F97316":"transparent",color:page===p?"#FFFFFF":"#94A3B8",borderRadius:page===p?"8px":"8px",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",textTransform:"capitalize" }}>
-                {p==="dashboard"?"📋 Dashboard":p==="messages"?"💬 Messages"+((()=>{const t=projects.reduce((s,pr)=>s+(pr.messages||[]).filter(m=>(m.id||0)>(seenMessages[pr.id]||0)).length,0);return t>0?` (${t})`:""})()):"📊 Reports"}
+                {p==="dashboard"?"📋 Dashboard":p==="messages"?"💬 Messages"+((()=>{
+                  const visProjects = user?.role==="pm" ? projects.filter(pr=>pr.pm===user.pm) : projects;
+                  const t=visProjects.reduce((s,pr)=>s+(pr.messages||[]).filter(m=>(m.id||0)>(seenMessages[pr.id]||0)).length,0);
+                  return t>0?` (${t})`:""})()):"📊 Reports"}
               </button>
             ))}
           </div>
@@ -706,10 +709,16 @@ export default function App() {
             <div style={{ display:"grid",gridTemplateColumns:"280px 1fr",height:"calc(100vh - 220px)" }}>
               {/* Left: conversation list */}
               <div style={{ borderRight:"1px solid #F0EDE6",overflowY:"auto" }}>
-                {projects.filter(p=>(p.messages||[]).length>0).length===0 && (
+                {projects.filter(p=>{
+                  if(user?.role==="pm" && p.pm!==user.pm) return false;
+                  return (p.messages||[]).length>0;
+                }).length===0 && (
                   <div style={{ padding:"40px 20px",textAlign:"center",color:"#94A3B8",fontSize:13 }}>No conversations yet</div>
                 )}
-                {projects.filter(p=>(p.messages||[]).length>0).map(p=>{
+                {projects.filter(p=>{
+                  if(user?.role==="pm" && p.pm!==user.pm) return false;
+                  return (p.messages||[]).length>0;
+                }).map(p=>{
                   const msgs=p.messages||[];
                   const seenId=seenMessages[p.id]||0;
                   const unread=msgs.filter(m=>(m.id||0)>seenId).length;
