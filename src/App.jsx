@@ -953,7 +953,10 @@ export default function App() {
                   const fD=p.finalDocs?p.finalDocs.filter(Boolean).length+"/"+ITEMS.length:"0/"+ITEMS.length;
                   return [p.id||"",p.programYear||"",'"'+(p.customer||"")+'"',p.agent||"",p.pm||"",p.recValue||0,p.dcSize||0,p.status||"",iD,fD,p.ejc?"Yes":"No",p.ec?"Yes":"No",p.iec?"Yes":"No"].join(",");
                 });
-                const csv=[hdr,...rowData].join("\n");
+                const totalRec=projects.reduce((s,p)=>s+(p.recValue||0),0);
+                const totalDc=projects.reduce((s,p)=>s+(p.dcSize||0),0);
+                const totalRow=["TOTAL","","","","",totalRec.toFixed(2),totalDc.toFixed(1),"","","","","",""].join(",");
+                const csv=[hdr,...rowData,totalRow].join("\n");
                 const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); a.download="ILSFA_Report.csv"; a.click();
               }} style={{ padding:"10px 24px",borderRadius:8,border:"none",background:"#2B5E3B",color:"#fff",fontFamily:"inherit",fontSize:13,fontWeight:500,cursor:"pointer",display:"flex",alignItems:"center",gap:8 }}>
                 ↓ Export Full Report (CSV)
