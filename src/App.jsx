@@ -384,27 +384,24 @@ export default function App() {
     }
   }, [sel?.id, drawerTab]);
 
-  // Mark messages as seen when messages tab is open
+  // Mark messages as seen whenever a project with messages is selected and visible
   useEffect(() => {
-    if (sel && drawerTab === "messages" && (sel.messages||[]).length > 0) {
-      const msgs = sel.messages||[];
-      const lastId = msgs.reduce((max,m)=>Math.max(max,Number(m.id)||0),0);
-      const seenId = Number(seenMessages[sel.id]||0);
-      if (lastId > seenId) {
-        setSeenMessages(prev => {
-          const updated = {...prev, [sel.id]: lastId};
-          if (user) {
-            try {
-              localStorage.setItem("seen_"+user.username, JSON.stringify(updated));
-            } catch(e) {
-              console.warn("Could not save seen messages", e);
-            }
-          }
-          return updated;
-        });
-      }
+    if (!sel || !user) return;
+    const msgs = sel.messages||[];
+    if (msgs.length === 0) return;
+    // Mark as seen if on messages page OR messages tab in drawer
+    const shouldMark = page === "messages" || drawerTab === "messages";
+    if (!shouldMark) return;
+    const lastId = msgs.reduce((max,m)=>Math.max(max,Number(m.id)||0),0);
+    const seenId = Number(seenMessages[sel.id]||0);
+    if (lastId > seenId) {
+      const updated = {...seenMessages, [sel.id]: lastId};
+      setSeenMessages(updated);
+      try {
+        localStorage.setItem("seen_"+user.username, JSON.stringify(updated));
+      } catch(e) {}
     }
-  }, [sel?.id, sel?.messages?.length, drawerTab]);
+  }, [sel?.id, page, drawerTab, sel?.messages?.length]);
 
   // Persist seenMessages to localStorage whenever it changes
   useEffect(() => {
@@ -732,7 +729,18 @@ export default function App() {
                   const last=msgs[msgs.length-1];
                   const isActive=sel?.id===p.id;
                   return (
-                    <div key={p.id} onClick={()=>{ openProject(p); setDrawerTab("messages"); }} style={{ padding:"14px 16px",borderBottom:"1px solid #F5F3EE",cursor:"pointer",background:isActive?"#F0FBF4":unread>0?"#FEF9F0":"#fff",transition:"background 0.1s" }}
+                    <div key={p.id} onClick={()=>{
+                      openProject(p);
+                      setDrawerTab("messages");
+                      // Immediately mark as seen
+                      const pMsgs = p.messages||[];
+                      if (pMsgs.length > 0) {
+                        const lastId = pMsgs.reduce((max,m)=>Math.max(max,Number(m.id)||0),0);
+                        const updated = {...seenMessages, [p.id]: lastId};
+                        setSeenMessages(updated);
+                        try { localStorage.setItem("seen_"+user.username, JSON.stringify(updated)); } catch(e){}
+                      }
+                    }} style={{ padding:"14px 16px",borderBottom:"1px solid #F5F3EE",cursor:"pointer",background:isActive?"#F0FBF4":unread>0?"#FEF9F0":"#fff",transition:"background 0.1s" }}
                       onMouseEnter={e=>{ if(!isActive) e.currentTarget.style.background="#FAFAF7"; }}
                       onMouseLeave={e=>{ e.currentTarget.style.background=isActive?"#F0FBF4":unread>0?"#FEF9F0":"#fff"; }}>
                       <div style={{ display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:4 }}>
