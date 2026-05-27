@@ -51,7 +51,10 @@ function parseProject(p) {
     iec: p.iec === true || p.iec === "TRUE" || p.iec === "true",
     initialDocs: typeof p.initialDocs === "string" ? JSON.parse(p.initialDocs || "[]") : (p.initialDocs || [...EMPTY_DOCS]),
     finalDocs:   typeof p.finalDocs   === "string" ? JSON.parse(p.finalDocs   || "[]") : (p.finalDocs   || [...EMPTY_DOCS]),
-    messages:    typeof p.messages    === "string" ? JSON.parse(p.messages    || "[]") : (p.messages    || []),
+    messages: (()=>{
+    const raw = typeof p.messages === "string" ? JSON.parse(p.messages || "[]") : (p.messages || []);
+    return raw.map(m => ({...m, id: Number(m.id||0)}));
+  })(),
   };
 }
 
@@ -190,8 +193,8 @@ export default function App() {
   const unreadCount = useMemo(()=>{
     if (!sel) return 0;
     const msgs = sel.messages||[];
-    const seenId = seenMessages[sel.id]||0;
-    return msgs.filter(m=>(m.id||0)>seenId).length;
+    const seenId = Number(seenMessages[sel.id]||0);
+    return msgs.filter(m=>Number(m.id||0)>seenId).length;
   },[sel,seenMessages]);
 
   const totals = useMemo(()=>({
@@ -385,8 +388,8 @@ export default function App() {
   useEffect(() => {
     if (sel && drawerTab === "messages" && (sel.messages||[]).length > 0) {
       const msgs = sel.messages||[];
-      const lastId = msgs.reduce((max,m)=>Math.max(max,m.id||0),0);
-      const seenId = seenMessages[sel.id]||0;
+      const lastId = msgs.reduce((max,m)=>Math.max(max,Number(m.id)||0),0);
+      const seenId = Number(seenMessages[sel.id]||0);
       if (lastId > seenId) {
         setSeenMessages(prev => {
           const updated = {...prev, [sel.id]: lastId};
@@ -463,7 +466,7 @@ export default function App() {
               <button key={p} onClick={()=>setPage(p)} style={{ padding:"6px 14px",borderRadius:7,border:"none",background:page===p?"#F97316":"transparent",color:page===p?"#FFFFFF":"#94A3B8",borderRadius:page===p?"8px":"8px",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",textTransform:"capitalize" }}>
                 {p==="dashboard"?"📋 Dashboard":p==="messages"?"💬 Messages"+((()=>{
                   const visProjects = user?.role==="pm" ? projects.filter(pr=>pr.pm===user.pm) : projects;
-                  const t=visProjects.reduce((s,pr)=>s+(pr.messages||[]).filter(m=>(m.id||0)>(seenMessages[pr.id]||0)).length,0);
+                  const t=visProjects.reduce((s,pr)=>s+(pr.messages||[]).filter(m=>Number(m.id||0)>Number(seenMessages[pr.id]||0)).length,0);
                   return t>0?` (${t})`:""})()):"📊 Reports"}
               </button>
             ))}
@@ -725,7 +728,7 @@ export default function App() {
                 }).map(p=>{
                   const msgs=p.messages||[];
                   const seenId=seenMessages[p.id]||0;
-                  const unread=msgs.filter(m=>(m.id||0)>seenId).length;
+                  const unread=msgs.filter(m=>Number(m.id||0)>Number(seenId||0)).length;
                   const last=msgs[msgs.length-1];
                   const isActive=sel?.id===p.id;
                   return (
