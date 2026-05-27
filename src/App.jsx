@@ -358,14 +358,14 @@ export default function App() {
   useEffect(() => {
     if (user) {
       loadFromSheet();
-      // Load seen message IDs from sessionStorage for this user
+      // Load seen message IDs from localStorage for this user
       try {
-        const stored = sessionStorage.getItem("seen_" + user.username);
+        const stored = localStorage.getItem("seen_" + user.username);
         if (stored) {
           const parsed = JSON.parse(stored);
           if (parsed && typeof parsed === "object") setSeenMessages(parsed);
         }
-      } catch(e) { sessionStorage.removeItem("seen_" + user.username); }
+      } catch(e) { localStorage.removeItem("seen_" + user.username); }
     } else {
       setSeenMessages({});
     }
@@ -391,7 +391,11 @@ export default function App() {
         setSeenMessages(prev => {
           const updated = {...prev, [sel.id]: lastId};
           if (user) {
-            try { sessionStorage.setItem("seen_"+user.username, JSON.stringify(updated)); } catch(e){}
+            try {
+              localStorage.setItem("seen_"+user.username, JSON.stringify(updated));
+            } catch(e) {
+              console.warn("Could not save seen messages", e);
+            }
           }
           return updated;
         });
@@ -399,11 +403,11 @@ export default function App() {
     }
   }, [sel?.id, sel?.messages?.length, drawerTab]);
 
-  // Persist seenMessages to sessionStorage whenever it changes
+  // Persist seenMessages to localStorage whenever it changes
   useEffect(() => {
     if (user && Object.keys(seenMessages).length > 0) {
       try {
-        sessionStorage.setItem("seen_" + user.username, JSON.stringify(seenMessages));
+        localStorage.setItem("seen_" + user.username, JSON.stringify(seenMessages));
       } catch(e) {}
     }
   }, [seenMessages, user]);
