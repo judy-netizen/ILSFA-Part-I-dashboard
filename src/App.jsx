@@ -137,6 +137,7 @@ const inputStyle = { width:"100%",padding:"8px 12px",border:"1px solid #E0DDD6",
 
 export default function App() {
   const [user, setUser]             = useState(null);
+  const [page, setPage]             = useState("dashboard");
   const [loginUser, setLoginUser]   = useState("");
   const [loginPass, setLoginPass]   = useState("");
   const [loginError, setLoginError] = useState("");
@@ -451,7 +452,16 @@ export default function App() {
 
       {/* Header */}
       <div style={{ background:"#1C1A17",padding:"14px 24px",display:"flex",alignItems:"center",justifyContent:"space-between" }}>
-        <div style={{ color:"#F7F5F0",fontSize:15,fontWeight:600 }}>ILSFA Part I — Submission Review Dashboard</div>
+        <div style={{ display:"flex",alignItems:"center",gap:24 }}>
+          <div style={{ color:"#F7F5F0",fontSize:15,fontWeight:600 }}>ILSFA Part I</div>
+          <div style={{ display:"flex",gap:4 }}>
+            {["dashboard","messages","reports"].map(p=>(
+              <button key={p} onClick={()=>setPage(p)} style={{ padding:"6px 14px",borderRadius:7,border:"none",background:page===p?"#2B2925":"transparent",color:page===p?"#F7F5F0":"#6B6760",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",textTransform:"capitalize" }}>
+                {p==="dashboard"?"📋 Dashboard":p==="messages"?"💬 Messages"+((()=>{const t=projects.reduce((s,pr)=>s+(pr.messages||[]).filter(m=>(m.id||0)>(seenMessages[pr.id]||0)).length,0);return t>0?` (${t})`:""})()):"📊 Reports"}
+              </button>
+            ))}
+          </div>
+        </div>
         <div style={{ display:"flex",alignItems:"center",gap:10 }}>
 
           {!sheetReady && !loading && (
@@ -483,6 +493,7 @@ export default function App() {
 
       <div style={{ padding:"20px 24px",maxWidth:1400,margin:"0 auto" }}>
 
+        {page === "dashboard" && <>
         {/* Summary cards */}
         <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr repeat(5,auto)",gap:10,marginBottom:14 }}>
           <div style={{ background:"#F0FBF4",border:"1px solid #A8E4C2",borderTop:"3px solid #1A7A4A",borderRadius:10,padding:"14px 18px" }}>
@@ -683,6 +694,248 @@ export default function App() {
             </div>
           </div>
         )}
+        </>}
+
+        {/* ── MESSAGES PAGE ─────────────────────────────────────────────── */}
+        {page === "messages" && (
+          <div style={{ background:"#fff",border:"1px solid #E8E5DE",borderRadius:12,overflow:"hidden" }}>
+            <div style={{ padding:"16px 20px",borderBottom:"1px solid #F0EDE6",display:"flex",alignItems:"center",justifyContent:"space-between" }}>
+              <div style={{ fontSize:14,fontWeight:600,color:"#1C1A17" }}>All Messages</div>
+              <div style={{ fontSize:12,color:"#8B8680" }}>{projects.filter(p=>(p.messages||[]).length>0).length} conversations</div>
+            </div>
+            <div style={{ display:"grid",gridTemplateColumns:"280px 1fr",height:"calc(100vh - 220px)" }}>
+              {/* Left: conversation list */}
+              <div style={{ borderRight:"1px solid #F0EDE6",overflowY:"auto" }}>
+                {projects.filter(p=>(p.messages||[]).length>0).length===0 && (
+                  <div style={{ padding:"40px 20px",textAlign:"center",color:"#A8A49E",fontSize:13 }}>No conversations yet</div>
+                )}
+                {projects.filter(p=>(p.messages||[]).length>0).map(p=>{
+                  const msgs=p.messages||[];
+                  const seenId=seenMessages[p.id]||0;
+                  const unread=msgs.filter(m=>(m.id||0)>seenId).length;
+                  const last=msgs[msgs.length-1];
+                  const isActive=sel?.id===p.id;
+                  return (
+                    <div key={p.id} onClick={()=>{ openProject(p); setDrawerTab("messages"); }} style={{ padding:"14px 16px",borderBottom:"1px solid #F5F3EE",cursor:"pointer",background:isActive?"#F0FBF4":unread>0?"#FEF9F0":"#fff",transition:"background 0.1s" }}
+                      onMouseEnter={e=>{ if(!isActive) e.currentTarget.style.background="#FAFAF7"; }}
+                      onMouseLeave={e=>{ e.currentTarget.style.background=isActive?"#F0FBF4":unread>0?"#FEF9F0":"#fff"; }}>
+                      <div style={{ display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:4 }}>
+                        <div style={{ fontSize:12,fontWeight:600,color:"#1C1A17" }}>{p.id}</div>
+                        {unread>0 && <span style={{ background:"#B03A2E",color:"#fff",fontSize:10,fontWeight:700,padding:"1px 7px",borderRadius:10 }}>{unread}</span>}
+                      </div>
+                      <div style={{ fontSize:11,color:"#5A5652",marginBottom:4 }}>{p.customer}</div>
+                      {last && <div style={{ fontSize:11,color:"#A8A49E",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap" }}>{last.from}: {last.text}</div>}
+                      {last && <div style={{ fontSize:10,color:"#C8C4BA",marginTop:3 }}>{last.time}</div>}
+                    </div>
+                  );
+                })}
+              </div>
+              {/* Right: active conversation */}
+              <div style={{ display:"flex",flexDirection:"column",overflow:"hidden" }}>
+                {!sel ? (
+                  <div style={{ flex:1,display:"flex",alignItems:"center",justifyContent:"center",color:"#A8A49E",fontSize:13 }}>
+                    <div style={{ textAlign:"center" }}><div style={{ fontSize:32,marginBottom:10 }}>💬</div>Select a conversation</div>
+                  </div>
+                ) : (
+                  <>
+                    <div style={{ padding:"14px 20px",borderBottom:"1px solid #F0EDE6",flexShrink:0 }}>
+                      <div style={{ fontSize:13,fontWeight:600,color:"#1C1A17" }}>{sel.id} — {sel.customer}</div>
+                      <div style={{ fontSize:11,color:"#8B8680",marginTop:2 }}>PM: {sel.pm||"Unassigned"} · Agent: {sel.agent}</div>
+                    </div>
+                    <div style={{ flex:1,overflowY:"auto",padding:"16px 20px",display:"flex",flexDirection:"column",gap:12,minHeight:0 }}>
+                      {(sel.messages||[]).map(msg=>{
+                        const isMe=msg.role===user?.role;
+                        const rc=msg.role==="manager"?"#1A5F9E":msg.role==="admin"?"#1C1A17":"#6B4CA8";
+                        const rb=msg.role==="manager"?"#EBF4FF":msg.role==="admin"?"#F0EDE6":"#F3EEFF";
+                        return (
+                          <div key={msg.id} style={{ display:"flex",flexDirection:"column",alignItems:isMe?"flex-end":"flex-start" }}>
+                            <div style={{ display:"flex",alignItems:"center",gap:5,marginBottom:4,flexDirection:isMe?"row-reverse":"row" }}>
+                              <Avatar name={msg.from} size={20}/>
+                              <span style={{ fontSize:11,fontWeight:600,color:rc }}>{msg.from}</span>
+                              <span style={{ fontSize:10,padding:"1px 6px",borderRadius:10,background:rb,color:rc,fontWeight:500 }}>{msg.role==="manager"?"Reviewer":msg.role==="admin"?"Admin":"PM"}</span>
+                              <span style={{ fontSize:10,color:"#A8A49E" }}>{msg.time}</span>
+                            </div>
+                            <div style={{ maxWidth:"75%",padding:"10px 14px",borderRadius:isMe?"12px 4px 12px 12px":"4px 12px 12px 12px",background:isMe?"#1C1A17":"#F5F3EE",color:isMe?"#F7F5F0":"#1C1A17",fontSize:13,lineHeight:1.6 }}>
+                              {msg.text}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div style={{ padding:"14px 20px",borderTop:"1px solid #F0EDE6",flexShrink:0 }}>
+                      <div style={{ display:"flex",gap:8 }}>
+                        <textarea value={newMsg} onChange={e=>setNewMsg(e.target.value)} onKeyDown={e=>{ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMessage();}}} placeholder="Type a message… (Enter to send)" rows={2} style={{ flex:1,padding:"9px 12px",border:"1px solid #E0DDD6",borderRadius:8,fontSize:13,color:"#1C1A17",resize:"none",background:"#FAFAF7",outline:"none",fontFamily:"inherit",lineHeight:1.5 }} />
+                        <button onClick={()=>sendMessage()} style={{ padding:"0 18px",borderRadius:8,border:"none",background:newMsg.trim()?"#1C1A17":"#E0DDD6",color:"#fff",cursor:newMsg.trim()?"pointer":"default",fontFamily:"inherit",fontSize:12,fontWeight:500,flexShrink:0 }}>Send</button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── REPORTS PAGE ──────────────────────────────────────────────── */}
+        {page === "reports" && (
+          <div style={{ display:"flex",flexDirection:"column",gap:16 }}>
+            {/* Top row summary */}
+            <div style={{ display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12 }}>
+              {[
+                ["Total Projects",projects.length,"#4A4640"],
+                ["Total REC Value",fmt(projects.reduce((s,p)=>s+(p.recValue||0),0)),"#1A7A4A"],
+                ["Total DC Size",fmtKw(projects.reduce((s,p)=>s+(p.dcSize||0),0)),"#1A5F9E"],
+                ["Approved",projects.filter(p=>p.status==="approved").length+" / "+projects.length,"#1A7A4A"],
+              ].map(([l,v,c])=>(
+                <div key={l} style={{ background:"#fff",border:"1px solid #E8E5DE",borderTop:`3px solid ${c}`,borderRadius:10,padding:"16px 20px" }}>
+                  <div style={{ fontSize:11,color:"#8B8680",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6 }}>{l}</div>
+                  <div style={{ fontSize:24,fontWeight:700,color:c }}>{v}</div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:16 }}>
+              {/* Status Breakdown */}
+              <div style={{ background:"#fff",border:"1px solid #E8E5DE",borderRadius:12,padding:"20px" }}>
+                <div style={{ fontSize:13,fontWeight:600,color:"#1C1A17",marginBottom:16 }}>Status Breakdown</div>
+                {Object.entries(STATUS).map(([k,s])=>{
+                  const cnt=projects.filter(p=>p.status===k).length;
+                  const pct=projects.length>0?Math.round((cnt/projects.length)*100):0;
+                  const rec=projects.filter(p=>p.status===k).reduce((sum,p)=>sum+(p.recValue||0),0);
+                  return (
+                    <div key={k} style={{ marginBottom:14 }}>
+                      <div style={{ display:"flex",justifyContent:"space-between",marginBottom:5 }}>
+                        <div style={{ display:"flex",alignItems:"center",gap:8 }}>
+                          <span style={{ width:10,height:10,borderRadius:"50%",background:s.color,display:"inline-block" }}></span>
+                          <span style={{ fontSize:13,fontWeight:500,color:"#1C1A17" }}>{s.label}</span>
+                        </div>
+                        <div style={{ textAlign:"right" }}>
+                          <span style={{ fontSize:13,fontWeight:600,color:s.color }}>{cnt}</span>
+                          <span style={{ fontSize:11,color:"#8B8680",marginLeft:6 }}>{fmt(rec)}</span>
+                        </div>
+                      </div>
+                      <div style={{ height:8,background:"#F0EDE6",borderRadius:4,overflow:"hidden" }}>
+                        <div style={{ width:`${pct}%`,height:"100%",background:s.color,borderRadius:4,transition:"width 0.5s" }}></div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Program Year Breakdown */}
+              <div style={{ background:"#fff",border:"1px solid #E8E5DE",borderRadius:12,padding:"20px" }}>
+                <div style={{ fontSize:13,fontWeight:600,color:"#1C1A17",marginBottom:16 }}>Program Year Breakdown</div>
+                {["PY8-2026","PY8-2026 Waitlisted"].map(py=>{
+                  const pyProjects=projects.filter(p=>p.programYear===py);
+                  const rec=pyProjects.reduce((s,p)=>s+(p.recValue||0),0);
+                  const dc=pyProjects.reduce((s,p)=>s+(p.dcSize||0),0);
+                  const approved=pyProjects.filter(p=>p.status==="approved").length;
+                  return (
+                    <div key={py} style={{ marginBottom:16,padding:"14px 16px",background:py==="PY8-2026"?"#F3EEFF":"#FDF6EC",border:`1px solid ${py==="PY8-2026"?"#C9B3F5":"#E8D5B0"}`,borderRadius:10 }}>
+                      <div style={{ fontSize:13,fontWeight:600,color:py==="PY8-2026"?"#6B4CA8":"#8B7355",marginBottom:8 }}>{py}</div>
+                      <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8 }}>
+                        <div><div style={{ fontSize:10,color:"#8B8680",marginBottom:2 }}>PROJECTS</div><div style={{ fontSize:16,fontWeight:700,color:"#1C1A17" }}>{pyProjects.length}</div></div>
+                        <div><div style={{ fontSize:10,color:"#8B8680",marginBottom:2 }}>REC VALUE</div><div style={{ fontSize:14,fontWeight:700,color:"#1A7A4A" }}>{fmt(rec)}</div></div>
+                        <div><div style={{ fontSize:10,color:"#8B8680",marginBottom:2 }}>DC SIZE</div><div style={{ fontSize:14,fontWeight:700,color:"#1A5F9E" }}>{fmtKw(dc)}</div></div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:16 }}>
+              {/* By Sales Agent */}
+              <div style={{ background:"#fff",border:"1px solid #E8E5DE",borderRadius:12,padding:"20px" }}>
+                <div style={{ fontSize:13,fontWeight:600,color:"#1C1A17",marginBottom:16 }}>By Sales Agent</div>
+                <div style={{ overflowY:"auto",maxHeight:300 }}>
+                  <table style={{ width:"100%",borderCollapse:"collapse",fontSize:12 }}>
+                    <thead><tr style={{ background:"#FAFAF7" }}>
+                      {["Agent","Projects","REC Value","DC Size","Approved"].map(h=><th key={h} style={{ padding:"7px 10px",textAlign:"left",fontWeight:500,color:"#8B8680",fontSize:11,borderBottom:"1px solid #F0EDE6" }}>{h}</th>)}
+                    </tr></thead>
+                    <tbody>
+                      {[...new Set(projects.map(p=>p.agent).filter(Boolean))].sort().map(agent=>{
+                        const ap=projects.filter(p=>p.agent===agent);
+                        return <tr key={agent} style={{ borderBottom:"1px solid #F5F3EE" }}>
+                          <td style={{ padding:"8px 10px" }}><div style={{ display:"flex",alignItems:"center",gap:7 }}><Avatar name={agent} size={22}/>{agent}</div></td>
+                          <td style={{ padding:"8px 10px",color:"#1C1A17",fontWeight:500 }}>{ap.length}</td>
+                          <td style={{ padding:"8px 10px",color:"#1A7A4A",fontWeight:500 }}>{fmt(ap.reduce((s,p)=>s+(p.recValue||0),0))}</td>
+                          <td style={{ padding:"8px 10px",color:"#1A5F9E" }}>{fmtKw(ap.reduce((s,p)=>s+(p.dcSize||0),0))}</td>
+                          <td style={{ padding:"8px 10px" }}><span style={{ color:"#1A7A4A",fontWeight:600 }}>{ap.filter(p=>p.status==="approved").length}</span><span style={{ color:"#C8C4BA" }}>/{ap.length}</span></td>
+                        </tr>;
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* By Project Manager */}
+              <div style={{ background:"#fff",border:"1px solid #E8E5DE",borderRadius:12,padding:"20px" }}>
+                <div style={{ fontSize:13,fontWeight:600,color:"#1C1A17",marginBottom:16 }}>By Project Manager</div>
+                <div style={{ overflowY:"auto",maxHeight:300 }}>
+                  <table style={{ width:"100%",borderCollapse:"collapse",fontSize:12 }}>
+                    <thead><tr style={{ background:"#FAFAF7" }}>
+                      {["PM","Projects","REC Value","DC Size","Approved"].map(h=><th key={h} style={{ padding:"7px 10px",textAlign:"left",fontWeight:500,color:"#8B8680",fontSize:11,borderBottom:"1px solid #F0EDE6" }}>{h}</th>)}
+                    </tr></thead>
+                    <tbody>
+                      {PM_LIST.map(pm=>{
+                        const pp=projects.filter(p=>p.pm===pm);
+                        if(pp.length===0) return null;
+                        return <tr key={pm} style={{ borderBottom:"1px solid #F5F3EE" }}>
+                          <td style={{ padding:"8px 10px" }}><div style={{ display:"flex",alignItems:"center",gap:7 }}><Avatar name={pm} size={22}/>{pm}</div></td>
+                          <td style={{ padding:"8px 10px",color:"#1C1A17",fontWeight:500 }}>{pp.length}</td>
+                          <td style={{ padding:"8px 10px",color:"#1A7A4A",fontWeight:500 }}>{fmt(pp.reduce((s,p)=>s+(p.recValue||0),0))}</td>
+                          <td style={{ padding:"8px 10px",color:"#1A5F9E" }}>{fmtKw(pp.reduce((s,p)=>s+(p.dcSize||0),0))}</td>
+                          <td style={{ padding:"8px 10px" }}><span style={{ color:"#1A7A4A",fontWeight:600 }}>{pp.filter(p=>p.status==="approved").length}</span><span style={{ color:"#C8C4BA" }}>/{pp.length}</span></td>
+                        </tr>;
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            {/* Document completion */}
+            <div style={{ background:"#fff",border:"1px solid #E8E5DE",borderRadius:12,padding:"20px" }}>
+              <div style={{ fontSize:13,fontWeight:600,color:"#1C1A17",marginBottom:16 }}>Document Completion Rate (Initial Review)</div>
+              <div style={{ display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:10 }}>
+                {ITEMS.map((item,idx)=>{
+                  const checked=projects.filter(p=>p.initialDocs&&p.initialDocs[idx]).length;
+                  const pct=projects.length>0?Math.round((checked/projects.length)*100):0;
+                  const color=pct===100?"#3A8C58":pct>=70?"#4A8FCC":pct>=40?"#F5A623":"#D4614F";
+                  return (
+                    <div key={item} style={{ background:"#FAFAF7",border:"1px solid #F0EDE6",borderRadius:8,padding:"12px" }}>
+                      <div style={{ fontSize:11,fontWeight:600,color:"#1C1A17",marginBottom:8 }}>{item}</div>
+                      <div style={{ height:6,background:"#F0EDE6",borderRadius:3,overflow:"hidden",marginBottom:6 }}>
+                        <div style={{ width:`${pct}%`,height:"100%",background:color,borderRadius:3 }}></div>
+                      </div>
+                      <div style={{ display:"flex",justifyContent:"space-between" }}>
+                        <span style={{ fontSize:11,color:"#8B8680" }}>{checked}/{projects.length}</span>
+                        <span style={{ fontSize:11,fontWeight:600,color }}>{pct}%</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Export */}
+            <div style={{ display:"flex",justifyContent:"flex-end" }}>
+              <button onClick={()=>{
+                const hdr=["Project ID","Program Year","Customer","Agent","PM","REC Value","DC Size","Status","Initial Docs","Final Docs","EJC","EC","IEC"].join(",");
+                const rowData=projects.map(p=>{
+                  const iD=p.initialDocs?p.initialDocs.filter(Boolean).length+"/"+ITEMS.length:"0/"+ITEMS.length;
+                  const fD=p.finalDocs?p.finalDocs.filter(Boolean).length+"/"+ITEMS.length:"0/"+ITEMS.length;
+                  return [p.id||"",p.programYear||"",'"'+(p.customer||"")+'"',p.agent||"",p.pm||"",p.recValue||0,p.dcSize||0,p.status||"",iD,fD,p.ejc?"Yes":"No",p.ec?"Yes":"No",p.iec?"Yes":"No"].join(",");
+                });
+                const csv=[hdr,...rowData].join("\n");
+                const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); a.download="ILSFA_Report.csv"; a.click();
+              }} style={{ padding:"10px 24px",borderRadius:8,border:"none",background:"#2B5E3B",color:"#fff",fontFamily:"inherit",fontSize:13,fontWeight:500,cursor:"pointer",display:"flex",alignItems:"center",gap:8 }}>
+                ↓ Export Full Report (CSV)
+              </button>
+            </div>
+          </div>
+        )}
+
       </div>
 
       {/* ── DETAIL DRAWER ───────────────────────────────────────────────────── */}
