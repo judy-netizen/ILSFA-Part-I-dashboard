@@ -27,11 +27,12 @@ const USERS = [
 ];
 
 const STATUS = {
-  pending:        { label:"Pending",        color:"#8B7355", bg:"#FDF6EC", border:"#E8D5B0" },
-  initial_review: { label:"Initial Review", color:"#1A5F9E", bg:"#EBF4FF", border:"#BDDAF5" },
-  final_review:   { label:"Final Review",   color:"#6B4CA8", bg:"#F3EEFF", border:"#C9B3F5" },
-  approved:       { label:"Approved",       color:"#1A7A4A", bg:"#EBF9F1", border:"#A8E4C2" },
-  flagged:        { label:"Flagged",        color:"#B03A2E", bg:"#FEF0EF", border:"#F5C0BC" },
+  pending:        { label:"Pending",           color:"#8B7355", bg:"#FDF6EC", border:"#E8D5B0" },
+  initial_review: { label:"Initial Review",    color:"#1A5F9E", bg:"#EBF4FF", border:"#BDDAF5" },
+  final_review:   { label:"Final Review",      color:"#6B4CA8", bg:"#F3EEFF", border:"#C9B3F5" },
+  approved:       { label:"Approved",          color:"#1A7A4A", bg:"#EBF9F1", border:"#A8E4C2" },
+  flagged:        { label:"Flagged",           color:"#B03A2E", bg:"#FEF0EF", border:"#F5C0BC" },
+  submitted:      { label:"Part I Submitted",  color:"#0369A1", bg:"#E0F2FE", border:"#7DD3FC" },
 };
 
 const INIT_DATA = [];
@@ -198,13 +199,14 @@ export default function App() {
   },[sel,seenMessages]);
 
   const totals = useMemo(()=>({
-    rec:      list.reduce((s,p)=>s+(p.recValue||0),0),
-    dc:       list.reduce((s,p)=>s+(p.dcSize||0),0),
-    approved: list.filter(p=>p.status==="approved").length,
-    flagged:  list.filter(p=>p.status==="flagged").length,
-    initial:  list.filter(p=>p.status==="initial_review").length,
-    final:    list.filter(p=>p.status==="final_review").length,
-    pending:  list.filter(p=>p.status==="pending").length,
+    rec:       list.reduce((s,p)=>s+(p.recValue||0),0),
+    dc:        list.reduce((s,p)=>s+(p.dcSize||0),0),
+    approved:  list.filter(p=>p.status==="approved").length,
+    flagged:   list.filter(p=>p.status==="flagged").length,
+    initial:   list.filter(p=>p.status==="initial_review").length,
+    final:     list.filter(p=>p.status==="final_review").length,
+    pending:   list.filter(p=>p.status==="pending").length,
+    submitted: list.filter(p=>p.status==="submitted").length,
   }),[list]);
 
   const anyFilter = fStatus||fAgent||fPM||fDoc||fProgramYear||search;
@@ -502,7 +504,7 @@ export default function App() {
 
         {page === "dashboard" && <>
         {/* Summary cards */}
-        <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr repeat(5,auto)",gap:10,marginBottom:14 }}>
+        <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr repeat(6,auto)",gap:10,marginBottom:14 }}>
           <div style={{ background:"#F0FBF4",border:"1px solid #A8E4C2",borderTop:"3px solid #1A7A4A",borderRadius:10,padding:"14px 18px" }}>
             <div style={{ fontSize:11,color:"#1A7A4A",fontWeight:500,textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:4 }}>Total REC Value{anyFilter?" (filtered)":""}</div>
             <div style={{ fontSize:24,fontWeight:700,color:"#1A7A4A" }}>{fmt(totals.rec)}</div>
@@ -513,7 +515,7 @@ export default function App() {
             <div style={{ fontSize:24,fontWeight:700,color:"#1A5F9E" }}>{fmtKw(totals.dc)}</div>
             {anyFilter&&<div style={{ fontSize:11,color:"#4A8FCC",marginTop:2 }}>{list.length}/{projects.length} projects</div>}
           </div>
-          {[["Approved",totals.approved,"#1A7A4A","#EBF9F1","#A8E4C2"],["Initial Review",totals.initial,"#1A5F9E","#EBF4FF","#BDDAF5"],["Final Review",totals.final,"#6B4CA8","#F3EEFF","#C9B3F5"],["Flagged",totals.flagged,"#B03A2E","#FEF0EF","#F5C0BC"],["Pending",totals.pending,"#8B7355","#FDF6EC","#E8D5B0"]].map(([l,v,c,bg,br])=>(
+          {[["Approved",totals.approved,"#1A7A4A","#EBF9F1","#A8E4C2"],["Initial Review",totals.initial,"#1A5F9E","#EBF4FF","#BDDAF5"],["Final Review",totals.final,"#6B4CA8","#F3EEFF","#C9B3F5"],["Part I Submitted",totals.submitted,"#0369A1","#E0F2FE","#7DD3FC"],["Flagged",totals.flagged,"#B03A2E","#FEF0EF","#F5C0BC"],["Pending",totals.pending,"#8B7355","#FDF6EC","#E8D5B0"]].map(([l,v,c,bg,br])=>(
             <div key={l} style={{ background:bg,border:`1px solid ${br}`,borderTop:`3px solid ${c}`,borderRadius:10,padding:"14px 18px",minWidth:100 }}>
               <div style={{ fontSize:11,color:c,fontWeight:500,textTransform:"uppercase",letterSpacing:"0.04em",marginBottom:4,whiteSpace:"nowrap" }}>{l}</div>
               <div style={{ fontSize:24,fontWeight:700,color:c }}>{v}</div>
@@ -525,7 +527,7 @@ export default function App() {
         <div style={{ background:"#fff",border:"1px solid #E8E5DE",borderRadius:10,padding:"12px 16px",marginBottom:14,display:"flex",alignItems:"center",gap:10,flexWrap:"wrap" }}>
           <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search project, customer…" style={{ padding:"6px 12px",border:"1px solid #E0DDD6",borderRadius:7,fontSize:12,width:220,outline:"none" }} />
           <div style={{ width:1,height:24,background:"#E8E5DE" }}></div>
-          <SelFilter value={fStatus} onChange={setFStatus} placeholder="All Statuses" options={[{v:"pending",l:"Pending"},{v:"initial_review",l:"Initial Review"},{v:"final_review",l:"Final Review"},{v:"approved",l:"Approved"},{v:"flagged",l:"Flagged"}]} />
+          <SelFilter value={fStatus} onChange={setFStatus} placeholder="All Statuses" options={[{v:"pending",l:"Pending"},{v:"initial_review",l:"Initial Review"},{v:"final_review",l:"Final Review"},{v:"approved",l:"Approved"},{v:"flagged",l:"Flagged"},{v:"submitted",l:"Part I Submitted"}]} />
           <select value={fAgent} onChange={e=>setFAgent(e.target.value)} style={{ padding:"6px 10px",border:"1px solid #E0DDD6",borderRadius:7,fontSize:12,background:"#fff",color:fAgent?"#0A1628":"#94A3B8",outline:"none",cursor:"pointer",fontFamily:"inherit" }}>
             <option value="">Sales Agent</option>
             {AGENTS.map(grp=>(
