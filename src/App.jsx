@@ -116,7 +116,7 @@ function DocsBar({ docs }) {
 }
 
 function Field({ label, children }) {
-  return <div><div style={{ fontSize:11,fontWeight:500,color:"#8B8680",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6 }}>{label}</div>{children}</div>;
+  return <div><div style={{ fontSize:11,fontWeight:500,color:"#0F2044",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6 }}>{label}</div>{children}</div>;
 }
 
 function SelFilter({ value, onChange, options, placeholder }) {
@@ -441,11 +441,11 @@ export default function App() {
           <div style={{ fontSize:12,color:"#8B8680",marginBottom:24 }}>Enter your username and password to continue</div>
           <div style={{ display:"flex",flexDirection:"column",gap:14 }}>
             <div>
-              <div style={{ fontSize:11,fontWeight:500,color:"#8B8680",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6 }}>Username</div>
+              <div style={{ fontSize:11,fontWeight:500,color:"#0F2044",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6 }}>Username</div>
               <input value={loginUser} onChange={e=>setLoginUser(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handleLogin()} placeholder="Enter username" style={{ width:"100%",padding:"10px 14px",border:`1px solid ${loginError?"#F5C0BC":"#E0DDD6"}`,borderRadius:9,fontSize:13,color:"#0A1628",background:"#FAFAF7",outline:"none",fontFamily:"inherit",boxSizing:"border-box" }} autoFocus />
             </div>
             <div>
-              <div style={{ fontSize:11,fontWeight:500,color:"#8B8680",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6 }}>Password</div>
+              <div style={{ fontSize:11,fontWeight:500,color:"#0F2044",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6 }}>Password</div>
               <input value={loginPass} onChange={e=>setLoginPass(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handleLogin()} type="password" placeholder="Enter password" style={{ width:"100%",padding:"10px 14px",border:`1px solid ${loginError?"#F5C0BC":"#E0DDD6"}`,borderRadius:9,fontSize:13,color:"#0A1628",background:"#FAFAF7",outline:"none",fontFamily:"inherit",boxSizing:"border-box" }} />
             </div>
             {loginError && <div style={{ background:"#FEF0EF",border:"1px solid #F5C0BC",borderRadius:8,padding:"9px 14px",fontSize:12,color:"#B03A2E" }}>⚠️ {loginError}</div>}
@@ -820,7 +820,7 @@ export default function App() {
                 ["Approved",projects.filter(p=>p.status==="approved").length+" / "+projects.length,"#1A7A4A"],
               ].map(([l,v,c])=>(
                 <div key={l} style={{ background:"#fff",border:"1px solid #E8E5DE",borderTop:`3px solid ${c}`,borderRadius:10,padding:"16px 20px" }}>
-                  <div style={{ fontSize:11,color:"#8B8680",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6 }}>{l}</div>
+                  <div style={{ fontSize:11,color:"#0F2044",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6 }}>{l}</div>
                   <div style={{ fontSize:24,fontWeight:700,color:c }}>{v}</div>
                 </div>
               ))}
@@ -1158,7 +1158,7 @@ export default function App() {
       {/* ── EDIT PROJECT MODAL ─────────────────────────────────────────────── */}
       {showEdit && sel && (
         <div style={{ position:"fixed",inset:0,background:"rgba(28,26,23,0.55)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:300 }} onClick={e=>{ if(e.target===e.currentTarget) setShowEdit(false); }}>
-          <div style={{ width:540,background:"#FFF7ED",borderRadius:14,boxShadow:"0 8px 40px rgba(0,0,0,0.18)",maxHeight:"90vh",display:"flex",flexDirection:"column" }}>
+          <div style={{ width:540,background:"#FB923C",borderRadius:14,boxShadow:"0 8px 40px rgba(0,0,0,0.18)",maxHeight:"90vh",display:"flex",flexDirection:"column" }}>
             <div style={{ padding:"18px 24px",borderBottom:"1px solid #F0EDE6",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0 }}>
               <div>
                 <div style={{ fontSize:15,fontWeight:600,color:"#0A1628" }}>Edit Project Info</div>
@@ -1166,7 +1166,7 @@ export default function App() {
               </div>
               <button onClick={()=>setShowEdit(false)} style={{ width:28,height:28,borderRadius:6,border:"1px solid #E0DDD6",background:"transparent",cursor:"pointer",fontSize:16,color:"#8B8680" }}>×</button>
             </div>
-            <div style={{ padding:"20px 24px",overflowY:"auto",flex:1,display:"flex",flexDirection:"column",gap:14 }}>
+            <div style={{ padding:"20px 24px",overflowY:"auto",flex:1,display:"flex",flexDirection:"column",gap:14,background:"#FFFFFF" }}>
               {/* Program Year */}
               <Field label="Program Year *">
                 <div style={{ display:"flex",gap:10 }}>
@@ -1223,7 +1223,7 @@ export default function App() {
                 </div>
               </Field>
             </div>
-            <div style={{ padding:"14px 24px",borderTop:"1px solid #FED7AA",display:"flex",gap:10,flexShrink:0 }}>
+            <div style={{ padding:"14px 24px",borderTop:"1px solid #E5E7EB",display:"flex",gap:10,flexShrink:0,background:"#FFFFFF" }}>
               <button onClick={saveEdit} disabled={!editForm.projectId.trim()} style={{ padding:"9px 24px",borderRadius:8,border:"none",background:editForm.projectId.trim()?"#2B5E3B":"#A8C5B2",color:"#fff",fontFamily:"inherit",fontSize:13,fontWeight:500,cursor:editForm.projectId.trim()?"pointer":"not-allowed" }}>
                 Save Changes
               </button>
@@ -1236,12 +1236,12 @@ export default function App() {
       {/* ── ADD PROJECT MODAL ───────────────────────────────────────────────── */}
       {showAdd&&(
         <div style={{ position:"fixed",inset:0,background:"rgba(28,26,23,0.55)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200 }} onClick={e=>{ if(e.target===e.currentTarget) setShowAdd(false); }}>
-          <div style={{ width:540,background:"#FFF7ED",borderRadius:14,boxShadow:"0 8px 40px rgba(0,0,0,0.18)",maxHeight:"90vh",display:"flex",flexDirection:"column" }}>
+          <div style={{ width:540,background:"#FB923C",borderRadius:14,boxShadow:"0 8px 40px rgba(0,0,0,0.18)",maxHeight:"90vh",display:"flex",flexDirection:"column" }}>
             <div style={{ padding:"18px 24px",borderBottom:"1px solid #F0EDE6",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0 }}>
               <div style={{ fontSize:15,fontWeight:600,color:"#0A1628" }}>Add New Project</div>
               <button onClick={()=>setShowAdd(false)} style={{ width:28,height:28,borderRadius:6,border:"1px solid #E0DDD6",background:"transparent",cursor:"pointer",fontSize:16,color:"#8B8680" }}>×</button>
             </div>
-            <div style={{ padding:"20px 24px",overflowY:"auto",flex:1,display:"flex",flexDirection:"column",gap:14 }}>
+            <div style={{ padding:"20px 24px",overflowY:"auto",flex:1,display:"flex",flexDirection:"column",gap:14,background:"#FFFFFF" }}>
               <div style={{ background:"#F3EEFF",border:"1px solid #C9B3F5",borderRadius:8,padding:"10px 14px",fontSize:12,color:"#6B4CA8" }}>
                 Fill in your project details. The manager will handle document review after submission.
               </div>
@@ -1249,8 +1249,8 @@ export default function App() {
               <Field label="Program Year *">
                 <div style={{ display:"flex",gap:10 }}>
                   {["PY8-2026","PY8-2026 Waitlisted"].map(y=>(
-                    <div key={y} onClick={()=>setForm(f=>({...f,programYear:y}))} style={{ flex:1,padding:"12px 16px",borderRadius:9,border:`2px solid ${form.programYear===y?"#0F2044":"#FED7AA"}`,background:form.programYear===y?"#0F2044":"#FFF7ED",cursor:"pointer",textAlign:"center",transition:"all 0.15s" }}>
-                      <div style={{ fontSize:13,fontWeight:600,color:form.programYear===y?"#FFFFFF":"#0F2044" }}>{y}</div>
+                    <div key={y} onClick={()=>setForm(f=>({...f,programYear:y}))} style={{ flex:1,padding:"12px 16px",borderRadius:9,border:`2px solid ${form.programYear===y?"#0F2044":"#E5E7EB"}`,background:form.programYear===y?"#0F2044":"#FFFFFF",cursor:"pointer",textAlign:"center",transition:"all 0.15s" }}>
+                      <div style={{ fontSize:13,fontWeight:600,color:form.programYear===y?"#FFFFFF":"#374151" }}>{y}</div>
                     </div>
                   ))}
                 </div>
@@ -1283,11 +1283,11 @@ export default function App() {
               <Field label="Program Eligibility (optional — check all that apply)">
                 <div style={{ display:"flex",gap:10,marginTop:4,flexWrap:"wrap" }}>
                   {[["ejc","EJC"],["ec","EC"],["iec","IEC"]].map(([key,label])=>(
-                    <div key={key} onClick={()=>setForm(f=>({...f,[key]:!f[key]}))} style={{ display:"flex",alignItems:"center",gap:8,padding:"10px 16px",borderRadius:8,border:`1.5px solid ${form[key]?"#0F2044":"#FED7AA"}`,background:form[key]?"#0F2044":"#FFF7ED",cursor:"pointer",userSelect:"none" }}>
+                    <div key={key} onClick={()=>setForm(f=>({...f,[key]:!f[key]}))} style={{ display:"flex",alignItems:"center",gap:8,padding:"10px 16px",borderRadius:8,border:`1.5px solid ${form[key]?"#0F2044":"#E5E7EB"}`,background:form[key]?"#0F2044":"#FFFFFF",cursor:"pointer",userSelect:"none" }}>
                       <div style={{ width:18,height:18,borderRadius:4,border:`1.5px solid ${form[key]?"#3A8C58":"#D0CCC6"}`,background:form[key]?"#3A8C58":"#fff",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
                         {form[key]?<span style={{ color:"#fff",fontSize:11,fontWeight:700 }}>✓</span>:null}
                       </div>
-                      <span style={{ fontSize:13,fontWeight:600,color:form[key]?"#FFFFFF":"#0F2044" }}>{label}</span>
+                      <span style={{ fontSize:13,fontWeight:600,color:form[key]?"#FFFFFF":"#374151" }}>{label}</span>
                     </div>
                   ))}
                 </div>
@@ -1297,7 +1297,7 @@ export default function App() {
                 <div style={{ marginTop:6 }}><DocChecklist docs={formDocs} onChange={i=>{ const n=[...formDocs]; n[i]=n[i]?0:1; setFormDocs(n); }} /></div>
               </Field>
             </div>
-            <div style={{ padding:"14px 24px",borderTop:"1px solid #FED7AA",display:"flex",gap:10,flexShrink:0 }}>
+            <div style={{ padding:"14px 24px",borderTop:"1px solid #E5E7EB",display:"flex",gap:10,flexShrink:0,background:"#FFFFFF" }}>
               <button onClick={addProject} disabled={!form.programYear} style={{ padding:"9px 24px",borderRadius:8,border:"none",background:form.programYear?"#2B5E3B":"#A8C5B2",color:"#fff",fontFamily:"inherit",fontSize:13,fontWeight:500,cursor:form.programYear?"pointer":"not-allowed" }}>
                 Submit Project
               </button>
