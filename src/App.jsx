@@ -1158,7 +1158,7 @@ export default function App() {
       {/* ── EDIT PROJECT MODAL ─────────────────────────────────────────────── */}
       {showEdit && sel && (
         <div style={{ position:"fixed",inset:0,background:"rgba(28,26,23,0.55)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:300 }} onClick={e=>{ if(e.target===e.currentTarget) setShowEdit(false); }}>
-          <div style={{ width:540,background:"#fff",borderRadius:14,boxShadow:"0 8px 40px rgba(0,0,0,0.18)",maxHeight:"90vh",display:"flex",flexDirection:"column" }}>
+          <div style={{ width:540,background:"#FFF7ED",borderRadius:14,boxShadow:"0 8px 40px rgba(0,0,0,0.18)",maxHeight:"90vh",display:"flex",flexDirection:"column" }}>
             <div style={{ padding:"18px 24px",borderBottom:"1px solid #F0EDE6",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0 }}>
               <div>
                 <div style={{ fontSize:15,fontWeight:600,color:"#0A1628" }}>Edit Project Info</div>
@@ -1223,7 +1223,7 @@ export default function App() {
                 </div>
               </Field>
             </div>
-            <div style={{ padding:"14px 24px",borderTop:"1px solid #F0EDE6",display:"flex",gap:10,flexShrink:0 }}>
+            <div style={{ padding:"14px 24px",borderTop:"1px solid #FED7AA",display:"flex",gap:10,flexShrink:0 }}>
               <button onClick={saveEdit} disabled={!editForm.projectId.trim()} style={{ padding:"9px 24px",borderRadius:8,border:"none",background:editForm.projectId.trim()?"#2B5E3B":"#A8C5B2",color:"#fff",fontFamily:"inherit",fontSize:13,fontWeight:500,cursor:editForm.projectId.trim()?"pointer":"not-allowed" }}>
                 Save Changes
               </button>
@@ -1236,7 +1236,7 @@ export default function App() {
       {/* ── ADD PROJECT MODAL ───────────────────────────────────────────────── */}
       {showAdd&&(
         <div style={{ position:"fixed",inset:0,background:"rgba(28,26,23,0.55)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200 }} onClick={e=>{ if(e.target===e.currentTarget) setShowAdd(false); }}>
-          <div style={{ width:540,background:"#fff",borderRadius:14,boxShadow:"0 8px 40px rgba(0,0,0,0.18)",maxHeight:"90vh",display:"flex",flexDirection:"column" }}>
+          <div style={{ width:540,background:"#FFF7ED",borderRadius:14,boxShadow:"0 8px 40px rgba(0,0,0,0.18)",maxHeight:"90vh",display:"flex",flexDirection:"column" }}>
             <div style={{ padding:"18px 24px",borderBottom:"1px solid #F0EDE6",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0 }}>
               <div style={{ fontSize:15,fontWeight:600,color:"#0A1628" }}>Add New Project</div>
               <button onClick={()=>setShowAdd(false)} style={{ width:28,height:28,borderRadius:6,border:"1px solid #E0DDD6",background:"transparent",cursor:"pointer",fontSize:16,color:"#8B8680" }}>×</button>
@@ -1249,8 +1249,8 @@ export default function App() {
               <Field label="Program Year *">
                 <div style={{ display:"flex",gap:10 }}>
                   {["PY8-2026","PY8-2026 Waitlisted"].map(y=>(
-                    <div key={y} onClick={()=>setForm(f=>({...f,programYear:y}))} style={{ flex:1,padding:"12px 16px",borderRadius:9,border:`2px solid ${form.programYear===y?"#6B4CA8":"#E0DDD6"}`,background:form.programYear===y?"#F3EEFF":"#FAFAF7",cursor:"pointer",textAlign:"center",transition:"all 0.15s" }}>
-                      <div style={{ fontSize:13,fontWeight:600,color:form.programYear===y?"#6B4CA8":"#5A5652" }}>{y}</div>
+                    <div key={y} onClick={()=>setForm(f=>({...f,programYear:y}))} style={{ flex:1,padding:"12px 16px",borderRadius:9,border:`2px solid ${form.programYear===y?"#0F2044":"#FED7AA"}`,background:form.programYear===y?"#0F2044":"#FFF7ED",cursor:"pointer",textAlign:"center",transition:"all 0.15s" }}>
+                      <div style={{ fontSize:13,fontWeight:600,color:form.programYear===y?"#FFFFFF":"#0F2044" }}>{y}</div>
                     </div>
                   ))}
                 </div>
@@ -1283,11 +1283,11 @@ export default function App() {
               <Field label="Program Eligibility (optional — check all that apply)">
                 <div style={{ display:"flex",gap:10,marginTop:4,flexWrap:"wrap" }}>
                   {[["ejc","EJC"],["ec","EC"],["iec","IEC"]].map(([key,label])=>(
-                    <div key={key} onClick={()=>setForm(f=>({...f,[key]:!f[key]}))} style={{ display:"flex",alignItems:"center",gap:8,padding:"10px 16px",borderRadius:8,border:`1.5px solid ${form[key]?"#3A8C58":"#E0DDD6"}`,background:form[key]?"#EBF9F1":"#FAFAF7",cursor:"pointer",userSelect:"none" }}>
+                    <div key={key} onClick={()=>setForm(f=>({...f,[key]:!f[key]}))} style={{ display:"flex",alignItems:"center",gap:8,padding:"10px 16px",borderRadius:8,border:`1.5px solid ${form[key]?"#0F2044":"#FED7AA"}`,background:form[key]?"#0F2044":"#FFF7ED",cursor:"pointer",userSelect:"none" }}>
                       <div style={{ width:18,height:18,borderRadius:4,border:`1.5px solid ${form[key]?"#3A8C58":"#D0CCC6"}`,background:form[key]?"#3A8C58":"#fff",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
                         {form[key]?<span style={{ color:"#fff",fontSize:11,fontWeight:700 }}>✓</span>:null}
                       </div>
-                      <span style={{ fontSize:13,fontWeight:600,color:form[key]?"#1A7A4A":"#5A5652" }}>{label}</span>
+                      <span style={{ fontSize:13,fontWeight:600,color:form[key]?"#FFFFFF":"#0F2044" }}>{label}</span>
                     </div>
                   ))}
                 </div>
@@ -1297,7 +1297,7 @@ export default function App() {
                 <div style={{ marginTop:6 }}><DocChecklist docs={formDocs} onChange={i=>{ const n=[...formDocs]; n[i]=n[i]?0:1; setFormDocs(n); }} /></div>
               </Field>
             </div>
-            <div style={{ padding:"14px 24px",borderTop:"1px solid #F0EDE6",display:"flex",gap:10,flexShrink:0 }}>
+            <div style={{ padding:"14px 24px",borderTop:"1px solid #FED7AA",display:"flex",gap:10,flexShrink:0 }}>
               <button onClick={addProject} disabled={!form.programYear} style={{ padding:"9px 24px",borderRadius:8,border:"none",background:form.programYear?"#2B5E3B":"#A8C5B2",color:"#fff",fontFamily:"inherit",fontSize:13,fontWeight:500,cursor:form.programYear?"pointer":"not-allowed" }}>
                 Submit Project
               </button>
