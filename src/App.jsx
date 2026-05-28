@@ -1,5 +1,11 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 
+// Load Work Sans font
+const fontLink = document.createElement("link");
+fontLink.href = "https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap";
+fontLink.rel = "stylesheet";
+document.head.appendChild(fontLink);
+
 const pulseStyle = `@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`;
 
 const ITEMS = ["IPA","PPA","Shading Study","Planset","Array","SS","SSR","POO","UB","ES Box","ES Date","ILSFA Verified","IPA Linked","HRUP","Invoice"];
@@ -417,7 +423,7 @@ export default function App() {
 
   // ── LOGIN SCREEN ──────────────────────────────────────────────────────────
   if (!user) return (
-    <div style={{ fontFamily:"'Helvetica Neue',sans-serif",background:"#F7F5F0",minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center" }}>
+    <div style={{ fontFamily:"'Work Sans','Helvetica Neue',sans-serif",background:"#F7F5F0",minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center" }}>
       <div style={{ width:380,background:"#fff",borderRadius:16,boxShadow:"0 4px 32px rgba(0,0,0,0.10)",overflow:"hidden" }}>
         <div style={{ background:"#0F2044",padding:"28px 32px 24px" }}>
           <div style={{ display:"flex",alignItems:"center",gap:12,marginBottom:8 }}>
@@ -454,7 +460,7 @@ export default function App() {
 
   // ── MAIN DASHBOARD ──────────────────────────────────────────────────────────
   return (
-    <div style={{ fontFamily:"'Helvetica Neue',sans-serif",background:"#F7F5F0",minHeight:"100vh" }}>
+    <div style={{ fontFamily:"'Work Sans','Helvetica Neue',sans-serif",background:"#F7F5F0",minHeight:"100vh" }}>
       <style>{pulseStyle}</style>
 
       {/* Header */}
