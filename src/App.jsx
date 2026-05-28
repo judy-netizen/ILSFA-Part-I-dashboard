@@ -526,7 +526,7 @@ export default function App() {
 
         {/* Filters */}
         <div style={{ background:"#fff",border:"1px solid #E8E5DE",borderRadius:10,padding:"12px 16px",marginBottom:14,display:"flex",alignItems:"center",gap:10,flexWrap:"wrap" }}>
-          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search project, customer…" style={{ padding:"6px 12px",border:"1px solid #E0DDD6",borderRadius:7,fontSize:12,width:220,outline:"none" }} />
+          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search project, customer…" style={{ padding:"6px 12px",border:"1px solid #D1D5DB",borderRadius:7,fontSize:12,width:220,outline:"none",color:"#374151" }} />
           <div style={{ width:1,height:24,background:"#E8E5DE" }}></div>
           <SelFilter value={fStatus} onChange={setFStatus} placeholder="All Statuses" options={[{v:"pending",l:"Pending"},{v:"initial_review",l:"Initial Review"},{v:"final_review",l:"Final Review"},{v:"approved",l:"Approved"},{v:"flagged",l:"Flagged"},{v:"submitted",l:"Part I Submitted"}]} />
           <select value={fAgent} onChange={e=>setFAgent(e.target.value)} style={{ padding:"6px 10px",border:"1px solid #E0DDD6",borderRadius:7,fontSize:12,background:"#fff",color:fAgent?"#0A1628":"#94A3B8",outline:"none",cursor:"pointer",fontFamily:"inherit" }}>
@@ -547,7 +547,7 @@ export default function App() {
             {["PY8-2026","PY8-2026 Waitlisted"].map(y=><option key={y} value={y}>{y}</option>)}
           </select>
           {anyFilter && <button onClick={clearFilters} style={{ padding:"5px 12px",borderRadius:6,border:"1px solid #E0DDD6",background:"#fff",fontFamily:"inherit",fontSize:11,color:"#B03A2E",cursor:"pointer",fontWeight:500 }}>✕ Clear</button>}
-          <div style={{ marginLeft:"auto",fontSize:12,color:"#8B8680",fontWeight:500 }}>{list.length} project{list.length!==1?"s":""}</div>
+          <div style={{ marginLeft:"auto",fontSize:12,color:"#374151",fontWeight:500 }}>{list.length} project{list.length!==1?"s":""}</div>
         </div>
 
         {/* Table */}
