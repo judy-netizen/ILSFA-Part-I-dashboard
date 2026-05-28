@@ -586,10 +586,10 @@ export default function App() {
                     onMouseEnter={e=>e.currentTarget.style.background="#EFEDE7"}
                     onMouseLeave={e=>e.currentTarget.style.background=i%2===0?"#fff":"#FDFCFA"}>
                     <td style={{ padding:"10px 14px",fontFamily:"monospace",fontSize:11,color:"#8B8680" }}>{p.id}</td>
-                    <td style={{ padding:"10px 14px" }}>{p.programYear ? <span style={{ display:"inline-flex",alignItems:"center",padding:"3px 10px",borderRadius:20,fontSize:11,fontWeight:600,background:"#F3EEFF",color:"#6B4CA8",border:"1px solid #C9B3F5" }}>{p.programYear}</span> : <span style={{ color:"#C8C4BA",fontSize:11 }}>—</span>}</td>
-                    <td style={{ padding:"10px 14px" }}><div style={{ display:"flex",alignItems:"center",gap:7 }}><Avatar name={p.customer} /><span style={{ color:"#5A5652",whiteSpace:"nowrap" }}>{p.customer}</span></div></td>
-                    <td style={{ padding:"10px 14px" }}><div style={{ display:"flex",alignItems:"center",gap:7 }}><Avatar name={p.agent} /><span style={{ color:"#5A5652" }}>{p.agent}</span></div></td>
-                    <td style={{ padding:"10px 14px" }}>{p.pm?<div style={{ display:"flex",alignItems:"center",gap:7 }}><Avatar name={p.pm} /><span style={{ color:"#5A5652" }}>{p.pm}</span></div>:<span style={{ color:"#C8C4BA",fontSize:11 }}>Unassigned</span>}</td>
+                    <td style={{ padding:"10px 14px",color:"#1C1A17",fontSize:12,fontWeight:500 }}>{p.programYear||<span style={{ color:"#C8C4BA" }}>—</span>}</td>
+                    <td style={{ padding:"10px 14px",color:"#1C1A17",fontSize:12 }}>{p.customer}</td>
+                    <td style={{ padding:"10px 14px",color:"#1C1A17",fontSize:12 }}>{p.agent}</td>
+                    <td style={{ padding:"10px 14px",color:"#1C1A17",fontSize:12 }}>{p.pm||<span style={{ color:"#C8C4BA" }}>Unassigned</span>}</td>
                     <td style={{ padding:"10px 14px",fontFamily:"monospace",fontSize:11,color:"#1A7A4A",fontWeight:600 }}>{p.recValue?fmt(p.recValue):"—"}</td>
                     <td style={{ padding:"10px 14px",fontFamily:"monospace",fontSize:11,color:"#1A5F9E" }}>{p.dcSize?fmtKw(p.dcSize):"—"}</td>
                     <td style={{ padding:"10px 14px" }}><DocsBar docs={p.initialDocs} /></td>
