@@ -313,8 +313,9 @@ export default function App() {
   }
 
   async function addProject() {
-    if (!form.projectId.trim() || !form.programYear) return;
-    const id = form.projectId.trim();
+    if (!form.programYear) return;
+    const tempNum = String(Date.now()).slice(-6);
+    const id = form.projectId.trim() || ("TEMP-" + tempNum);
     const newProject = { ...form, id, programYear:form.programYear, recValue:parseFloat(form.recValue)||0, dcSize:parseFloat(form.dcSize)||0, status:"pending", initialDocs:[...formDocs], finalDocs:[...EMPTY_DOCS], initialComment:"", finalComment:"", initialReviewer:"", finalReviewer:"", messages:[] };
     setProjects(prev=>[newProject,...prev]);
     setForm(EMPTY_FORM);
@@ -955,8 +956,9 @@ export default function App() {
                 });
                 const totalRec=projects.reduce((s,p)=>s+(p.recValue||0),0);
                 const totalDc=projects.reduce((s,p)=>s+(p.dcSize||0),0);
-                const totalRow=["TOTAL","","","","",totalRec.toFixed(2),totalDc.toFixed(1),"","","","","",""].join(",");
-                const csv=[hdr,...rowData,totalRow].join("\n");
+                const blankRow=["","","","","","","","","","","","",""].join(",");
+                const totalRow=["TOTAL ("+projects.length+" projects)","","","","","$"+totalRec.toLocaleString(),totalDc.toFixed(1)+" kW","","","","","",""].join(",");
+                const csv=[hdr,...rowData,blankRow,totalRow].join("\n");
                 const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); a.download="ILSFA_Report.csv"; a.click();
               }} style={{ padding:"10px 24px",borderRadius:8,border:"none",background:"#2B5E3B",color:"#fff",fontFamily:"inherit",fontSize:13,fontWeight:500,cursor:"pointer",display:"flex",alignItems:"center",gap:8 }}>
                 ↓ Export Full Report (CSV)
@@ -1170,8 +1172,8 @@ export default function App() {
                 </div>
               </Field>
               <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:12 }}>
-                <Field label="Project ID *">
-                  <input value={editForm.projectId} onChange={e=>setEditForm(f=>({...f,projectId:e.target.value}))} placeholder="Enter project ID" style={inputStyle} />
+                <Field label="Project ID (optional — temp ID auto-assigned if blank)">
+                  <input value={editForm.projectId} onChange={e=>setEditForm(f=>({...f,projectId:e.target.value}))} placeholder="e.g. P-14279 (leave blank for temp ID)" style={inputStyle} />
                 </Field>
                 <Field label="Customer Name">
                   <input value={editForm.customer} onChange={e=>setEditForm(f=>({...f,customer:e.target.value}))} placeholder="e.g. Maria Reyes" style={inputStyle} />
@@ -1248,8 +1250,8 @@ export default function App() {
                 </div>
               </Field>
               <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:12 }}>
-                <Field label="Project ID *">
-                  <input value={form.projectId} onChange={e=>setForm(f=>({...f,projectId:e.target.value}))} placeholder="Enter project ID" style={inputStyle} />
+                <Field label="Project ID (optional — temp ID auto-assigned if blank)">
+                  <input value={form.projectId} onChange={e=>setForm(f=>({...f,projectId:e.target.value}))} placeholder="e.g. P-14279 (leave blank for temp ID)" style={inputStyle} />
                 </Field>
                 <Field label="Customer Name"><input  value={form.customer} onChange={e=>setForm(f=>({...f,customer:e.target.value}))} placeholder="e.g. Maria Reyes" style={inputStyle} /></Field>
                 
@@ -1290,7 +1292,7 @@ export default function App() {
               </Field>
             </div>
             <div style={{ padding:"14px 24px",borderTop:"1px solid #F0EDE6",display:"flex",gap:10,flexShrink:0 }}>
-              <button onClick={addProject} disabled={!form.projectId.trim()||!form.programYear} style={{ padding:"9px 24px",borderRadius:8,border:"none",background:(form.projectId.trim()&&form.programYear)?"#2B5E3B":"#A8C5B2",color:"#fff",fontFamily:"inherit",fontSize:13,fontWeight:500,cursor:(form.projectId.trim()&&form.programYear)?"pointer":"not-allowed" }}>
+              <button onClick={addProject} disabled={!form.programYear} style={{ padding:"9px 24px",borderRadius:8,border:"none",background:form.programYear?"#2B5E3B":"#A8C5B2",color:"#fff",fontFamily:"inherit",fontSize:13,fontWeight:500,cursor:form.programYear?"pointer":"not-allowed" }}>
                 Submit Project
               </button>
               <button onClick={()=>setShowAdd(false)} style={{ background:"transparent",border:"none",fontSize:13,color:"#8B8680",cursor:"pointer",fontFamily:"inherit" }}>Cancel</button>
