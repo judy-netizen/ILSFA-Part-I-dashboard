@@ -557,7 +557,7 @@ export default function App() {
               <thead>
                 <tr style={{ background:"#0F2044" }}>
                   {["Project ID","Program Year","Customer","Sales Agent","Project Manager","REC Value","DC Size","Initial Docs","Final Docs","Status","Messages",""].map(h=>(
-                    <th key={h} style={{ padding:"8px 14px",textAlign:"left",fontWeight:600,color:"#F97316",fontSize:11,borderBottom:"1px solid #1E3A5F",whiteSpace:"nowrap" }}>{h}</th>
+                    <th key={h} style={{ padding:"8px 14px",textAlign:"left",fontWeight:600,color:"#FFFFFF",fontSize:11,borderBottom:"1px solid #1E3A5F",whiteSpace:"nowrap" }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -613,8 +613,8 @@ export default function App() {
               </tbody>
               {list.length>1&&(
                 <tfoot>
-                  <tr style={{ background:"#FAFAF7",borderTop:"2px solid #E8E5DE" }}>
-                    <td colSpan={5} style={{ padding:"10px 14px",fontSize:11,fontWeight:600,color:"#8B8680" }}>TOTALS ({list.length} projects)</td>
+                  <tr style={{ background:"#E5E7EB",borderTop:"2px solid #D1D5DB" }}>
+                    <td colSpan={5} style={{ padding:"10px 14px",fontSize:11,fontWeight:700,color:"#1C1A17" }}>TOTALS ({list.length} projects)</td>
                     <td style={{ padding:"10px 14px",fontFamily:"monospace",fontSize:12,color:"#1A7A4A",fontWeight:700 }}>{fmt(totals.rec)}</td>
                     <td style={{ padding:"10px 14px",fontFamily:"monospace",fontSize:12,color:"#1A5F9E",fontWeight:700 }}>{fmtKw(totals.dc)}</td>
                     <td colSpan={5}></td>
