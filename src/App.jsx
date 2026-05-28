@@ -555,9 +555,9 @@ export default function App() {
           <div style={{ overflowX:"auto" }}>
             <table style={{ width:"100%",borderCollapse:"collapse",fontSize:12 }}>
               <thead>
-                <tr style={{ background:"#FAFAF7" }}>
+                <tr style={{ background:"#0F2044" }}>
                   {["Project ID","Program Year","Customer","Sales Agent","Project Manager","REC Value","DC Size","Initial Docs","Final Docs","Status","Messages",""].map(h=>(
-                    <th key={h} style={{ padding:"8px 14px",textAlign:"left",fontWeight:500,color:"#8B8680",fontSize:11,borderBottom:"1px solid #F0EDE6",whiteSpace:"nowrap" }}>{h}</th>
+                    <th key={h} style={{ padding:"8px 14px",textAlign:"left",fontWeight:600,color:"#F97316",fontSize:11,borderBottom:"1px solid #1E3A5F",whiteSpace:"nowrap" }}>{h}</th>
                   ))}
                 </tr>
               </thead>
