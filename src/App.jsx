@@ -9,6 +9,8 @@ document.head.appendChild(fontLink);
 const pulseStyle = `@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`;
 
 const ITEMS = ["IPA","PPA","Shading Study","Planset","Array","SS","SSR","POO","UB","ES Box","ES Date","ILSFA Verified","IPA Linked","HRUP","Invoice"];
+const NP_ITEMS = ["EJC","EJC Adjacent","IEC","IEC Adjacent","501C","BIF","Narrative","Support Letters","POO","Qualified Tenant","Comed Bill","Proposal","Shading Study","IPA","PPA","Pipeline Reviewed","Site Survey","SSR","Part I Submitted","Comment"];
+const EMPTY_NP_DOCS = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 const EMPTY_DOCS = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
 const ROLES = {
@@ -58,6 +60,12 @@ function parseProject(p) {
     iec: p.iec === true || p.iec === "TRUE" || p.iec === "true",
     initialDocs: typeof p.initialDocs === "string" ? JSON.parse(p.initialDocs || "[]") : (p.initialDocs || [...EMPTY_DOCS]),
     finalDocs:   typeof p.finalDocs   === "string" ? JSON.parse(p.finalDocs   || "[]") : (p.finalDocs   || [...EMPTY_DOCS]),
+    npInitialDocs: typeof p.npInitialDocs === "string" ? JSON.parse(p.npInitialDocs || "[]") : (p.npInitialDocs || [...EMPTY_NP_DOCS]),
+    npFinalDocs:   typeof p.npFinalDocs   === "string" ? JSON.parse(p.npFinalDocs   || "[]") : (p.npFinalDocs   || [...EMPTY_NP_DOCS]),
+    npInitialComment: p.npInitialComment || "",
+    npFinalComment:   p.npFinalComment   || "",
+    npInitialReviewer: p.npInitialReviewer || "",
+    npFinalReviewer:   p.npFinalReviewer   || "",
     messages: (()=>{
     const raw = typeof p.messages === "string" ? JSON.parse(p.messages || "[]") : (p.messages || []);
     return raw.map(m => ({...m, id: Number(m.id||0)}));
@@ -173,6 +181,12 @@ export default function App() {
   const [fComment, setFComment]     = useState("");
   const [fReviewer, setFReviewer]   = useState("");
   const [saved, setSaved]           = useState(false);
+  const [npIDocs, setNpIDocs]       = useState([...EMPTY_NP_DOCS]);
+  const [npFDocs, setNpFDocs]       = useState([...EMPTY_NP_DOCS]);
+  const [npIComment, setNpIComment] = useState("");
+  const [npFComment, setNpFComment] = useState("");
+  const [npIReviewer, setNpIReviewer] = useState("");
+  const [npFReviewer, setNpFReviewer] = useState("");
   const [newMsg, setNewMsg]         = useState("");
   const [showAdd, setShowAdd]       = useState(false);
   const [showEdit, setShowEdit]     = useState(false);
@@ -232,10 +246,16 @@ export default function App() {
     setFReviewer(p.finalReviewer||"");
     setNewMsg("");
     setSaved(false);
+    setNpIDocs([...(p.npInitialDocs||[...EMPTY_NP_DOCS])]);
+    setNpFDocs([...(p.npFinalDocs||[...EMPTY_NP_DOCS])]);
+    setNpIComment(p.npInitialComment||"");
+    setNpFComment(p.npFinalComment||"");
+    setNpIReviewer(p.npInitialReviewer||"");
+    setNpFReviewer(p.npFinalReviewer||"");
   }
 
   async function saveProject() {
-    const updated = { ...sel, status:eStatus, initialDocs:iDocs, initialComment:iComment, initialReviewer:iReviewer, finalDocs:fDocs, finalComment:fComment, finalReviewer:fReviewer };
+    const updated = { ...sel, status:eStatus, initialDocs:iDocs, initialComment:iComment, initialReviewer:iReviewer, finalDocs:fDocs, finalComment:fComment, finalReviewer:fReviewer, npInitialDocs:npIDocs, npFinalDocs:npFDocs, npInitialComment:npIComment, npFinalComment:npFComment, npInitialReviewer:npIReviewer, npFinalReviewer:npFReviewer };
     setProjects(prev=>prev.map(p=>p.id===sel.id?updated:p));
     setSel(updated);
     setSaved(true);
@@ -1079,10 +1099,10 @@ export default function App() {
                       </Field>
                     </div>
                     <div style={{ display:"flex",borderBottom:"1px solid #F0EDE6",flexShrink:0 }}>
-                      {[["initial","Initial Review","#1A5F9E"],["final","Final Review","#6B4CA8"]].map(([tab,label,color])=>(
-                        <button key={tab} onClick={()=>setReviewTab(tab)} style={{ flex:1,padding:"10px",border:"none",background:"transparent",fontFamily:"inherit",fontSize:12,fontWeight:500,cursor:"pointer",color:reviewTab===tab?color:"#8B8680",borderBottom:`2px solid ${reviewTab===tab?color:"transparent"}` }}>
-                          {label} <span style={{ marginLeft:5,fontSize:11,background:reviewTab===tab?`${color}18`:"#F0EDE6",color:reviewTab===tab?color:"#8B8680",padding:"1px 7px",borderRadius:10 }}>
-                            {tab==="initial"?`${iDocs.filter(Boolean).length}/${ITEMS.length}`:`${fDocs.filter(Boolean).length}/${ITEMS.length}`}
+                      {[["initial","Initial Review","#1A5F9E"],["final","Final Review","#6B4CA8"],...(sel.programYear==="Non Profit"?[["np_initial","NP Initial","#0369A1"],["np_final","NP Final","#0F766E"]]:[])] .map(([tab,label,color])=>(
+                        <button key={tab} onClick={()=>setReviewTab(tab)} style={{ flex:1,padding:"10px",border:"none",background:"transparent",fontFamily:"inherit",fontSize:11,fontWeight:500,cursor:"pointer",color:reviewTab===tab?color:"#8B8680",borderBottom:`2px solid ${reviewTab===tab?color:"transparent"}` }}>
+                          {label} <span style={{ marginLeft:3,fontSize:10,background:reviewTab===tab?`${color}18`:"#F0EDE6",color:reviewTab===tab?color:"#8B8680",padding:"1px 6px",borderRadius:10 }}>
+                            {tab==="initial"?`${iDocs.filter(Boolean).length}/${ITEMS.length}`:tab==="final"?`${fDocs.filter(Boolean).length}/${ITEMS.length}`:tab==="np_initial"?`${npIDocs.filter(Boolean).length}/${NP_ITEMS.length}`:`${npFDocs.filter(Boolean).length}/${NP_ITEMS.length}`}
                           </span>
                         </button>
                       ))}
@@ -1097,6 +1117,45 @@ export default function App() {
                         <Field label={`Documents — Final (${fDocs.filter(Boolean).length}/${ITEMS.length})`}><div style={{ marginTop:6 }}><DocChecklist docs={fDocs} onChange={i=>toggleDoc(fDocs,setFDocs,i)} /></div></Field>
                         <Field label="Reviewer Name"><input value={fReviewer} onChange={e=>setFReviewer(e.target.value)} placeholder="Your name" style={inputStyle} /></Field>
                         <Field label="Final Review Comment"><textarea value={fComment} onChange={e=>setFComment(e.target.value)} placeholder="Notes…" rows={4} style={{ ...inputStyle,resize:"vertical",lineHeight:1.6 }} /></Field>
+                      </>}
+                      {reviewTab==="np_initial" && <>
+                        {sel.programYear!=="Non Profit" && <div style={{ background:"#FEF0EF",border:"1px solid #F5C0BC",borderRadius:8,padding:"10px 14px",fontSize:12,color:"#B03A2E" }}>This section is only for Non Profit projects.</div>}
+                        {sel.programYear==="Non Profit" && <>
+                          <Field label={`Non Profit Documents — Initial (${npIDocs.filter(Boolean).length}/${NP_ITEMS.length})`}>
+                            <div style={{ marginTop:6,display:"grid",gridTemplateColumns:"1fr 1fr",gap:6 }}>
+                              {NP_ITEMS.map((item,i)=>(
+                                <div key={i} onClick={()=>{const n=[...npIDocs];n[i]=n[i]?0:1;setNpIDocs(n);}} style={{ display:"flex",alignItems:"center",gap:8,padding:"8px 10px",borderRadius:8,border:`1px solid ${npIDocs[i]?"#A8E4C2":"#E8E5DE"}`,background:npIDocs[i]?"#F0FBF4":"#fff",cursor:"pointer" }}>
+                                  <div style={{ width:18,height:18,borderRadius:4,border:`1px solid ${npIDocs[i]?"#3A8C58":"#E0DDD6"}`,background:npIDocs[i]?"#3A8C58":"#FAFAF7",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
+                                    {npIDocs[i]?<span style={{ color:"#fff",fontSize:11,fontWeight:700 }}>✓</span>:null}
+                                  </div>
+                                  <span style={{ fontSize:12,color:npIDocs[i]?"#1A7A4A":"#8B8680",fontWeight:npIDocs[i]?600:400 }}>{item}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </Field>
+                          <Field label="Initial Reviewer"><input value={npIReviewer} onChange={e=>setNpIReviewer(e.target.value)} placeholder="Reviewer name" style={inputStyle} /></Field>
+                          <Field label="Initial Review Comment"><textarea value={npIComment} onChange={e=>setNpIComment(e.target.value)} placeholder="Notes from initial review…" rows={4} style={{ ...inputStyle,resize:"vertical",lineHeight:1.6 }} /></Field>
+                        </>}
+                      </>}
+                      {reviewTab==="np_final" && <>
+                        {sel.programYear!=="Non Profit" && <div style={{ background:"#FEF0EF",border:"1px solid #F5C0BC",borderRadius:8,padding:"10px 14px",fontSize:12,color:"#B03A2E" }}>This section is only for Non Profit projects.</div>}
+                        {sel.programYear==="Non Profit" && <>
+                          <div style={{ background:"#E0F2FE",border:"1px solid #7DD3FC",borderRadius:8,padding:"10px 14px",fontSize:12,color:"#0369A1" }}>Final Review re-checks all Non Profit documents independently.</div>
+                          <Field label={`Non Profit Documents — Final (${npFDocs.filter(Boolean).length}/${NP_ITEMS.length})`}>
+                            <div style={{ marginTop:6,display:"grid",gridTemplateColumns:"1fr 1fr",gap:6 }}>
+                              {NP_ITEMS.map((item,i)=>(
+                                <div key={i} onClick={()=>{const n=[...npFDocs];n[i]=n[i]?0:1;setNpFDocs(n);}} style={{ display:"flex",alignItems:"center",gap:8,padding:"8px 10px",borderRadius:8,border:`1px solid ${npFDocs[i]?"#A8E4C2":"#E8E5DE"}`,background:npFDocs[i]?"#F0FBF4":"#fff",cursor:"pointer" }}>
+                                  <div style={{ width:18,height:18,borderRadius:4,border:`1px solid ${npFDocs[i]?"#3A8C58":"#E0DDD6"}`,background:npFDocs[i]?"#3A8C58":"#FAFAF7",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
+                                    {npFDocs[i]?<span style={{ color:"#fff",fontSize:11,fontWeight:700 }}>✓</span>:null}
+                                  </div>
+                                  <span style={{ fontSize:12,color:npFDocs[i]?"#1A7A4A":"#8B8680",fontWeight:npFDocs[i]?600:400 }}>{item}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </Field>
+                          <Field label="Final Reviewer"><input value={npFReviewer} onChange={e=>setNpFReviewer(e.target.value)} placeholder="Reviewer name" style={inputStyle} /></Field>
+                          <Field label="Final Review Comment"><textarea value={npFComment} onChange={e=>setNpFComment(e.target.value)} placeholder="Notes from final review…" rows={4} style={{ ...inputStyle,resize:"vertical",lineHeight:1.6 }} /></Field>
+                        </>}
                       </>}
                     </div>
                     <div style={{ padding:"14px 22px",borderTop:"1px solid #F0EDE6",display:"flex",alignItems:"center",gap:12,flexShrink:0 }}>
