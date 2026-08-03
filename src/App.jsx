@@ -550,7 +550,7 @@ export default function App() {
           <SelFilter value={fDoc}    onChange={setFDoc}    placeholder="Has Document" options={ITEMS} />
           <select value={fProgramYear} onChange={e=>setFProgramYear(e.target.value)} style={{ padding:"6px 10px",border:"1px solid #E0DDD6",borderRadius:7,fontSize:12,background:"#fff",color:fProgramYear?"#0A1628":"#94A3B8",outline:"none",cursor:"pointer",fontFamily:"inherit" }}>
             <option value="">Program Year</option>
-            {["PY8-2026","PY8-2026 Waitlisted"].map(y=><option key={y} value={y}>{y}</option>)}
+            {["PY8-2026","PY8-2026 Waitlisted","Non Profit"].map(y=><option key={y} value={y}>{y}</option>)}
           </select>
           {anyFilter && <button onClick={clearFilters} style={{ padding:"5px 12px",borderRadius:6,border:"1px solid #E0DDD6",background:"#fff",fontFamily:"inherit",fontSize:11,color:"#B03A2E",cursor:"pointer",fontWeight:500 }}>✕ Clear</button>}
           <div style={{ marginLeft:"auto",fontSize:12,color:"#374151",fontWeight:500 }}>{list.length} project{list.length!==1?"s":""}</div>
@@ -1170,7 +1170,7 @@ export default function App() {
               {/* Program Year */}
               <Field label="Program Year *">
                 <div style={{ display:"flex",gap:10 }}>
-                  {["PY8-2026","PY8-2026 Waitlisted"].map(y=>(
+                  {["PY8-2026","PY8-2026 Waitlisted","Non Profit"].map(y=>(
                     <div key={y} onClick={()=>setEditForm(f=>({...f,programYear:y}))} style={{ flex:1,padding:"12px 16px",borderRadius:9,border:`2px solid ${editForm.programYear===y?"#6B4CA8":"#E0DDD6"}`,background:editForm.programYear===y?"#F3EEFF":"#FAFAF7",cursor:"pointer",textAlign:"center",transition:"all 0.15s" }}>
                       <div style={{ fontSize:13,fontWeight:600,color:editForm.programYear===y?"#6B4CA8":"#5A5652" }}>{y}</div>
                     </div>
@@ -1248,7 +1248,7 @@ export default function App() {
               {/* Program Year - full width, always visible */}
               <Field label="Program Year *">
                 <div style={{ display:"flex",gap:10 }}>
-                  {["PY8-2026","PY8-2026 Waitlisted"].map(y=>(
+                  {["PY8-2026","PY8-2026 Waitlisted","Non Profit"].map(y=>(
                     <div key={y} onClick={()=>setForm(f=>({...f,programYear:y}))} style={{ flex:1,padding:"12px 16px",borderRadius:9,border:`2px solid ${form.programYear===y?"#0F2044":"#E5E7EB"}`,background:form.programYear===y?"#0F2044":"#FFFFFF",cursor:"pointer",textAlign:"center",transition:"all 0.15s" }}>
                       <div style={{ fontSize:13,fontWeight:600,color:form.programYear===y?"#FFFFFF":"#374151" }}>{y}</div>
                     </div>
